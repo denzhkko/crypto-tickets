@@ -50,9 +50,10 @@ contract Concert is ERC721 {
      *
      * - `to_` ticket owner count
      */
-    function safeMint(address to_) public {
+    function safeMint(address to_) external payable {
         // TODO: add price check
         // TODO: add ticket count check
+        require(msg.value == _ticketPrice);
 
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();

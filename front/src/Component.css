@@ -1,0 +1,24 @@
+.div-1 {
+    /* background-color: #61dafb; */
+    background-color: green;
+    /* color: #000000; */
+    color: white;
+    /* display: flex; */
+    width: 100%; /* Ширина */
+
+    text-align: left;
+    padding-right:  20px;
+    padding-left:   20px;
+
+    position: sticky;
+    top: 0;
+    
+}
+
+.div-2 {
+    background-color: #ABBAEA;
+}
+
+.div-3 {
+    background-color: #FBD603;
+}

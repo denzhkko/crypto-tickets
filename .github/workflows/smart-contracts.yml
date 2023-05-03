@@ -1,0 +1,21 @@
+name: smart contract ci
+run-name: ${{ github.actor }} is testing out smart contracts
+on:
+  - push
+  - pull_request
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./smart-contracts.yml
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install -g truffle
+      - run: truffle version
+      - run: whoami
+      - run: pwd
+      - run: ls

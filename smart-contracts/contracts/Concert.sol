@@ -11,7 +11,7 @@ contract Concert is ERC721 {
     string private _concertTitle;
     int64 private _date;
     string private _posterUrl;
-    int64 private _ticketCount;
+    uint256 private _ticketCount;
     uint256 private _ticketPrice;
 
     /**
@@ -33,7 +33,7 @@ contract Concert is ERC721 {
         string memory concertTitle_,
         int64 date_,
         string memory posterUrl_,
-        int64 ticketCount_,
+        uint256 ticketCount_,
         uint256 ticketPrice_
     ) ERC721(name_, symbol_) {
         _concertTitle = concertTitle_;
@@ -51,11 +51,10 @@ contract Concert is ERC721 {
      * - `to_` ticket owner count
      */
     function safeMint(address to_) external payable {
-        // TODO: add price check
-        // TODO: add ticket count check
         require(msg.value == _ticketPrice);
 
         uint256 tokenId = _tokenIdCounter.current();
+        require(tokenId < _ticketCount);
         _tokenIdCounter.increment();
         _safeMint(to_, tokenId);
     }
@@ -84,7 +83,7 @@ contract Concert is ERC721 {
     /**
      * Returns ticket count.
      */
-    function getTicketCount() public view returns (int64) {
+    function getTicketCount() public view returns (uint256) {
         return _ticketCount;
     }
 

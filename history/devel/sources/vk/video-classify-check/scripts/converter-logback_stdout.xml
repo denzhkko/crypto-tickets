@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+    <property name="loggingPattern"
+              value="%-5level %d{yyyy-MM-dd HH:mm:ss,Europe/Moscow} %logger.%method\\(%file:%line\\): %message%n"/>
+    <property name="loggingHome" value="/logs/poisk/kafka-converter"/>
+    <property name="rollingPattern" value="%d{yyyy-MM-dd,Europe/Moscow}"/>
+    <property name="maxHistory" value="10"/>
+    <property name="totalSizeCap" value="10GB"/>
+    <property name="appName" value="video-kafka-converter"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>${loggingPattern}</pattern>
+        </encoder>
+    </appender>
+
+    <logger level="ALL" name="ru.mail" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger level="INFO" name="org.apache.kafka" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

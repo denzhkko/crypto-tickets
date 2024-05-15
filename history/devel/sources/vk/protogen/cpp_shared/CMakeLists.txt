@@ -1,0 +1,90 @@
+DECLARE_SHARED(libprotogen_shared)
+
+set(GOGO_SOURCES
+  placeholder.cpp
+)
+
+set(PROTO_DIR ${GOGO_ROOT}/projects/protogen/etc/)
+set(GOGO_PROTO_SOURCES
+  ${PROTO_DIR}/clickrank_blobs.proto
+  ${PROTO_DIR}/crawl_state.proto
+  ${PROTO_DIR}/doc_parser.proto
+  ${PROTO_DIR}/document_enums.proto
+  ${PROTO_DIR}/qembedder.proto
+  ${PROTO_DIR}/image_blobs.proto
+  ${PROTO_DIR}/image_defs.proto
+  ${PROTO_DIR}/image_bki.proto
+  ${PROTO_DIR}/phalanx_defs.proto
+  ${PROTO_DIR}/linkgraph_blobs.proto
+  ${PROTO_DIR}/bahromadb.proto
+  ${PROTO_DIR}/parsed_blobs.proto
+  ${PROTO_DIR}/rate_message.proto
+  ${PROTO_DIR}/readers_records.proto
+  ${PROTO_DIR}/result.proto
+  ${PROTO_DIR}/snippetdata.proto
+  ${PROTO_DIR}/spritzedata.proto
+  ${PROTO_DIR}/sputnik_logs.proto
+  ${PROTO_DIR}/urllog_record.proto
+  ${PROTO_DIR}/suggests.proto
+  ${PROTO_DIR}/sugg_db.proto
+  ${PROTO_DIR}/user_history.proto
+  ${PROTO_DIR}/fetcher_storage.proto
+  ${PROTO_DIR}/fetch_list.proto
+  ${PROTO_DIR}/content_storage.proto
+  ${PROTO_DIR}/document_dbctl.proto
+  ${PROTO_DIR}/generic_storage.proto
+  ${PROTO_DIR}/link.proto
+  ${PROTO_DIR}/url_context.proto
+  ${PROTO_DIR}/silicon_data.proto
+  ${PROTO_DIR}/search_result.proto
+  ${PROTO_DIR}/spellchecker.proto
+  ${PROTO_DIR}/subj_schema.proto
+  ${PROTO_DIR}/video.proto
+  ${PROTO_DIR}/video_qddb.proto
+  ${PROTO_DIR}/vk_music.proto
+  ${PROTO_DIR}/vk_groups.proto
+  ${PROTO_DIR}/vk_reco.proto
+  ${PROTO_DIR}/sekitei.proto
+  ${PROTO_DIR}/qp_proxy_result.proto
+  ${PROTO_DIR}/webmaster_blobs.proto
+  ${PROTO_DIR}/query_translations.proto
+  ${PROTO_DIR}/index_meta_part.proto
+  ${PROTO_DIR}/qinformer.proto
+  ${PROTO_DIR}/qddb_fast.proto
+  ${PROTO_DIR}/qddb_spc.proto
+  ${PROTO_DIR}/qddb_norm.proto
+  ${PROTO_DIR}/homer_data.proto
+  ${PROTO_DIR}/smoothing_searcherd.proto
+  ${PROTO_DIR}/infholder_blobs.proto
+  ${PROTO_DIR}/entry_proto.proto
+  ${PROTO_DIR}/entry_proto_header.proto
+  ${PROTO_DIR}/entry_proto_content.proto
+  ${PROTO_DIR}/cache_entry_proto.proto
+  ${PROTO_DIR}/spam_mi_matrix.proto
+  ${PROTO_DIR}/additive_app.proto
+  ${PROTO_DIR}/sekitei_experimental.proto
+  ${PROTO_DIR}/experiment.proto
+  ${PROTO_DIR}/traits.proto
+  ${PROTO_DIR}/NetworkBan_request.proto
+  ${PROTO_DIR}/gsb_data_message.proto
+  ${PROTO_DIR}/frame.proto
+  ${PROTO_DIR}/recostorage_result.proto
+  ${PROTO_DIR}/item2item.proto
+  ${PROTO_DIR}/taped.proto
+  ${PROTO_DIR}/markov.proto
+  ${PROTO_DIR}/lingvo_dump.proto
+  ${PROTO_DIR}/stage0_cache.proto
+  ${PROTO_DIR}/recommender.proto
+  ${PROTO_DIR}/bongd.proto
+  ${PROTO_DIR}/vydra.proto
+  ${PROTO_DIR}/phantomas.proto
+  ${PROTO_DIR}/featured_snippet.proto
+  ${PROTO_DIR}/backends_quality.proto
+  ${PROTO_DIR}/cosmo_domain_docs.proto
+  ${PROTO_DIR}/yandex_news_session.proto
+  ${PROTO_DIR}/yandex_news_document.proto
+  ${PROTO_DIR}/dzen_articles.proto
+)
+set(GOGO_PROTO_LINK_DIR ${GOGO_ROOT}/include/libprotogen_shared)
+
+DECLARE_END()

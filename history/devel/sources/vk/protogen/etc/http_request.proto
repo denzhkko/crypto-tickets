@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+package http;
+
+message HttpRequest {
+    optional string query_string = 1;
+    optional bytes body = 2;
+}

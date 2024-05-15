@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+
+message ProductVisitEvent
+{
+    enum PageType
+    {
+        OTHER = 1;
+        HOME = 2;
+        SEARCHRESULTS = 3;
+        CATEGORY = 4;
+        PRODUCT = 5;
+        CART = 6;
+        PURCHASE = 7;
+        RECOMMENDATION = 8;
+    }
+    optional fixed64 vid = 1;
+    optional uint32  shop_id = 2;
+    optional uint32  feed_id = 3;
+    repeated string  product_id = 4;
+    optional PageType page_type = 5;
+    optional uint32  total_price = 6;   // в копейках
+    optional fixed32 timestamp = 7;
+}

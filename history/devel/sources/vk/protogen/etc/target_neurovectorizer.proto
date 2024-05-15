@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+package target_neurovectorizer.pb;
+
+message Phrases {
+    enum EmbeddingFormat {
+        FP32 = 0;
+        FP16 = 1;
+    }
+
+    message PhraseEmbedding {
+        repeated float component = 1;
+        optional bytes compressed = 2;
+    }
+
+    message Query {
+        optional uint32 id = 1;
+        optional bytes phrase = 2;
+        optional PhraseEmbedding embedding = 3;
+    }
+
+    repeated Query query = 1;
+    optional uint32 version = 2;
+    optional string error = 3;
+    optional EmbeddingFormat embedding_format = 4;
+}

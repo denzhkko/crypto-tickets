@@ -1,0 +1,52 @@
+syntax = "proto2";
+
+import "options.proto";
+
+package pb.srch;
+
+message VkTrack {
+    optional string query_text = 1 [(gogo.json).name = "id"];
+
+    optional string track      = 2 [(gogo.json).name = "title" ];
+    optional string artist     = 3 [(gogo.json).name = "artist"];
+    optional string album      = 4 [(gogo.json).name = "album" ];
+
+    optional int32  official   = 5 [(gogo.json).name = "official"   , (gogo.json).force_print = true];
+    optional int32  explicit   = 6 [(gogo.json).name = "explicit"   , (gogo.json).force_print = true];
+    optional int32  child      = 7 [(gogo.json).name = "child"      , (gogo.json).force_print = true];
+    optional int32  blacklist  = 8 [(gogo.json).name = "blacklisted", (gogo.json).force_print = true];
+}
+
+message VkTrackNail {
+    required NailFilter filter = 1 [(gogo.json).name = "filter"];
+    required NailData   data   = 2 [(gogo.json).name = "data"  ];
+}
+
+message NailFilter {
+    optional string track_id   = 1 [(gogo.json).name = "id"    ];
+    optional string track      = 2 [(gogo.json).name = "title" ];
+    optional string artist     = 3 [(gogo.json).name = "artist"];
+    optional string album      = 4 [(gogo.json).name = "album" ];
+}
+
+message NailData {
+    optional string track_id   = 1 [(gogo.json).name = "id"       ];
+    optional string track      = 2 [(gogo.json).name = "title"    ];
+    optional string artist     = 3 [(gogo.json).name = "artist"   ];
+    optional string album      = 4 [(gogo.json).name = "album"    ];
+    optional int32  official   = 5 [(gogo.json).name = "official"   , (gogo.json).force_print = true];
+    optional int32  explicit   = 6 [(gogo.json).name = "explicit"   , (gogo.json).force_print = true];
+    optional int32  child      = 7 [(gogo.json).name = "child"      , (gogo.json).force_print = true];
+    optional int32  blacklist  = 8 [(gogo.json).name = "blacklisted", (gogo.json).force_print = true];
+}
+
+message MonitorData {
+    optional uint32 storage_size      = 1 [(gogo.json).name = "storage_size"     ];
+    optional uint32 nails_size        = 2 [(gogo.json).name = "nails_size"       ];
+    optional string storage_version   = 3 [(gogo.json).name = "storage_version"  ];
+    optional string nails_version     = 4 [(gogo.json).name = "nails_version"    ];
+    optional string monitor_file_data = 5 [(gogo.json).name = "monitor_file"     ];
+    optional string storage_age       = 6 [(gogo.json).name = "storage_age"      ];
+    optional string nails_age         = 7 [(gogo.json).name = "nails_age"        ];
+    optional string monitor_file_age  = 8 [(gogo.json).name = "monitor_file_age" ];
+}

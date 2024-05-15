@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.quicklinks;
+
+import "crawl_state.proto";
+import "image_blobs.proto";
+import "content_storage.proto";
+option java_outer_classname = "QuickLinkInfo";
+
+
+message WebPageInfo
+{
+   required string pageUrl = 1;
+   required string fullPageUrl = 2;
+   required ru.mail.go.webbase.blobs.CrawlDetails.stateTypes state = 3;
+   optional string redirectUrl = 4;
+   required bool duplicate = 5;
+   required float rank = 6;
+   optional ru.mail.go.webbase.blobs.HtmlPage parsed_page = 7;
+   repeated float ranks = 8;
+   optional gogo.storage.spider_document_detail numzones = 9;
+}
+
+message LinkInfo
+{
+   required string quickLinkURL = 1;
+   required string quickLinktitle = 2;
+   required float rank = 3;
+   required float relRank = 4;
+   optional string snippet = 5;
+   optional string snippetOrigin = 6;
+}
+
+message LinksInfo
+{
+   repeated LinkInfo pageUrl = 1;
+   required int32 version = 2;
+}

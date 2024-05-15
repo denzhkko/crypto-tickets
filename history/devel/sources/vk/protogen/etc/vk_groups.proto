@@ -1,0 +1,126 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "VkGroups";
+
+enum VkGroupAccessType
+{
+  OPEN = 0;
+  CLOSED = 1;
+  PRIVATE = 2;
+}
+
+enum VkGroupType
+{
+  GROUP = 0;
+  PAGE = 1;
+  EVENT = 2;
+}
+
+enum VkGroupAgeLimit
+{
+  NO_LIMIT = 0;
+  FROM_16 = 1;
+  FROM_18 = 2;
+}
+
+enum VkGroupDeactivationReason
+{
+  DELETED = 0;
+  BANNED = 1;
+}
+
+enum VkGroupMainSectionType
+{
+  NONE = 0;
+  PHOTOS = 1;
+  TOPICS = 2;
+  AUDIOS = 3;
+  VIDEOS = 4;
+  MARKET = 5;
+}
+
+message VkGroupLocation
+{
+  optional int64 id = 1;
+  optional string title = 2;
+}
+
+message VkGroupContactInfo
+{
+  optional int64 user_id = 1;
+  optional string desc = 2;
+  optional string phone = 3;
+  optional string email = 4;
+}
+
+message VkGroupImageInfo
+{
+  optional string url = 1;
+  optional int32 width = 2;
+  optional int32 height = 3;
+}
+
+message VkGroupCoverInfo
+{
+  optional bool enabled = 1;
+  repeated VkGroupImageInfo images = 2;
+}
+
+message VkGroupMarketInfo
+{
+  optional bool enabled = 1;
+  optional int32 price_min = 2;
+  optional int32 price_max = 3;
+  optional int64 main_album_id = 4;
+  optional int64 contact_id = 5;
+  optional int64 currency_id = 6;
+  optional string currency_sign = 7;
+  optional string currency_text = 8;
+}
+
+message VkGroupPlaceInfo
+{
+  optional int64 id = 1;
+  optional string title = 2;
+  optional double latitude = 3;
+  optional double longitude = 4;
+  optional string type = 5;
+  optional int64 country_id = 6;
+  optional int64 city_id = 7;
+  optional string address = 8;
+}
+
+message VkGroup
+{
+  optional int64 id = 1;
+  optional string name = 2;
+  optional string screen_name = 3;
+  optional VkGroupAccessType access_level = 4; // "is_closed"
+  optional VkGroupDeactivationReason deactivation_reason = 5; // "deactivated"
+  optional VkGroupType type = 6;
+  optional bool has_photo = 7;
+
+  optional string page_status_bar = 8; // "activity"
+  optional VkGroupAgeLimit age_limits = 9;
+  optional VkGroupLocation city = 10;
+  repeated VkGroupContactInfo contacts = 11;
+  optional VkGroupLocation country = 12;
+  optional VkGroupCoverInfo cover = 13;
+  optional string description = 14;
+  optional int64 fixed_wall_post_id = 15;
+  optional int64 main_album_id = 16;
+  optional VkGroupMainSectionType main_section = 17;
+  optional VkGroupMarketInfo market = 18;
+  optional int64 members_count = 19;
+  optional VkGroupPlaceInfo place = 20;
+  optional string public_date_label = 21;
+  optional string site_url = 22;
+  optional int64 start_date_ts = 23;
+  optional int64 finish_date_ts = 24;
+  optional string group_status = 25;
+  optional bool trending = 26;
+  optional bool verified = 27;
+  optional string wiki_page = 28;
+}

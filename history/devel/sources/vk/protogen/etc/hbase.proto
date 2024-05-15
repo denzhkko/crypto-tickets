@@ -1,0 +1,36 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.hbase;
+
+
+option java_outer_classname = "HBaseData";
+
+
+message MutationsProto {
+    optional PutProto put = 1;
+    optional DeleteProto delete = 2;
+}
+
+message PutProto {
+    required bytes row = 1;
+    repeated CellProto cells = 2;
+}
+
+message DeleteProto {
+    required bytes row = 1;
+    repeated DeleteCellProto cells = 2;
+}
+
+
+message CellProto {
+    required bytes family = 1;
+    required bytes qualifier = 2;
+    required bytes value = 3;
+    optional int64 timestamp = 4;
+}
+
+message DeleteCellProto {
+    required bytes family = 1;
+    required bytes qualifier = 2;
+    optional int64 timestamp = 3;
+}

@@ -1,0 +1,47 @@
+syntax = "proto2";
+
+package idxembedder.pb;
+
+message Document {
+    required string text    = 1;
+    required uint32 docid   = 2;
+    required uint32 zone_id = 3;
+}
+
+message VectorData {
+    required bytes  data    = 1;
+    optional uint32 blockid = 2;
+}
+
+message BakedDocument {
+    required uint32 docid       = 1;
+    required uint32 blockid     = 2;
+    optional bytes pt_vector    = 3;
+    optional bytes neuro_vector = 4;
+}
+
+message BakedDocumentV2 {
+    required uint32 docid       = 1;
+    repeated VectorData vectors = 2;
+}
+
+message Zone2BlockId {
+    required uint32 zone_id = 1;
+    repeated uint32 block_ids = 2;
+}
+
+message Request {
+    repeated Document documents         = 1;
+    optional uint32 minimal_version     = 2;
+}
+
+message Answer {
+    required uint32          result_code       = 1;
+    repeated BakedDocument   documents         = 2;
+    optional fixed32         pt_model_hash     = 3;
+    optional fixed32         neuro_model_hash  = 4;
+    optional bool            pq_enabled        = 5 [default = false];
+    repeated uint32          blockid_map       = 6;
+    repeated BakedDocumentV2 documents_v2      = 7;
+    optional uint32          version           = 8;
+}

@@ -1,0 +1,127 @@
+syntax = "proto2";
+
+package recostream.pb;
+
+
+message LoginState
+{
+    required int64 user_id = 1;
+    optional uint64 vid = 2;
+    optional int32 split = 3;
+    optional bool is_anonymous = 4;
+    optional string from_label = 5;
+    optional int64 advert_sitename = 6;
+    optional string category_ids = 7;
+    repeated string many_vids = 8;
+    repeated string many_emails = 9;
+    optional string vk_id = 10;
+    optional string ok_id = 11;
+    optional string idfa = 12;
+    optional string gaid = 13;
+}
+
+message CosmoState
+{
+    message CacheCursor
+    {
+        required string record_id = 1;
+        required int32 pos = 2;
+    }
+
+    message Stats
+    {
+        optional int32 skipped = 1;
+        optional int32 bahroma_missed = 2;
+        optional int32 banned = 3;
+    }
+
+    message ExperimentInfo
+    {
+        required uint32 experiment_id = 1;
+    }
+
+    optional CacheCursor cache_cursor = 1;
+    optional Stats stats = 2;
+    optional ExperimentInfo experiment_info = 3;
+}
+
+message CosmoSources
+{
+    map< string, CosmoState > states = 1;
+}
+
+message TargetState
+{
+    repeated int32 last_banners = 1;
+}
+
+message TargetSources
+{
+    map< string, TargetState > states = 1;
+}
+
+message ResultsPageState
+{
+    message BlockState
+    {
+        optional string name = 1;
+        optional int32 used_positions = 2;
+        optional int32 block_layout_position = 3;
+    }
+
+    optional int32 layout_position = 1;
+    repeated BlockState blocks = 3;
+    // 32-bit hashes is enough for results set
+    // repeated fixed32 document_hashes = 4 [deprecated = true];
+    repeated string terminated_providers = 5;
+    repeated uint32 lenta = 6;
+    repeated int64 document_hashes = 7;
+}
+
+message PPNState
+{
+    optional string results_hash = 1;
+    optional int32 position = 2;
+    optional int64 creation_ts = 3 [deprecated = true];
+}
+
+message SubscriptionState
+{
+    message SubscriptionInfo
+    {
+        required uint32 cnt = 1;
+        optional int64 last_ts = 2;
+    }
+
+    optional string block_name = 1;
+    optional bool show_category_subscription = 3;
+    optional bool show_cold_sources_subscription = 4;
+    repeated int64 user_source_subscriptions = 5;
+
+    optional SubscriptionInfo category_subscription = 6;
+    optional SubscriptionInfo cold_sources_subscription = 7;
+}
+
+message RecoSessionState
+{
+    optional LoginState login_state = 1;
+    optional ResultsPageState results_page_state = 3;
+    optional CosmoSources cosmo_sources = 4;
+    optional PPNState ppn_state = 5;
+    optional TargetSources target_sources = 6;
+    optional SubscriptionState subscription_state = 7;
+    optional bool cold_lenta = 8;
+    optional int64 creation_ts = 100;
+}
+
+message ProfileSettingField
+{
+    required string key = 1;
+    required string value = 2;
+}
+
+message ProfileSettings
+{
+    repeated ProfileSettingField settings = 1;
+}
+

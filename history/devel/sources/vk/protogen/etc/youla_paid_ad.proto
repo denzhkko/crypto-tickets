@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package youla.paidad.pb;
+
+option java_outer_classname = "YoulaPaidAd";
+
+message ViewInfo
+{
+   required string product_id = 1;
+   optional uint64 time       = 2;
+}
+
+message PaidAdUserViews
+{
+    repeated ViewInfo view_info = 1;
+}

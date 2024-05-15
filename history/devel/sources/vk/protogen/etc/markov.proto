@@ -1,0 +1,27 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.markov.protogen;
+option java_outer_classname = "MarkovBlobs";
+
+/*Markov doc-click-view chain*/
+message MarkovDCVChain {
+  repeated MarkovDCVState state = 1;
+}
+
+message MarkovDCVState {
+  required MarkovDCVStateDescription description = 1;
+  required double freq = 2 [default = 1];
+  repeated MarkovDCVEdge edge =3;
+}
+
+message MarkovDCVStateDescription {
+  optional int64 docID = 1;
+  optional string url = 2;
+  required bool isClicked = 3;
+  required bool isViewed = 4;
+}
+
+message MarkovDCVEdge {
+  required MarkovDCVStateDescription neighbor = 1;
+  required double prob = 2;
+}

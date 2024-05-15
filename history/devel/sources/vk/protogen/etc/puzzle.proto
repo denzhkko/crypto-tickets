@@ -1,0 +1,27 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.puzzle;
+
+option java_outer_classname = "Puzzle";
+
+message PuzzleUserSession
+{
+    required string user_id = 1;
+
+    message LogEntry
+    {
+        required string name = 1;
+        optional int64 last_ts = 2;
+        optional uint32 count = 3 [ default = 1 ];
+        enum UrlType {
+            COMMON = 0;
+            SITELINK = 1;
+            VK_GROUP = 2;
+            VK_LONGREAD = 3;
+        }
+        optional UrlType url_type = 4;
+    }
+    repeated LogEntry domain_visits = 2;
+    repeated LogEntry url_visits = 3;
+    optional int64 last_ts = 5;
+}

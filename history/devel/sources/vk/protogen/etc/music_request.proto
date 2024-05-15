@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+import "options.proto";
+
+package pb.srch.music;
+
+
+message SearcherParams {
+    string qid = 1 [(gogo.query).name = "_qid"];
+    string user_type = 2 [(gogo.query).name = "_user_type"];
+    string query = 3 [(gogo.query).name = "q"];
+    string query_data = 4 [(gogo.query).name = "wqp2"];
+    string rb_code = 5 [(gogo.query).name = "rb_code"];
+    bool is_utf8 = 6 [(gogo.query).name = "_utf8"];
+
+    uint64 documents_count = 7 [(gogo.query).name = "n"];
+};
+
+message UrlInfoParams {
+    string qid = 1 [(gogo.query).name = "_qid"];
+    string user_type = 2 [(gogo.query).name = "_user_type"];
+    repeated string url_hashes = 3 [(gogo.query).name = "q"];
+};
+
+message SerpSite {
+    uint32 position = 1;
+    string url = 2;
+    string title = 3;
+    float sq_model_rank = 4;
+};
+
+message ShardSite {
+    uint64 url_hash = 1;
+    uint32 position = 3;
+    float sq_model_rank = 4;
+};
+
+message ManagerParams {
+    string qid = 1 [(gogo.query).name = "_qid"];
+    string user_type = 2 [(gogo.query).name = "_user_type"];
+    string query = 3 [(gogo.query).name = "q"];
+    string query_data = 4 [(gogo.query).name = "wqp2"];
+    string rb_code = 5 [(gogo.query).name = "rb_code"];
+
+    bool is_voice = 6 [(gogo.query).name = "voice"];
+    bool is_album = 7 [(gogo.query).name = "_album"];
+    bool is_nails_disabled = 8 [(gogo.query).name = "_music_disable_nails"];
+    repeated string url_hashes = 9 [(gogo.query).name = "urls_info"];
+
+    string supposed_artist = 10 [(gogo.query).name = "supposed_artist"];
+    string supposed_track = 11 [(gogo.query).name = "supposed_track"];
+
+    string dict_artist = 12 [(gogo.query).name = "dict_artist"];
+    string dict_track = 13 [(gogo.query).name = "dict_track"];
+
+    repeated SerpSite serp = 14 [(gogo.query).name = "serp"];
+    repeated ShardSite shard = 15 [(gogo.query).name = "shard"];
+
+    bool use_titles_new = 16 [(gogo.query).name = "_music_titles_new"];
+
+    string lbcmd = 17 [(gogo.query).name = "LBcmd"];
+};

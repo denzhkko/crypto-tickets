@@ -1,0 +1,79 @@
+syntax = "proto2";
+
+package recostream.pb;
+option java_outer_classname = "RecostreamPixelMetaInfoProto";
+
+import "cosmo_result.proto";
+import "uuid.proto";
+
+
+message ResultInfo
+{
+    optional int32 position = 1;
+    optional string block_label = 2;
+    optional bool is_internal_url = 3;
+    optional bool is_fulltext = 4;
+    optional bool has_pictures = 5;
+    optional bool is_commercial_fulltext = 6;
+    optional int32 block_position = 7;
+    optional bool from_scrollable = 8;
+    optional bool filler = 9;
+    optional int64 advert_sitename = 10;
+    optional bool is_video = 11;
+    optional string distribution_channel_id = 12;
+}
+
+message PromoInfo
+{
+    repeated int32 active_campaigns = 1;
+}
+
+message UserInfo
+{
+    optional int64 user_id = 1;
+    optional int64 vid = 2;
+    optional int64 hash_email = 3;
+    optional string geo = 4;
+    optional uint32 age = 5;
+    optional bool sex = 6;
+    optional int64 hash_device_id = 7;
+    optional int64 hash_advertising_id = 8;
+    optional string idfa = 9;
+    optional string gaid = 10;
+    optional utils.pb.UUID compact_idfa = 11;
+    optional utils.pb.UUID compact_gaid = 12;
+}
+
+message DocumentMetaInfo
+{
+    optional cosmo.pb.Metrics metrics = 1;
+    optional cosmo.pb.DocumentInfo document_info = 2;
+    optional cosmo.pb.InterleavingInfo interleaving_info = 3;
+    optional cosmo.pb.MixerInfo mixer_info = 4;
+    optional ResultInfo result_info = 5;
+    optional string from_label = 6;
+    optional PromoInfo promo_info = 7;
+    optional UserInfo user_info = 8;
+    optional string url = 9;
+}
+
+message ProviderOriginInfo
+{
+    required string name = 1;
+}
+
+message ProviderMetaInfo
+{
+    optional ProviderOriginInfo origin_info = 1;
+    optional cosmo.pb.MixerInfo mixer_info = 2;
+    optional cosmo.pb.Metrics metrics = 3;
+}
+
+message ResultMetaInfo
+{
+    repeated ProviderMetaInfo providers = 1;
+    optional string from_label = 2;
+    optional UserInfo user_info = 3;
+    optional int64 advert_sitename = 4;
+}
+

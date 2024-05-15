@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+message UserSubscription
+{
+    string params     = 1;
+    uint64 sid        = 2;
+    uint64 search_from_ts = 3;
+    uint64 expiration = 4;
+    uint64 created_timestamp = 5;
+    string original_params   = 6;
+    bool   is_wide    = 7;
+    uint64 ngsid      = 8;
+}
+
+message UserSubscriptions
+{
+    repeated UserSubscription subscriptions = 1;
+    string uid               = 2;
+    uint64 expiration_timestamp = 3;
+}

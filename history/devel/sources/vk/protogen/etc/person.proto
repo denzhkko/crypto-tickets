@@ -1,0 +1,39 @@
+syntax = "proto2";
+
+import "image_defs.proto";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "PersonDefs";
+
+message RawPersonProfileData {  
+    optional bytes body = 1;
+    optional bytes thumb = 2;
+    optional string thumbUrl = 3;
+    optional uint64 lastCrawled = 4;
+};
+
+message PersonInfo {
+    optional string name = 1;
+    optional string description = 2;
+    optional string contact = 3;
+    optional string location = 4;
+    repeated string work = 5;
+    repeated string edu = 6;
+    optional string birthday = 7;
+    optional string status = 8;
+    optional string imgUrl = 9;
+    optional ru.mail.go.webbase.parsing.img.Thumb thumb = 10;
+    optional string thumbUrl = 11;
+    optional uint32 thumbWidth = 12;
+    optional uint32 thumbHeight = 13;
+    optional uint32 friendsCount = 14;
+    optional uint32 photosCount = 15;
+    optional uint64 lastCrawled = 16;
+    optional bool publicAccess = 17;
+    optional bool profileActive = 18;
+    optional string primaryProfileUrl = 19;
+    optional string publicProfileUrl = 20;
+    optional string gender = 21;
+};
+

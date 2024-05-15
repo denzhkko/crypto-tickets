@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+// blobs for blobfish
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "BlobfishBlobs";
+
+message Snap {
+    required string url  = 1;
+    optional bytes title = 2;
+    optional bytes text  = 3;
+    optional int64 time  = 4;
+}
+

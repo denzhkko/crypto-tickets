@@ -1,0 +1,24 @@
+syntax = "proto3";
+package pb.suggests;
+
+import "options.proto";
+
+message DzenNewsQuery {
+
+    message Variant {
+        string text = 1 [(gogo.json).name = "text"];
+        uint32 frequency = 2 [(gogo.json).name = "freq"];
+        uint32 flags = 3 [(gogo.json).name = "flags"];
+    };
+
+    message Group {
+        string id = 1 [(gogo.json).name = "group_id"];
+        uint32 frequency = 2 [(gogo.json).name = "freq"];
+    };
+
+    string query = 1 [(gogo.json).name = "query"];
+    uint32 frequency = 2 [(gogo.json).name = "freq"];
+    double freshness = 3 [(gogo.json).name = "freshness"];
+    repeated Variant variants = 4 [(gogo.json).name = "variants"];
+    repeated Group groups = 5 [(gogo.json).name = "groups"];
+};

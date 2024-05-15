@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package factoid.pb;
+
+message Fact {
+    optional string label = 1;
+    optional float score = 2;
+}
+
+message Facts {
+    repeated Fact facts = 1;
+}

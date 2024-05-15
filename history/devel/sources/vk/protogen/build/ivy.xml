@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="ru.mail.go" module="protogen" revision="1.194--SRCH-73417-100" status="integration" publication="20240506093748"/>
+  <configurations>
+    <conf name="annotationProcessor" visibility="private"/>
+    <conf name="apiElements" visibility="private" extends="runtime"/>
+    <conf name="archives" visibility="public"/>
+    <conf name="compile" visibility="private"/>
+    <conf name="compileClasspath" visibility="private" extends="compileOnly,implementation"/>
+    <conf name="compileOnly" visibility="private"/>
+    <conf name="default" visibility="public" extends="runtimeElements"/>
+    <conf name="implementation" visibility="private" extends="compile"/>
+    <conf name="published" visibility="public"/>
+    <conf name="publishedDocs" visibility="public"/>
+    <conf name="publishedSources" visibility="public"/>
+    <conf name="publishedTests" visibility="public"/>
+    <conf name="runtime" visibility="private" extends="compile"/>
+    <conf name="runtimeClasspath" visibility="private" extends="implementation,runtime,runtimeOnly"/>
+    <conf name="runtimeElements" visibility="private" extends="implementation,runtime,runtimeOnly"/>
+    <conf name="runtimeOnly" visibility="private"/>
+    <conf name="testAnnotationProcessor" visibility="private"/>
+    <conf name="testCompile" visibility="private" extends="compile"/>
+    <conf name="testCompileClasspath" visibility="private" extends="testCompileOnly,testImplementation"/>
+    <conf name="testCompileOnly" visibility="private"/>
+    <conf name="testImplementation" visibility="private" extends="implementation,testCompile"/>
+    <conf name="testRuntime" visibility="private" extends="runtime,testCompile"/>
+    <conf name="testRuntimeClasspath" visibility="private" extends="testImplementation,testRuntime,testRuntimeOnly"/>
+    <conf name="testRuntimeOnly" visibility="private" extends="runtimeOnly"/>
+  </configurations>
+  <publications>
+    <artifact name="protogen" type="jar" ext="jar" conf="apiElements,archives,archives,published,runtime,runtimeElements"/>
+    <artifact name="protogen" type="jar" ext="jar" conf="archives,publishedSources" m:classifier="sources"/>
+    <artifact name="protogen" type="jar" ext="jar" conf="archives,publishedTests" m:classifier="tests"/>
+  </publications>
+  <dependencies>
+    <dependency org="com.google.protobuf" name="protobuf-java" rev="2.5.0" conf="compile-&gt;default"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="annotationProcessor"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="apiElements"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="archives"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="compile"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="compileClasspath"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="compileOnly"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="default"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="implementation"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="published"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="publishedDocs"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="publishedSources"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="publishedTests"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="runtime"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="runtimeClasspath"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="runtimeElements"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="runtimeOnly"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="testAnnotationProcessor"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="testCompile"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="testCompileClasspath"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="testCompileOnly"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="testImplementation"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="testRuntime"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="testRuntimeClasspath"/>
+    <exclude org="org.apache.hadoop" module="hadoop-core" conf="testRuntimeOnly"/>
+  </dependencies>
+</ivy-module>

@@ -1,0 +1,43 @@
+syntax = "proto2";
+
+package ru.mail.go.vydra.data;
+
+import "silicon_data.proto";
+
+option java_outer_classname = "VydraData";
+option optimize_for = SPEED; // default
+
+
+message VydraSourceDoc {
+    required string url = 1;
+    required string html = 2;
+
+    enum Type {
+        HTML = 0;
+        AMP_HTML = 1;
+    }
+
+    optional Type type = 3 [default = HTML];
+}
+
+enum VydraResultStatus {
+    OK = 0;
+    FAIL = 1;
+    NO_PARSER = 2;
+    INVALID_INPUT = 3;
+    INPUT_TOO_LONG = 4;
+    INVALID_SOURCE_URL = 5;
+    BANNED_URL = 6;
+    BAD_DOC_TYPE = 7;
+}
+
+message VydraResultInfo {
+    optional int32 layer_words_count = 1;
+}
+
+message VydraResultDoc {
+    required VydraResultStatus status = 1;
+    optional ru.mail.go.webbase.blobs.SiliconDocParserInfo siliconData = 2;
+    optional VydraResultInfo info = 3;
+}
+

@@ -1,0 +1,60 @@
+syntax = "proto3";
+package pb.suggests.index;
+
+import "options.proto";
+
+message IdxQuery {
+
+    message Variant {
+        string query = 1 [(gogo.json).name = "query"];
+        uint32 uniq = 2 [(gogo.json).name = "uniq"];
+        uint32 flags = 3 [(gogo.json).name = "flags"];
+    };
+
+    message Action {
+        string item_id = 1 [(gogo.json).name = "item_id"];
+        uint32 uniq = 2 [(gogo.json).name = "uniq"];
+        uint32 uniq_1d = 3 [(gogo.json).name = "uniq_1d"];
+        uint32 count = 4 [(gogo.json).name = "count"];
+        uint32 count_1d = 5 [(gogo.json).name = "count_1d"];
+    };
+
+    string query = 1 [(gogo.json).name = "query"];
+    uint32 uniq = 2 [(gogo.json).name = "uniq"];
+    uint32 uniq_1d = 3 [(gogo.json).name = "uniq_1d"];
+    uint32 count = 4 [(gogo.json).name = "count"];
+    uint32 count_1d = 5 [(gogo.json).name = "count_1d"];
+    repeated int32 glue_ids = 6 [(gogo.json).name = "glue_ids"];
+
+    repeated Variant variants = 7 [(gogo.json).name = "variants"];
+    repeated Action actions = 8 [(gogo.json).name = "actions"];
+};
+
+message IdxActionData {
+    string item_id = 1 [(gogo.json).name = "item_id"];
+};
+
+message StorageAction {
+    uint64 nid = 1;
+
+    string publisher_id = 2 [(gogo.json).name = "publisher_id"];
+}
+
+message StorageQueryFeatures {
+    string query = 1;
+
+    uint32 uniq = 2 [(gogo.json).name = "uniq"];
+    uint32 uniq_1d = 3 [(gogo.json).name = "uniq_1d"];
+    uint32 count = 4 [(gogo.json).name = "count"];
+    uint32 count_1d = 5 [(gogo.json).name = "count_1d"];
+}
+
+message StorageQueryActionFeatures {
+    string query = 1;
+    uint64 nid = 2;
+
+    uint32 uniq = 3 [(gogo.json).name = "uniq"];
+    uint32 uniq_1d = 4 [(gogo.json).name = "uniq_1d"];
+    uint32 count = 5 [(gogo.json).name = "count"];
+    uint32 count_1d = 6 [(gogo.json).name = "count_1d"];
+}

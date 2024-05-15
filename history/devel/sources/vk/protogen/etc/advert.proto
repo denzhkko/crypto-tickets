@@ -1,0 +1,30 @@
+syntax = "proto2";
+
+package ru.mail.go.advert;
+option java_outer_classname = "Advert";
+
+message Address {
+    required float lat = 1;
+    required float lon = 2;
+    required string phone = 3;
+    required string address = 4;
+    optional string schedule = 5;
+    optional int32 georegid = 6;
+}
+
+message AdvertAddress {
+    required uint64 ts = 1;
+    repeated Address address = 2;
+    optional string apiResponse = 3;
+}
+
+message RichSitelink {
+    required string url = 1;
+    required string title = 2;
+    required string snippet = 3;
+}
+
+message RichSitelinks {
+    required uint64 ts = 1;
+    repeated RichSitelink link = 2;
+}

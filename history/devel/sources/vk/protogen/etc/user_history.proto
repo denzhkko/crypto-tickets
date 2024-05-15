@@ -1,0 +1,93 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.userhistory;
+
+import "urllog_record.proto";
+option java_outer_classname = "UserHistory";
+
+message DayHistory
+{
+    required string date = 1;
+    optional string email = 2;
+    repeated QuerySession sessions = 3;
+}
+
+message SuperSession {
+    repeated LogicalSession logicalSessions = 1;
+}
+
+message LogicalSession {
+    enum SplitMergeReason {
+        time_gap = 1;
+        urls_match = 2;
+        simple_pattern = 3;
+        geometric = 4;
+        min_time = 5;
+    }
+    repeated QuerySessionInLogicalSession qsils = 1;
+}
+
+message QuerySessionInLogicalSession {
+    required QuerySession query = 1;
+    required LogicalSession.SplitMergeReason withNext = 2;
+    required bool isSplit = 3;
+}
+
+message QuerySession {
+    required uint64 time = 1;
+    required string ip = 2;
+    required string query = 3;
+    repeated Click clicks = 4;
+    optional ru.mail.go.webbase.ranking.ParamList sessionInfo = 5;
+    optional string email = 6;
+    repeated string urls = 7;
+    // start from(paging)
+    optional uint32 startFrom = 8;
+    // spell checked query
+    optional string spcq = 9;
+    optional string urls_data = 10;
+}
+
+message Click
+{
+    required uint64 time = 1;
+    required string url = 2;
+}
+
+message Features
+{
+    repeated KeyValue features = 1;
+}
+
+message KeyValue
+{
+    required string field = 1;
+    required float value = 2;
+}
+
+
+message UserQuerySession
+{
+    enum id_types 
+    {
+        vid = 0;
+        liru = 1;
+        youla_id = 2;
+    }
+    required string id = 1;
+    required QuerySession query_session = 2;
+    optional id_types id_type = 3 [ default = vid ];
+}
+
+message ExpiredInterest
+{
+    enum id_types
+    {
+        vid = 0;
+        liru = 1;
+        youla_id = 2;
+    }
+    required string id = 1;
+    required string interest = 2;
+    optional id_types id_type = 3 [ default = vid ];
+}

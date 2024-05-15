@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.serp;
+
+option java_outer_classname = "QDDBFast";
+import "result.proto"; // BBResult, ComputedValues
+
+message QddbFast
+{
+	message DocInfo
+	{
+		required uint32 doc_id = 1;
+		optional ru.mail.go.webbase.BBResult result = 2;
+	}
+
+	message GeoInfo
+	{
+		required uint32 geo = 1;
+		repeated DocInfo doc_infos = 2;
+	}
+
+	repeated GeoInfo geo_infos = 1;
+}

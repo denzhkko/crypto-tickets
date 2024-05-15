@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+package social.meta;
+
+enum LayoutType {
+    POSTS = 1;
+    PROFILES_ONLY = 2;
+    PROFILES_CAROUSEL = 4;
+}
+
+message LayoutState {
+    required uint32 index = 1;
+    required LayoutType type = 2;
+
+    required int32 last_used_idx = 3 [default = -1];
+
+    required bool porno_query = 4;
+
+    repeated int32 used_urls = 5;
+    repeated uint64 used_texts = 6;
+
+    required int32 last_shown_idx = 7 [default = 0];
+    optional bool fast_posts_remains = 8 [default = true];
+}
+
+message SocialState {
+    required int32 last_used_idx = 1 [default = 0];
+    required bool porno_query = 2 [default = false];
+    required int32 last_n = 3 [default = 0];
+
+    repeated uint64 used_texts = 4;
+
+    optional int32 last_source = 5 [default = 0];
+}

@@ -1,0 +1,10 @@
+syntax = "proto2";
+
+package ru.mail.go.sugg.indexer;
+import "suggests.proto";
+
+message SuggInfoRecord {
+  optional string query = 1;
+  optional double porno_prob = 2;
+  optional SuggSiteResult site_res = 3;
+}

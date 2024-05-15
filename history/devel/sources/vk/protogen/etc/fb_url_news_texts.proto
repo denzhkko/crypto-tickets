@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase;
+
+option java_outer_classname = "FBUrlNewsTexts";
+
+message NewsTexts
+{
+    message NewsText
+    {
+        required string title = 1;
+        required string description = 2;
+        optional string link = 3;
+    }
+
+    required int32 age = 1;
+    repeated NewsText texts = 2;
+}

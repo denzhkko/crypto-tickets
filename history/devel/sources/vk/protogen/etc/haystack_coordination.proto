@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package haystack.pb;
+
+
+message MicrobasesList
+{
+    message Microbase
+    {
+        required int32 id = 1;
+        optional int32 version = 2;
+        optional int64 tag_hash = 3;
+    }
+
+    repeated Microbase microbases = 1;
+    optional string host = 2;
+}
+

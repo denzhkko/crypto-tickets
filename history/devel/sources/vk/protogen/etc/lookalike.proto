@@ -1,0 +1,49 @@
+syntax = "proto2";
+
+package lookalike.pb;
+
+
+message UserAction
+{
+    enum Type
+    {
+        ACTION_CLICK = 1;
+    }
+
+    optional Type type = 1 [default = ACTION_CLICK];
+    required int64 timestamp = 2;
+    required int64 vid_id = 3;
+    required int64 doc_id = 4;
+};
+
+message UserData
+{
+    message AlsFea
+    {
+        required int32 index = 1;
+        required float weight = 2;
+    }
+
+    repeated AlsFea als = 1;
+    optional int64 version = 2;
+};
+
+message LookalikeEvent
+{
+    enum Action
+    {
+        CREATE_OR_UPDATE = 1;
+        CREATE_OR_REPLACE = 2;
+    }
+
+    message Data
+    {
+        required int64 user_id = 1;
+        required string tag = 2;
+        required UserData user_data = 3;
+    }
+
+    optional Action action = 1 [default = CREATE_OR_UPDATE];
+    required Data data = 2;
+};
+

@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+
+package homer.pb;
+
+message OKCacheData
+{
+    required string picture_url                 = 1;
+    required int64 like_count                   = 2;
+    required int64 reshare_count                = 3;
+    required bool reshare_possible              = 4;
+    required string reshare_unavailable_reason  = 5;
+}

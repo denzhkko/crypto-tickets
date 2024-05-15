@@ -1,0 +1,113 @@
+syntax = "proto2";
+
+package afisha.storage;
+
+message GpsInfo {
+    required float latitude = 1;
+    required float longitude = 2;
+}
+
+message ActorInfo {
+    required string name = 1;
+    optional string url = 2;
+}
+
+message ImageInfo {
+    optional string url = 1;
+    optional uint32 width = 2;
+    optional uint32 height = 3;
+
+    optional string valkiria_url = 4;
+    optional uint32 valkiria_width = 5;
+    optional uint32 valkiria_height = 6;
+}
+
+message FrameInfo {
+    optional string img = 1;
+    optional string url = 2;
+}
+
+message GalleryImageInfo {
+    optional ImageInfo image = 1;
+    optional ImageInfo m_image = 2;
+    optional ImageInfo tel_image = 3;
+    optional ImageInfo touch_image = 4;
+    optional FrameInfo frame = 5;
+}
+
+enum SeanceType {
+    NORMAL = 1;
+    TYPE_3D = 2;
+}
+
+message SeanceInfo {
+    required SeanceType type = 1;
+    required uint64 time = 2;
+    optional string url = 3;
+}
+
+enum MovieStatus {
+    PAST = 1;
+    PRESENT = 2;
+    FUTURE = 3;
+}
+
+message MovieInfo {
+    required uint64 id = 1;
+    required string name = 2;
+    required string url = 3;
+    required MovieStatus status = 4;
+    optional string original_name = 5;
+    optional string description = 6;
+    optional string review = 7;
+    optional uint64 release = 8;
+    optional uint64 release_ru = 9;
+    optional ImageInfo image = 10;
+    optional ImageInfo m_image = 33;
+    optional ImageInfo tel_image = 34;
+    optional ImageInfo touch_image = 35;
+    repeated GalleryImageInfo gallery = 11;
+    repeated ActorInfo actors = 12;
+    repeated string producers = 13;
+    repeated string directors = 14;
+    repeated string genres = 15;
+    repeated string countries = 16;
+    optional string gallery_url = 17;
+    optional string review_url = 18;
+    optional string ticket_url = 19;
+    optional string kinopoisk_url = 20;
+    optional string trailer_url = 21;
+    optional string trailer_source_url = 22;
+    optional string imdb_url = 23;
+    optional uint32 duration = 24;
+    optional float imdb_rating = 25;
+    optional int32 mail_rating_count = 26;
+    optional float mail_rating_min = 27;
+    optional float mail_rating_max = 28;
+    optional float mail_rating = 29;
+    optional uint32 age_restriction = 30;
+    optional int32 year = 31;
+    optional string site = 32;
+}
+
+message TicketPriceInfo {
+    required uint32 min = 1;
+    required uint32 max = 2;
+}
+
+message CinemaInfo {
+    required uint64 id = 1;
+    required string name = 2;
+    required string url = 3;
+    required uint32 rb_code = 4;
+    required string address = 5;
+    required GpsInfo location = 6;
+    repeated string subways = 7;
+    optional string phone_common = 8;
+    optional string phone_infobot = 9;
+    optional string map_url = 10;
+    optional string schedule_url = 11;
+    optional TicketPriceInfo ticket_price = 12;
+    optional string ticket_url = 13;
+}
+

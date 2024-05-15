@@ -1,0 +1,119 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.yandex_news;
+option java_outer_classname = "YandexNewsSession";
+
+enum SortOrder {
+    relevance = 0;
+    chronology = 1;
+}
+
+enum SerpType {
+    document = 0;
+    group = 1;
+}
+
+enum EventType {
+    search_request = 0;
+    search_response = 1;
+
+    search_focus = 2;
+    search_blur = 3;
+    search_clear = 4;
+
+    search_filter_date = 5;
+    search_filter_group = 6;
+    search_filter_sort = 7;
+}
+
+message SearchParams {
+    required SortOrder sort_order = 1;
+    required bool group = 2;
+    optional int32 time_from = 3;
+    optional int32 time_to = 4;
+}
+
+message DocItem {
+    required int32 hpos = 1;
+    required string url = 2;
+    required bool click = 3;
+    required int32 click_ts = 4;
+    required int32 show_ts = 5;
+}
+
+message SerpItem {
+    required SerpType type = 1;
+    required int32 pos = 2;
+
+    optional string group = 3; // id сюжета
+    optional string group_title = 4; // заголовок сюжета
+
+    // для type=document содержит ровно один элемент
+    repeated DocItem docs = 5;
+}
+
+message UserInfo {
+    required string yandex_uid = 1;
+    required string user_agent = 2;
+    required string ip = 3;
+}
+
+message PageDocumentItem {
+    required string url = 1;
+    required bool is_lightning = 2;
+}
+
+message PageItem {
+    required string page_url = 1;
+    required int32 page = 2;
+    repeated string urls = 3;
+    repeated PageDocumentItem page_documents = 4;
+    optional int32 show_ts = 5;
+}
+
+message ExperimentItem {
+    required string test_id = 1;
+    required string bucket = 2;
+}
+
+message EventItem {
+    required int32 ts = 1;
+    required EventType type = 2;
+
+    // для событий search_filter_*
+    optional SearchParams new_search_params = 3;
+
+    // для событий search_request
+    optional string new_query = 4;
+    optional string page_url = 5;
+}
+
+message YandexNewsSessionItem {
+    required string qid = 1;
+    required int32 ts = 2;
+    required string query = 3;
+    optional SearchParams search_params = 4;
+
+    repeated SerpItem serp = 5;
+
+    optional UserInfo user_info = 6;
+    repeated PageItem pages = 7;
+
+    repeated ExperimentItem experiments = 8;
+
+    optional bool yandex_suspected_robot = 9;
+    optional float yandex_robotness = 10;
+
+    repeated EventItem events = 11;
+
+    // по событию search_response
+    optional string parent_qid = 12;
+
+    // вычисляется на основе родительской сессии
+    // в данный момент: было ли событие фокуса по строке
+    // поискового запроса и события показов или кликов (для непустой выдачи)
+    // true - бот
+    // false - не бот
+    // отсутствует - нет родительской сессии
+    optional bool bot_by_parent = 13;
+}

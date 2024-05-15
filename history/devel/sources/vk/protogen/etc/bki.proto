@@ -1,0 +1,149 @@
+syntax = "proto2";
+
+package ru.mail.go.recommender.bki;
+option java_outer_classname = "BKIBlobs";
+
+
+message ProfileID
+{
+    enum Provider
+    {
+        VK = 1;
+        OK = 2;
+        MM = 3;
+    };
+
+    required Provider provider = 1;
+    required int64 id = 2;
+};
+
+message Profile
+{
+    enum Sex
+    {
+        UNKNOWN = 0;
+        FEMALE = 1;
+        MALE = 2;
+    };
+ 
+    message Geo
+    {
+        optional int32 region_id = 1;
+        optional string title = 2;
+    };
+    
+    message GeoLocation
+    {
+        optional Geo country = 1;
+        optional Geo region = 2;
+        optional Geo city = 3;
+    };
+    
+    message School
+    {
+        optional string name = 1;
+        optional GeoLocation location = 2;
+        optional int32 year_from = 3;
+        optional int32 year_to = 4;
+    };
+
+    message University
+    {
+        optional string name = 1;
+        optional GeoLocation location = 2;
+        optional int32 year_from = 3;
+        optional int32 year_to = 4;
+    };
+
+    message Career
+    {
+        optional string company = 1;
+        optional GeoLocation location = 2;
+        optional int32 year_from = 3;
+        optional int32 year_to = 4;
+        optional string position = 5;
+        optional int32 company_group_id = 6;
+    };
+    
+    message Friend
+    {
+        required int64 id = 1;
+        optional bool namesakes = 2;
+        optional bool collegues = 3;
+        optional bool relatives = 4;
+        optional bool classmates = 5;
+        optional bool militarymates = 6;
+        optional bool roommates = 7;
+    };
+    enum Platform
+    {
+        MOBILE_SITE   = 0;
+        IPHONE        = 1;
+        IPAD          = 2;
+        ANDROID       = 3;
+        WINDOWS_PHONE = 4;
+        WINDOWS_10    = 5;
+        FULL_SITE     = 6;
+    };
+    
+    enum MaritalStatus
+    {  
+        NOT_MARRIED      = 0;
+        HAS_PARTNER      = 1;
+        ENGAGED          = 2;
+        MARRIED          = 3;
+        COMPLICATED      = 4;
+        IN_ACTIVE_SEARCH = 5;
+        IN_LOVE          = 6;
+    };
+    
+    
+    required ProfileID id = 1;
+    optional string link = 3;
+    optional string first_name = 4;
+    optional string last_name = 5;
+    optional string middle_name = 6;
+    optional int32 birth_day = 7;
+    optional int32 birth_month = 8;
+    optional int32 birth_year = 9;
+    optional string photo = 10;
+    optional Sex sex = 11;
+    optional GeoLocation birth_place = 12;
+    optional GeoLocation current_place = 13;
+    optional string phone = 15;
+    optional string email = 16;
+    optional string skype = 17;
+    optional int64 last_seen_timestamp = 19;
+    repeated School schools = 20;
+    repeated University universities = 21;
+    repeated Career career = 22;
+    repeated string interests = 23;
+    repeated Friend friends = 24;
+    optional MaritalStatus marital_status_type = 25;
+    repeated Platform platforms_type = 26;
+    repeated int32 groups = 27;
+    optional GeoLocation friends_majority_place = 28;
+};
+
+message ProfilesLink
+{
+    required ProfileID first = 1;
+    required ProfileID second = 2;
+    
+    optional bool matched_name = 3;
+    optional bool matched_surname = 4;
+    optional bool matched_birthday = 5; //совпал день и месяц рождения
+    optional bool matched_birthyear = 6;
+    optional bool matched_city = 7; 
+    optional bool matched_activity = 8; //совпали школы, вузы или работа
+    optional bool matched_sex = 9;
+    optional int64 match_time = 10; 
+};
+
+message GroupInfo
+{
+    required int32  id = 1;
+    optional string title = 2;
+    optional string link = 3;
+    optional int32  members = 4;
+};

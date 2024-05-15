@@ -1,0 +1,40 @@
+syntax = "proto2";
+
+package pandao_reco.pb;
+
+option java_outer_classname = "PandaoRecoMetaData";
+option cc_enable_arenas = true;
+
+message CategoryData
+{
+    required string id = 1;
+    optional string name = 2;
+    optional string parentId = 3;
+};
+
+enum CurrencyType
+{
+    RUB = 1;
+};
+
+message ProductData
+{
+    required string id = 1;
+    optional float rank = 2;
+    optional string title = 3;
+    repeated string categories = 4;
+    optional string merchantid = 5;
+    optional uint32 orders_count_week = 7;
+};
+
+message Error
+{
+    optional string msg = 1;
+};
+
+message PandaoOutput
+{
+    repeated ProductData products = 1;
+    repeated Error errors = 10;
+};
+

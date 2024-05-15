@@ -1,0 +1,67 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.otvet;
+
+option java_outer_classname = "OtvetData";
+
+message Meta {
+
+    enum Type {
+        QUESTION = 1;
+        DELETE = 2;
+    }
+
+    required uint64 timestamp = 1;
+    required uint32 version = 2;
+    required Type type = 3;
+}
+
+message Delete {
+    required uint64 id = 1;
+}
+
+message Person {
+    required string nickname = 1;
+    required string email = 2;
+    optional string filin = 3;
+    required uint64 id = 4;
+}
+
+message Category {
+    required string url = 1;
+    required string name = 2;
+    required uint64 id = 3;
+}
+
+message Answer {
+    required Person author = 1;
+    required string date = 2;
+    required bool best = 3;
+    required string text = 4;
+    optional string source = 5;
+}
+
+message Question {
+    enum Type {
+        QUESTION = 1;
+        POLL = 2;
+    }
+    enum State {
+        OPEN = 1;
+        VOTING = 2;
+        RESOLVED = 3;
+    }
+
+    required uint64 id = 1;
+    required string date = 2;
+    required string url = 3;
+    required State state = 4;
+    required Type type = 5;
+    required string text = 6;
+    required string comment = 7;
+    required Person author = 8;
+    optional Category category = 9;
+    required Category subcategory = 10;
+
+    repeated Answer answers = 11;
+}

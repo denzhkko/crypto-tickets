@@ -1,0 +1,71 @@
+syntax = "proto2";
+
+package gogo.companies;
+
+// Координаты на самом деле double, но здесь это string,
+// чтобы можно было задать precision
+message GeoPoint {
+    required string lon = 1;
+    required string lat = 2;
+}
+
+message Schedule {
+    message DaySchedule {
+        message WorkHours {
+            required uint32 fr = 1;
+            required uint32 to = 2;
+        }
+        required uint32 weekday      = 1;
+        repeated WorkHours workhours = 2;
+    }
+    required string description = 1;
+    required bool is24x7        = 2;
+    repeated DaySchedule days   = 3;
+}
+
+message Photo {
+    optional string key    = 1;
+    optional uint32 width  = 2;
+    optional uint32 height = 3;
+}
+
+message Review {
+    required float rating = 1;
+    optional uint32 count  = 2;
+}
+
+message Metro {
+    required string name     = 1;
+    optional string comment  = 2;
+    optional string color    = 3;
+    optional uint32 distance = 4;
+}
+
+message Attribute {
+    required string tag  = 1;
+    required string name = 2;
+}
+
+message Rubric {
+    required string alias = 1;
+    required string kind  = 2;
+    required string name  = 3;
+}
+
+message Company {
+    required string id            = 1;
+    required string name          = 2;
+    required uint32 region_2gis   = 3;
+    required uint32 region_rb     = 4;
+    required string address       = 5;
+    optional string name_ext      = 6;
+    repeated string urls          = 7;
+    repeated string phones        = 8;
+    optional GeoPoint point       = 9;
+    optional Schedule schedule    = 10;
+    optional Photo photo          = 11;
+    optional Review review        = 12;
+    repeated Metro metro          = 13;
+    repeated Attribute attributes = 14;
+    repeated Rubric rubrics       = 15;
+}

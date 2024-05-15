@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="ru.mail.go.protogen" module="etc" revision="1.194--SRCH-73417-100" status="integration" publication="20240506093748"/>
+  <configurations>
+    <conf name="archives" visibility="public"/>
+    <conf name="default" visibility="public"/>
+    <conf name="published" visibility="public"/>
+  </configurations>
+  <publications>
+    <artifact name="etc" type="zip" ext="zip" conf="archives,archives,published"/>
+  </publications>
+</ivy-module>

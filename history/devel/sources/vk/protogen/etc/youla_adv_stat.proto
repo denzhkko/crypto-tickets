@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package youla.advstat.pb;
+
+option java_outer_classname = "YoulaAdvStat";
+
+message ClickInfo
+{
+   required string split_and_source  = 1;
+   optional string event_timestamp = 2;
+}

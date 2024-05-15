@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+package ru.mail.go.imaginator;
+option java_outer_classname = "Imaginator";
+import "fetcher_storage.proto";
+
+message ImageRecord {
+    required string docUrl = 1;
+    required gogo.fetcher.fetcher_image image = 2;
+    required string provider = 3;
+    optional string json = 4; //опциональные флажки которые будет проставлять провайдер. пробросятся до бахромы
+    optional double pornprob = 5; //вероятность что картинка порнушная. Если не задана, будет высчитана нейропорном
+}

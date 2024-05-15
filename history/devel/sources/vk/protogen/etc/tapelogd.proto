@@ -1,0 +1,76 @@
+syntax = "proto2";
+
+option java_package = "ru.mail.go.webbase.blobs";
+option java_outer_classname = "TapeLogd";
+
+message UserSourceStats
+{
+    optional uint64 id = 1; // source_id
+    optional uint32 views = 2 [ default = 0 ];
+    optional uint32 opens = 3 [ default = 0 ];
+    optional uint32 likes = 4 [ default = 0 ];
+    optional uint32 dislikes = 5 [ default = 0 ];
+    optional uint32 shares = 6 [ default = 0 ];
+}
+
+message SourceStatsList
+{
+    repeated UserSourceStats sources = 1;
+}
+
+message UserCategoryStats
+{
+    optional uint64 id = 1; // category_id
+    optional uint32 views = 2 [ default = 0 ];
+    optional uint32 opens = 3 [ default = 0 ];
+    optional uint32 likes = 4 [ default = 0 ];
+    optional uint32 dislikes = 5 [ default = 0 ];
+    optional uint32 shares = 6 [ default = 0 ];
+
+    optional SourceStatsList sources = 10;
+}
+
+message DocumentID
+{
+    required uint64 doc_id = 1;
+    optional uint64 source_id = 2;
+}
+
+message DocumentIDList
+{
+    repeated DocumentID documents = 1;
+}
+
+message UserLikesTape
+{
+    optional DocumentIDList likes = 1;
+    optional DocumentIDList dislikes = 2;
+    // it's document IDs
+    repeated uint64 liked_docs = 3 [ packed = true ];
+    repeated uint64 disliked_docs = 4 [ packed = true ];
+}
+
+enum ActionType
+{
+    APP_OPEN = 1;
+    VIEW = 2;
+    VIEW_IN = 3;
+    VIEW_OUT = 4;
+    OPEN = 5;
+    CLOSE = 6;
+    LIKE = 7;
+    UNLIKE = 8;
+    DISLIKE = 9;
+    UNDISLIKE = 10;
+    SHARE = 11;
+}
+
+message UserView
+{
+    optional string user_id = 1;
+    optional string url = 2;
+    optional int64  doc_id = 3;
+    optional int64  timestamp = 4;
+    optional ActionType action_type = 5;
+}
+

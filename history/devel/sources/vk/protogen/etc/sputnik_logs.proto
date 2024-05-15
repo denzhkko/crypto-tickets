@@ -1,0 +1,209 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.SputnikRanker;
+
+option java_outer_classname = "TransitionData";
+
+message Transition
+{
+    required uint64 time = 1;
+    required string referrer = 2;
+    required string url = 3;
+    optional bytes body = 4;
+    optional string ip = 5;
+    optional uint64 loadTime = 6;
+    optional bool hacked = 7;
+    optional string title = 8;
+    optional uint32 status = 9;
+    optional string serpInfo = 10;
+}
+
+message Body
+{
+    repeated string urls = 1;
+}
+
+message TransitionExtended
+{
+    required Transition transition = 1;
+    required string uid = 2;
+    required string email = 3;
+    optional Body body = 4;
+    optional string query = 5;
+}
+
+message Hit
+{
+    required uint64 time = 1;
+    required string url = 2;
+    optional uint64 loadTime = 3;
+    optional bool hacked = 4;
+}
+
+message Redirect {
+    enum UrlStatus {
+        InIndex = 0;
+        NotInIndex = 1;
+        Unknown = 2;
+    }
+    enum Type {
+        Redirected = 0;
+        Canonical = 1;
+        Duplicate = 2;
+        NoInfo = 3;
+    }
+
+    required string from = 1;
+    required string to = 2;
+    optional UrlStatus fromStatus = 3 [default = Unknown];
+    optional UrlStatus toStatus = 4 [default = Unknown];
+    optional Type type = 5 [default = NoInfo];
+}
+
+message Qlinks
+{
+    required string from = 1;
+    required Redirect.UrlStatus fromStatus = 2;
+    repeated Qlink qlink = 3;
+
+    required string to = 4;
+    required Redirect.Type type = 5;
+
+    message Qlink{
+        required string query = 1;
+        required int32 geo = 2;
+    }
+}
+
+message Session
+{
+    required string uid = 1;
+    repeated Hit hits = 2;
+    optional uint64 time = 3;
+    repeated uint32 regions = 4;
+    repeated Redirect redirect = 5;
+}
+
+message ImageBody
+{
+    enum Source
+    {
+       Unknown = 0;
+       Telemetry = 1;
+       Kvakin = 2;
+    }
+
+    required uint64 time = 1;
+    required string url = 2;
+    required bytes body = 3;
+    optional string uid = 4;
+    optional Source source = 5 [default = Telemetry];
+    optional uint32 weight = 6;
+    optional string query = 7;
+}
+
+message VideoBody
+{
+    required uint64 time = 1;
+    required string url = 2;
+    required bytes body = 3;
+    optional string uid = 4;
+}
+
+message BrowseRankData
+{
+    required string url = 1;
+    required uint32 region = 2;
+    optional uint64 time = 3;
+    optional double dwellTime = 4;
+    optional double loadTime = 5;
+    optional double position = 6;
+    optional double numberOfSessions = 7;
+    optional double numberOfLoads = 8;
+    optional double positionCoef = 9;
+    optional double timeCoef = 10;
+    optional double browseRank = 11;
+    optional double filteredBrowseRank = 12;
+    optional double pagesInSite = 13;
+}
+
+message UserRankUid
+{
+    required string uid = 1;
+    required double repeat = 2;
+}
+
+message UserRankValues
+{
+    required uint64 filterMask = 1;
+    repeated UserRankUid uid = 2;
+}
+
+message UserRankData
+{
+    required string url = 1;
+    required uint32 region = 2;
+    optional uint64 time = 3;
+    optional double numberOfUsers = 4;
+    optional UserRankValues values = 5;
+    optional uint64 hits = 6;
+    repeated string original_urls = 7;
+}
+
+message ForumedSegment
+{
+    required string pattern = 1;
+    required bool isForum = 2;
+}
+
+message ForumedSekitei
+{
+    repeated ForumedSegment segments = 1;
+}
+
+message SessionSpc
+{
+    enum Type
+    {
+        None = 0;
+        Auto = 1;
+        Sugg = 2;
+        Split = 3;
+    }
+    required Type type = 1;
+    required string rawQuery = 2;
+    optional string proposedQuery = 3;
+}
+
+message RedirectArray
+{
+	repeated Redirect redirects = 1;
+}
+
+message Snippet {
+	required string url = 1;
+	optional string title = 2;
+	optional string snippet = 3;
+}
+
+message SnippetSession
+{
+	repeated Snippet snippets = 1;
+}
+
+message FreshUrl
+{
+    required string url = 1;
+}
+
+message NewsInfo
+{
+    required string query = 1;
+    required uint32 reg = 2;
+    required uint64 timestamp = 3;
+    required uint32 show = 4;
+    required uint32 show_news_mixin = 5;
+    required uint32 show_fresh_urls = 6;
+    repeated FreshUrl fresh_urls = 7;
+    optional uint32 total_fresh_urls = 8;
+}

@@ -1,0 +1,96 @@
+syntax = "proto2";
+
+package ru.mail.go.sugg.vk_music.pb;
+option java_outer_classname = "ParseSessions";
+
+import "vk_music.proto";
+
+message CollectSessionsMapperKey {
+    optional uint64 uid = 1;
+    optional ru.mail.go.webbase.blobs.VkMusicSessionType serp_type = 2;
+    optional string client = 3;
+    optional uint64 search_time = 4;
+};
+
+enum SpellCheckerType {
+    FAIL = 0;
+    NONE = 1;
+    AUTO = 2;
+    SUGG = 3;
+};
+
+message CollectSessionsValue {
+    optional uint64 uid = 1;
+    optional string query = 2;
+
+    optional ru.mail.go.webbase.blobs.VkMusicSessionType serp_type = 3;
+    optional string client = 4;
+
+    optional uint64 search_time = 5;
+    optional bool is_experiment = 6;
+
+    optional uint64 docs_cnt = 7;
+    optional uint64 docs_official_cnt = 8;
+    repeated string click_ids = 9;
+
+    optional SpellCheckerType spc_type = 10;
+    optional string spc_query = 11;
+};
+
+enum JoinSessionsAndClustersMapperKeyType {
+    CLUSTER = 0;
+    SESSION = 1;
+};
+
+message JoinSessionsAndClustersMapperKey {
+    optional JoinSessionsAndClustersMapperKeyType type = 1;
+    optional uint64 uid = 2;
+};
+
+message JoinSessionsAndClustersValue {
+    optional uint64 uid = 1;
+    optional string query = 2;
+
+    optional ru.mail.go.webbase.blobs.VkMusicSessionType serp_type = 3;
+    optional string client = 4;
+
+    optional uint32 cluster_id = 5;
+};
+
+message CalcClusterFrequenciesMapperKey {
+    optional string query = 1;
+    optional string client = 2;
+};
+
+message CalcClusterFrequenciesMapperValue {
+    optional uint32 cluster_id = 1;
+};
+
+message DumpQueriesMapperKey {
+    optional string query = 1;
+    optional ru.mail.go.webbase.blobs.VkMusicSessionType serp_type = 2;
+    optional string client = 3;
+};
+
+message DumpQueriesMapperValue {
+    optional uint64 uid = 1;
+    optional uint64 docs_cnt = 2;
+    optional uint64 docs_official_cnt = 3;
+};
+
+message DumpClicksMapperKey {
+    optional string query = 1;
+    optional string client = 4;
+    optional ru.mail.go.webbase.blobs.VkMusicSessionType serp_type = 2;
+    optional string click_id = 3;
+};
+
+message DumpClicksMapperValue {
+    optional uint64 uid = 1;
+};
+
+message DumpMisspellsMapperKey {
+    optional string query = 1;
+    optional SpellCheckerType spc_type = 2;
+    optional string spc_query = 3;
+};

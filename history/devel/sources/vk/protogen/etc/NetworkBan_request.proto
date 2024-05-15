@@ -1,0 +1,63 @@
+syntax = "proto2";
+
+//Запросы к сервису можно  делать двумя способами.
+//
+//1) plain text.
+//
+//  ЗАПРОС: просто список УРЛов, разделенных '\r\n'-ом.
+//  ОТВЕТ:    информация по каждому УРЛу. ( вот здесь нужно подумать над тем, какую именно инфу отдавать: или просто какие-то коды, или вместе с метаинформацией ).
+//  ЗАЧЕМ? - быстро проверить какой(ие)-то УРЛ(ы). Например, прямо с помощью bin/netcat.
+//
+//2) protobuf
+//
+//Описания сообщений запроса и ответа при работе с protobuf:
+enum ListType
+{
+    ALL = 0;
+//    BAN404 = 1;
+//    BANSVN = 2;
+    BAN404_SVN = 1;
+    STUB = 2;
+    GSB = 3;   // Google Safe Browsing
+    UNKNOWN = 4;
+}
+
+enum AnswerCode
+{
+    FOUND = 0;
+    CLEAR = 1;
+    WAIT_RESOLVE = 3;
+}
+
+message metaData
+{
+    repeated string info = 1; 
+    repeated ListType list_type = 2; // В каких списках найден
+    optional bool is_root_ban = 3 [ default = false ];
+}
+
+message tags_cont
+{
+    repeated string tag = 1;
+}
+
+message NetworkBan_request
+{
+    optional bool need_metadata  = 1 [ default = false ]; // Нужна ли информация о том, почему забанен?
+    optional ListType list_type  = 2 [ default = ALL ];   // Искать только в данном списке
+    repeated string urls         = 3;                     // УРЛы
+    optional string query        = 4;                     // Запрос
+    repeated tags_cont tags      = 5;                     // Теги
+    optional bool need_normalize = 6 [ default = true ];  // Нужно ли нормализовывать УРЛ
+    optional string client_name  = 7 [ default = "" ];    // Имя клиента
+}
+
+message NetworkBan_answer
+{
+    repeated AnswerCode ans_codes   = 1;
+    repeated metaData   mata_data   = 2;
+    required int64      state_hash  = 3;
+    optional bool       ban_all     = 4;
+}
+
+

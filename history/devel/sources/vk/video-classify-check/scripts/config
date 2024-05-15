@@ -1,0 +1,23 @@
+import.bootstrap = %import_bootstrap%
+import.topics = %import_topic%
+import.group-id = %group_id%
+import.poll-timeout = 1000
+import.queue-size = 1000
+import.commit-timeout = 10000
+import.earliest-day-offset = %earliest_day_offset%
+import.filter-by-sourceid = %allowed_source_id%
+import.use-local-time-for-doc = %use_local_time_for_doc%
+
+indexer.bootstrap = %indexer_bootstrap%
+indexer.topic = %indexer_topic%
+indexer.queue-size = 1000
+indexer.use-custom-partitioner = %custom_partitioner%
+indexer.use-partitioner-by-id = true
+
+metrics.host = %graphite_host%
+metrics.port = %graphite_port%
+metrics.prefix = %graphite_prefix%
+
+neuroporn.url = %neuroporn_url%
+workers = %workers_number%
+neuroporn.disable-request = %disable_neuroporn%

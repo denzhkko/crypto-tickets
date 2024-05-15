@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package utils.pb;
+
+message TestNestedMessage2
+{
+    optional int32 ii1 = 1 [ default = 777 ];
+}
+
+message TestNestedMessage
+{
+    optional int32 i1 = 1 [ default = 20 ];
+    required int32 i2 = 2 [ default = 30 ];
+    repeated int32 i3 = 3;
+    required string s1 = 4;
+    optional TestNestedMessage2 nested_msg = 5;
+}
+
+message TestMessage
+{
+    optional int32 i0 = 1 [ default = 5 ];
+    required TestNestedMessage msg = 2;
+}
+

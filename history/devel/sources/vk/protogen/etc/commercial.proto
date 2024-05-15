@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "options.proto";
+
+package pb.commercial;
+
+message VidQueries {
+    uint64 vid = 1 [(gogo.json).name = "vid"];
+    repeated string queries = 2 [(gogo.json).name = "queries"];
+};
+
+message RidQueries {
+    uint32 rid = 1 [(gogo.json).name = "rid"];
+    repeated string queries = 2 [(gogo.json).name = "queries"];
+};

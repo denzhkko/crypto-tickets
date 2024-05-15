@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package youla.soc_reg_cat_distr.pb;
+
+option java_outer_classname = "SocRegCatDistr";
+
+message YoulaSocRegCatDistr {
+  optional int32 region_id = 1;
+  optional int32 socdem_id = 2;
+
+  message Category {
+    optional int32 category_id = 1;
+    optional float rel_value = 2;
+    optional int32 abs_value = 3;
+  }
+
+  repeated Category categories = 3;
+
+}
+
+
+
+	
+

@@ -1,0 +1,90 @@
+syntax = "proto2";
+
+import "image_defs.proto";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "AppData";
+
+message AppDeveloper {
+  optional string name = 1;        // название  
+  optional string url = 2;         // урл
+  optional string support_url = 3; // урл поддержки приложения
+}
+
+message AppCategory {
+  repeated string name = 1;  // название категории
+}
+
+message AppParsed {
+  required string title = 1;         // название приложения
+  required uint32 platform = 2;      // платформа
+  optional string version = 3;       // версия
+  optional string updated = 4;       // дата обновления
+  required string price = 5;         // цена
+  optional AppCategory category = 6; // категории
+  required bool is_free = 7;         // бесплатное ли приложение
+  optional string age = 8;           // возрастное ограничение
+  optional string age_reason = 9;    // причина возрастного ограничения
+  optional string size = 10;         // размер
+  required ru.mail.go.webbase.parsing.img.Thumb thumb = 11;         // картинка
+  required string description = 12;  // описание
+  required double rate = 13;         // рейтинг
+  required double max_rate = 14;     // максимальный рейтинг
+  optional AppDeveloper developer = 15;  // разработчик
+  required string url = 16;          // урл приложения
+  required string mobile_url = 17;   // мобильный урл (app store, google play etc)
+  optional string requirements = 18; // требования
+  optional string id = 19;           // id документа
+  optional string reviewers = 20;    // количество оценивших пользователей
+}
+
+message AppProperties {
+  required string title = 1;         // название приложения
+  required uint32 platform = 2;      // платформа
+  optional string version = 3;       // версия
+  optional string updated = 4;       // дата обновления
+  required string price = 5;         // цена
+  optional AppCategory category = 6; // категории
+  required bool is_free = 7;         // бесплатное ли приложение
+  optional string age = 8;           // возрастное ограничение
+  optional string age_reason = 9;    // причина возрастного ограничения
+  optional string size = 10;         // размер
+  required string description = 11;  // описание
+  required double rate = 12;         // рейтинг
+  required double max_rate = 13;     // максимальный рейтинг
+  optional AppDeveloper developer = 14;  // разработчик
+  required string url = 15;          // урл приложения
+  required string mobile_url = 16;   // мобильный урл (app store, google play etc)
+  optional string requirements = 17; // требования
+  optional string id = 18;           // id документа
+  optional uint32 reviewers = 19;    // количество оценивших пользователей
+  optional uint64 rub_mask = 20; // битовая маска для фильтрации по рубрикам
+  optional bool is_banned = 21;         // может ли попадать в индекс
+  optional string categoryIds = 22; // строковы[й|е] идентификатор(ы) рубрик(и) для фильтрации
+  optional bool paid_content = 23;  // содержит ли платный контент
+  optional bool is_top_dev = 24;  // есть значок "Лучший разработчик"
+  optional bool is_editor_choice = 25;  // есть значок "Выбор редакции"
+}
+
+message AppImage {
+  required ru.mail.go.webbase.parsing.img.Thumb thumb = 1;         // картинка
+}
+
+message AppDataWrapper {
+  required AppProperties properties = 1; // основные данные приложения
+  required string image_url = 2;       //  урл картинки
+  optional AppImage image = 3;         // картинка
+  optional uint64 brsq2 = 4; // кол-во сессий
+  optional uint64 uruq2 = 5; // кол-во уникальных загрузок
+  optional bool is_top = 6;  // входит ли в топ приложений
+  optional string base64_img = 7;  // сжатая и закодированная в base64 картинка
+  optional string img_bkgrnd = 8;  // бэкграунд для картинки(пока win store only)
+  optional string reco_srch_key = 9; // ключ для поиска рекомендаций(top apps only)
+}
+
+message AppImageWrapper {
+  required AppImage image = 1;     // картинка
+  required string url = 2;         // урл приложения
+  optional string base64_img = 3;  // сжатая и закодированная в base64 картинка
+}

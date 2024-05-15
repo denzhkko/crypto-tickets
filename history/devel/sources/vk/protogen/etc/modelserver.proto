@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+import "neurovector.proto";
+
+package modelserver.pb;
+
+message Request {
+    repeated neurovector.pb.Values values = 1;
+    optional string name = 2;
+    optional string label = 3;
+}
+
+message Response {
+    repeated neurovector.pb.Values values = 1;
+    optional string error = 2;
+}

@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+
+package pb;
+
+message Filters
+{
+      optional int32 price_from          = 1;
+      optional int32 price_to            = 2;
+      optional string place_id           = 3;
+      optional string subcategories      = 4;
+      optional string params             = 5;
+      optional bool payment_available    = 6;
+      optional bool delivery_available   = 7;
+      optional bool free_delivery        = 8;
+      repeated string owner_ids          = 11;
+}
+
+message CompilationInfo
+{
+      repeated string query_texts   = 1;
+      optional string id            = 2;
+      optional Filters filters      = 3;
+}

@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.linkgraph;
+option java_outer_classname = "LinkGraphBlobs";
+import "parsed_blobs.proto";
+
+message RedirectorMessage {
+
+  message Redirect {
+    required string to = 1;
+  }
+
+  message Link {
+    required string from = 1;
+    required string text = 2;
+  }
+
+  message ExtraText {
+    required string id = 1; // contains: family:column:vcolumn
+    required ru.mail.go.webbase.blobs.ExtraTextArray extratextArray = 2;  //< блоб прямо из базы
+  }
+
+  optional Link link = 1;
+  optional Redirect redirect = 2;
+  optional ExtraText etext = 3;
+  
+}
+

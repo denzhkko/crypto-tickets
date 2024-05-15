@@ -1,0 +1,70 @@
+syntax = "proto2";
+
+package cosmo.pb;
+
+option java_outer_classname = "CosmoUserEvents";
+
+message UserEvents
+{
+    message SiteDislike
+    {
+        required int64 site_hash = 1;
+    };
+
+    message SourceDislike
+    {
+        required int64 source_id = 1;
+    };
+
+    message DocumentDislike
+    {
+        required int64 doc_id = 1;
+    };
+
+    repeated SiteDislike site_dislikes = 1;
+    repeated SourceDislike source_dislikes = 2;
+    repeated DocumentDislike document_dislikes = 3;
+};
+
+message PackedReactions
+{
+    message Reactions
+    {
+        optional uint32 clicks = 1;
+        optional uint32 likes = 2;
+        optional uint32 dislike_doc = 3;
+        optional uint32 dislike_source = 4;
+        optional uint32 hit_fulltext = 5;
+    };
+
+    required int64 doc_id = 1;
+    optional Reactions reactions = 2;
+};
+
+message PackedReactionsArr
+{
+    repeated PackedReactions reactions = 1;
+    optional int64 last_reaction_time = 2;
+};
+
+message Shows
+{
+    required int64 doc_id = 1;
+    required uint32 shows = 2;
+};
+
+message ShowsArr
+{
+    repeated Shows shows_arr = 1;
+};
+
+message TrafloClick
+{
+    required int64 source_id = 1;
+    required int64 timestamp = 2;
+};
+
+message TrafloClickArr
+{
+    repeated TrafloClick clicks = 1;
+};

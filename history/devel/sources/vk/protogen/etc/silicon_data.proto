@@ -1,0 +1,555 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+import "image_defs.proto";
+
+
+
+option java_outer_classname = "SiliconData";
+
+enum SiliconSourceMode {
+    TEXT = 0;
+    IMAGE = 1;
+    VIDEO = 2;
+    FULL_POST = 10;
+}
+
+
+enum SiliconSourceProvider {
+    MANUAL = 0;
+    ADMGO = 1;
+    INDEXISTO = 2;
+    COSMO_NEWS = 3;
+    ADMGO_COSMO = 4;
+    OK_BOLT = 5;
+    LIKEMORE_CABINET = 6;
+    ADMGO_LENTA = 7;
+    SOCIAL_VK_CAROUSEL = 8;
+}
+
+message SiliconSourceId {
+    required SiliconSourceProvider provider = 1;
+    required string id = 2;
+}
+
+
+
+message SiliconFetchUrl {
+
+    enum Type {
+        SOURCE = 0;
+        POST   = 1;
+        IMAGE  = 2;
+        MARKER = 3;
+    }
+
+    enum SourceType {
+        URL = 0;
+        RSS = 1;
+        API = 2;
+    }
+
+    enum MobileVersion {
+        PREFIX = 0;
+        AUTO = 1;
+        NONE = 2;
+    }
+
+    required Type type = 1;
+    required SourceType sourceType = 2;
+    required SiliconSourceMode mode = 3;
+    repeated string postsWithImage = 4;
+    required SiliconSourceId sourceId = 5;
+    optional string publicUrl = 6;
+    optional SiliconDocTaggerInfo taggerInfo = 7;
+    repeated string sourceNames = 8;
+    optional int64 siteId = 9;
+    repeated int64 categoryIds = 10;
+    optional SiliconDocParserInfoDigest marker = 11;
+    optional int64 firstMeetSec = 12;
+}
+
+
+
+message SiliconFetchedDoc {
+    required string url = 1; // url
+    optional string murl = 2; // url for mobile version, if exist
+    required SiliconSourceMode sourceMode = 3; // what type of message is this protobuf
+    required SiliconDocParserInfo parserInfo = 4; // main parsed info
+    required SiliconDocTaggerInfo taggerInfo = 5; // tags of document
+    optional int64 fetchTimestamp = 6; // ts of get request to the internet
+    optional SiliconSourceId sourceId = 7; // source identifier (RSS, root page, etc.)
+    optional int64 discoveryVersion = 8;
+    optional bool isRemoved = 9;
+    optional int64 publicationDate = 10; // date of publication, parsed from document (or source RSS)
+
+    optional string canonicalizedUrl = 11;
+
+    repeated string sourceNames = 12;
+    optional int64 siteId = 13;
+    repeated int64 categoryIds = 14;
+    optional int64 urlHash = 15; // hash from normalized, canonicalized url (as Base64 key in HBase, as long key in bahroma)
+    optional uint32 regionId = 16;
+    optional int64 firstMeetSec = 17;
+
+    optional ProvidersParams providersParams = 18;
+
+    optional SiliconeNewsTagsData newsTags = 19;
+    optional SiliconeNewsStoriesData newsStories = 20;
+
+    // id 21 -- reserved
+    
+    optional bytes vkPost = 22;
+
+    optional ScrollToClickInfo scrollToClickInfo = 23;
+    optional UserPixels userPixels = 24;
+
+    optional SiliconeDocState state = 25;
+    optional bool isDocStateUpdated = 26;
+
+    optional string jsonBlocks = 27;
+    repeated string tags = 28;
+
+    optional CustomAdminFields customAdminFields = 29;
+    optional string external_url = 30;
+    optional bool isAdminCustomDocUpdated = 31;
+    optional bool hasContents = 32;
+
+    optional RisksFields risksFields = 33;
+    optional string original_url = 34;
+
+    extensions 1000 to max;
+    extend SiliconFetchedDoc {
+        optional string indexistoId = 1000 [deprecated=true]; // some hash id in indexisto base
+        optional bytes page_source = 1001; // raw content from net
+        optional int64 parsedDate = 1002; // ts of parser instance
+
+        optional string routeKey = 1003;
+
+        repeated int64 cosmoSourceId = 1004;
+        optional int64 topicId = 1005; // topicId for ok doc
+    }
+}
+
+
+message SiliconDocParserInfo {
+    optional string title = 1;
+    optional string description = 2;
+    optional string body = 3;
+    required PostImages images = 4;
+    optional string video = 5;
+    optional string descriptionRss = 6; // description from RSS
+
+    optional SiliconeParsedBody parsedBody = 7; // parsed body parts
+    optional SiliconeAuthor author = 8;
+    optional SiliconeCategory category = 9; // page category/rubric on site
+
+    optional SiliconeVideoData videoData = 10;
+    optional string layerBodyHtml = 11;
+
+    optional CustomFields customFields = 12;
+    optional int32 layer_words_count = 13;
+
+    optional string layer_header = 14;
+    optional string layer_footer = 15;
+
+    optional string amp_url = 16; // <link rel="amphtml" href="[amp_url]">
+
+    repeated Gallery galleries = 17;
+    optional string guid = 18;
+    optional bool is_valid_fulltext = 19;
+    optional PulseVideos videos = 20;
+    optional string slug = 21;
+
+    optional string media_rating = 22;
+    optional int64 ttl = 23;
+    repeated string categories = 24;
+
+    optional int64 layer_symbol_count = 25;
+
+    optional string pharma_product = 26;
+
+    optional bool has_relap_test = 27;
+
+    repeated int32 doc_region_ids = 28;
+}
+
+message PulseVideos {
+    required PulseVideo mainVideo = 1;
+    // repeated PulseVideo videos = 2; сделано на будущее если будет несколько видео в посте
+}
+
+message PulseVideo {
+    required string video_url = 1;
+    optional int32 duration = 2;
+}
+
+message SiliconeAuthor {
+    optional string name = 1;
+    optional string url = 2;
+}
+
+message SiliconeCategory {
+    optional string category = 1;
+    optional string sub_category = 2;
+}
+
+message SiliconeDocState {
+    optional bool disabled = 1;
+}
+
+enum ImageType {
+    PNG = 0;
+    JPEG = 1;
+    GIF = 2;
+}
+
+message SiliconeParsedBody {
+    repeated SiliconeBodyPart bodyPart = 1; // parsed body parts
+}
+
+message SiliconeBodyPart {
+    enum PartName {
+        HEADER1 = 0;
+        HEADER2 = 1;
+        HEADER3 = 2;
+        HEADER4 = 3;
+        HEADER5 = 4;
+        HEADER6 = 5;
+
+        PREFORMATTED = 6;
+        TEXT = 7;
+        BREAK = 8;
+
+        PARAGRAPH = 10;
+        LIST = 11;
+        LINK = 12;
+        BLOCKQUOTE = 13;
+
+        IMG = 20;
+        INSTAGRAM = 21;
+
+        VIDEO_YOUTUBE = 30;
+        VIDEO_VIMEO = 31;
+        VIDEO_VK = 32;
+
+        IFRAME = 33;
+        HTML = 34;
+    }
+
+    required PartName name = 1;
+    optional string textHtml = 2;
+    optional bool containsCode = 3;
+    optional SiliconImage image = 4;
+    optional string imageHref = 5;
+    optional ImageType imageType = 6;
+    optional string objectId = 7;
+    repeated string list = 8;
+}
+
+message Gallery {
+    required string name = 1;
+    repeated GalleryImage images = 2;
+}
+
+message GalleryImage {
+    required SiliconImage image = 1;
+    required string placeHolderUrl = 2;
+    optional string description = 3;
+}
+
+
+message PostImages {
+    optional SiliconImage mainImage = 1;
+    repeated SiliconImage images = 2;
+    optional SiliconImage okImage = 3;
+    repeated SiliconImage layerImages = 4;
+}
+
+
+message SiliconImage {
+    required string originalUrl = 1;
+    optional string previewUrl = 2;
+    optional uint64 simHash = 3;
+    optional uint32 width = 4;
+    optional uint32 height = 5;
+    optional ru.mail.go.webbase.parsing.img.Thumb imageContent = 6;
+
+    repeated SiliconeImagePostID postID = 7; // reverse links to posts
+    optional string microbase = 8;
+    optional string caption = 9;
+    optional bool fetchFailed = 10;
+
+    optional ru.mail.go.webbase.parsing.img.ImageFormat originalFormat = 11;
+    optional uint64 okImageId = 12;
+
+    optional string srchKey = 13;
+    optional bool supplied = 14;
+    optional string img_url = 15;
+    repeated string tags = 16;
+
+    optional bool saveFailed = 17;
+}
+
+message SiliconeImagePostID {
+    required string postUrl = 1; // reverse link to post
+    required int32 ordinal = 2; // id for hbase uniq ordering
+}
+
+message SiliconeImageGalleryRef {
+    required string postUrl = 1;
+    required string galleryName = 2;
+    required int32 ordinal = 3;
+}
+
+
+message SiliconDocTaggerInfo {
+    repeated string tag = 1;
+}
+
+message SiliconDocTaggerHashInfo {
+    repeated int64 tagHashes = 1;
+}
+
+message ScrollToClickInfo {
+    optional string target_url = 1;
+    optional string target_url_title = 2;
+    optional string target_url_description = 3;
+    optional string img_aerospike_url = 4;
+    optional string mobile_img_aerospike_url = 5;
+}
+
+message UserPixels {
+    repeated string readup = 1;
+    repeated string redirect = 2;
+    repeated string show = 3;
+    repeated string click = 4;
+}
+
+message CustomAdminFields {
+    optional string custom_title = 1;
+    optional SiliconImage custom_main_image = 2;
+    optional SiliconImage vendor_image = 3;
+    optional bool is_for_realme = 4;
+}
+
+enum SourceParsingError {
+    SOURCE_CONFIG_MISSING = 0;
+    SOURCE_NO_CONTENT = 1;
+    SOURCE_NO_POSTS = 2;
+    SOURCE_CONFIG_ERROR = 3;
+    SOURCE_PARSER_ERROR = 4;
+    SOURCE_BAN_CONFIG_ERROR = 5;
+    SOURCE_POST_URL_ERROR = 6;
+    SITE_CONFIG_MISSING = 7;
+}
+
+message SourceParsingErrorList {
+    repeated SourceParsingError errors = 1;
+}
+
+
+enum PostParsingResult {
+    POST_OK = 0;
+    POST_NO_TEXT = 1;
+    POST_NO_IMAGE = 2;
+    POST_NOT_PARSED = 3;
+}
+
+enum PostParsingError {
+    POST_CONFIG_MISSING = 0;
+    POST_TITLE_CONFIG_ERROR = 1;
+    POST_DESCRIPTION_CONFIG_ERROR = 2;
+    POST_READABILITY_CONFIG_ERROR = 3;
+    POST_IMAGE_CONFIG_ERROR = 4;
+    POST_NO_CONTENT = 5;
+    POST_URL_ERROR = 6;
+    POST_BOILERPIPE_ERROR = 7;
+    POST_OG_IMAGE_NOT_FOUND = 8;
+    POST_BOILERPIPE_IMAGE_ERROR = 9;
+    POST_BOILERPIPE_IMAGE_NOT_FOUND = 10;
+    POST_PARSED_HTML_MISSING = 11;
+    POST_VK_PARSER_ERROR = 12;
+    POST_IMAGE_GALLERY_CONFIG_ERROR = 13;
+    POST_VIDEO_CONFIG_ERROR = 14;
+    POST_LAYER_ERROR = 15;
+    POST_HOST_MISMATCH = 16;
+    POST_CUSTOM_FIELD_CONFIG_ERROR = 17;
+    POST_TITLE_PARSING_ERROR = 18;
+    POST_DESCRIPTION_PARSING_ERROR = 19;
+    POST_MAIN_IMAGE_PARSING_ERROR = 20;
+}
+
+message PostParsingErrorList {
+    repeated PostParsingError errors = 1;
+}
+
+
+enum ImageProcessResult {
+    IMAGE_OK = 0;
+    IMAGE_FAIL = 1;
+    IMAGE_NOT_FETCHED = 2;
+}
+
+
+enum ImageProcessError {
+    IMAGE_RESIZE_ERROR = 0;
+    IMAGE_THUMB_ERROR = 1;
+    IMAGE_PREVIEW_EXPORT_ERROR = 2;
+    IMAGE_EXPORT_FOR_POST_ERROR = 3;
+    IMAGE_SIMHASH_ERROR = 4;
+}
+
+message ImageProcessErrorList {
+    repeated ImageProcessError errors = 1;
+}
+
+
+// deprecated, use SiliconeVideo
+message SiliconeYoutubeVideoData {
+    required string videoID = 1;
+    required string playerUrl = 2;
+}
+
+
+enum SiliconeVideoType {
+    YOUTUBE = 0;
+    VIMEO = 1;
+}
+
+message SiliconeVideoYoutube {
+    required string playerUrl = 1;
+    required string videoID = 2;
+}
+
+message SiliconeVideoVimeo {
+    required string playerUrl = 1;
+}
+
+message SiliconeVideo {
+    required SiliconeVideoType type = 1;
+    optional SiliconeVideoYoutube videoYoutube = 2;
+    optional SiliconeVideoVimeo videoVimeo = 3;
+}
+
+
+message SiliconeVideoData {
+    optional SiliconeYoutubeVideoData youtubeData = 1;
+    repeated SiliconeVideo videos = 2;
+}
+
+
+message PostsBySourcesCmd {
+    repeated SiliconSourceId sourceIds = 1;
+    repeated string replyTopics = 2;
+    repeated TimeInterval fetchTimeIntervals = 3;
+}
+
+message PostAndSource {
+    required string postUrl = 1;
+    required SiliconSourceId sourceId = 2;
+}
+
+message PostsBySiteCmd {
+    repeated int64 siteIds = 1;
+    repeated string replyTopics = 2;
+    repeated TimeInterval fetchTimeIntervals = 3;
+}
+
+message TimeInterval {
+    optional uint64 startTsMs = 1;
+    optional uint64 stopTsMs = 2;
+}
+
+
+message PostSiteSources {
+    required string postUrl = 1;
+    required int64 siteId = 2;
+    repeated SiliconSourceId sourceId = 3;
+    optional int64 firstMeetSec = 4;
+}
+
+
+
+
+message MarkerDigest {
+    required int32 markerId = 1;
+    required bytes valueHash = 2;
+}
+
+
+message MarkerMultiDigest {
+    required int32 markerId = 1;
+    repeated bytes valueHashes = 2;
+}
+
+message CustomFieldMarkerDigest {
+    required string fieldName = 1;
+    optional MarkerDigest fieldValue = 2;
+}
+
+message CustomFieldMarkerDigests {
+    repeated CustomFieldMarkerDigest items = 1;
+}
+
+message LayerMarkerDigest {
+    required int32 markerId = 1;
+    repeated int32 valueHashes = 2;
+}
+
+message SiliconDocParserInfoDigest {
+    repeated MarkerDigest title = 1;
+    repeated MarkerDigest description = 2;
+    repeated MarkerDigest body = 3;
+    repeated MarkerDigest mainImageUrl = 4;
+    repeated MarkerMultiDigest imageGalleryUrls = 5;
+    repeated MarkerMultiDigest videoUrls = 6;
+    optional CustomFieldMarkerDigests customFields = 7;
+    repeated LayerMarkerDigest layer = 8;
+}
+
+// used for passing provider's parameters
+message KeyValuePair {
+    optional string Key = 1;
+    optional string Value = 2;
+}
+
+// get custom params from rss and pass forwad (to bahroma, cosmo etc)
+message ProvidersParams {
+    repeated KeyValuePair keyValuePairs = 1;
+}
+
+message CustomField {
+    required string Name = 1;
+    optional string Value = 2;
+}
+
+message CustomFields {
+    repeated CustomField items = 1;
+}
+
+
+message SiliconeNewsTagsData {
+    repeated SiliconeNewsTagData tags = 1;
+}
+
+message SiliconeNewsTagData {
+    required int32 id = 1;
+    optional string name = 2;
+}
+
+message SiliconeNewsStoriesData {
+    repeated SiliconeNewsStoryData stories = 1;
+}
+
+message SiliconeNewsStoryData {
+    required int32 id = 1;
+    optional string name = 2;
+}
+
+message RisksFields {
+    optional float eroScore = 1;
+    optional float pornoScore = 2;
+    optional float safeContent = 3;
+}

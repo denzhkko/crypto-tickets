@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+package qtransform.pb;
+
+message TransformedQuery {
+    optional string query = 1;
+    repeated string replaced_part_tags = 2;
+}

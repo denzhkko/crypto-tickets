@@ -1,0 +1,287 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.interleaving;
+
+option java_outer_classname = "InterleavingSerpProto";
+
+message FailStat
+{
+    required string id = 1;
+    optional uint32 count = 2;
+}
+
+message ExperimentStats
+{
+    required uint32 id = 1;
+    required uint32 queries_count = 2;
+    required bool failed = 3;
+    optional string fail_reason = 4;
+    optional uint32 trials_count = 5; // how many queries was before filter and fail
+    optional uint32 fails_count = 6; // how many queries was failed by any reason
+    optional uint32 failed_a = 7;   // fail A source
+    optional uint32 failed_b = 8;   // fail B source
+    repeated FailStat fails_stat = 9;    // fails info
+    optional string info = 10;      // experiment info from daemon
+}
+
+message ExperimentStatsList
+{
+    repeated ExperimentStats stats = 1;
+}
+
+message ExperimentConfig
+{
+    required uint32 id = 1;
+    required string type = 2;
+    required string source_a_type = 3;
+    required string source_b_type = 4;
+    optional string source_a_config = 5;
+    optional string source_b_config = 6;
+    optional string queries_filter = 7;
+    required uint32 min_per_day = 8; // is it real required ?
+    required uint32 max_per_day = 9;
+    required uint32 priority = 10;
+    required uint32 start_date = 11;
+    optional bool   quota_all = 12 [default = false]; // take all requests into account quota (true) or only satisfed queries_filter (false)
+    optional string queries_file = 13;
+    optional string homer_location = 14;
+    optional string ae_set_name = 15;
+    optional uint32 max_sessions = 16;
+}
+
+message ExperimentMetaConfig
+{
+    repeated ExperimentConfig experiments = 1;
+}
+
+message MetricsTask
+{
+    required uint32 id = 1;
+    required string type = 2;
+    required uint32 experiment_id = 3;
+    required uint64 start_time = 4;                        // unix timestamp (seconds)
+    required uint64 stop_time = 5;                         // unix timestamp (seconds)
+    optional float confidence_coefficient = 6;             // e.g. 0.05 to get 95% confidence intervals
+    optional string filter_rx = 7;
+    optional string queries_file = 8;
+    optional bool send_graphite = 9;                       // send metric to graphite
+}
+
+message MetricsMetaTask
+{
+    repeated MetricsTask metrics = 1;
+}
+
+message MetricResult
+{
+    required int32 id = 1;
+    required float value = 4;
+    required float confidence_max = 5;
+    required float confidence_min = 6;
+    required uint32 events_number = 7;                     // number of queries, included in calculating
+    required float reliability = 8;
+    optional float probability_A_better = 9;
+    optional float probability_B_better = 10;
+    optional uint32 a_wins = 11;
+    optional uint32 b_wins = 12;
+    optional uint32 no_clicks = 13;
+}
+
+message MetricsResults
+{
+    repeated MetricResult results = 1;
+}
+
+
+message DumpTask
+{
+    required uint32 id = 1;
+    required uint32 experiment_id = 2;
+    required uint64 start_time = 4;                        // unix timestamp (seconds)
+    required uint64 stop_time = 5;                         // unix timestamp (seconds)
+    optional uint32 max_logs = 6 [default = 10000];        // number of query logs to dump for each possible metric value
+    optional string filter_rx = 7;
+    optional string experiment_type = 8;
+    optional bool   with_snippets = 9;
+    optional string metric_type = 10;
+    optional bool   draw = 11;
+    optional bool   noclicks = 12;
+}
+
+message DumpTasks
+{
+    repeated DumpTask tasks = 1;
+}
+
+message DumpResult
+{
+    required uint32 id = 1;
+    required string dump_url = 2;
+}
+
+message DumpResults
+{
+    repeated DumpResult results = 1;
+}
+
+message DumpProgress
+{
+    required uint32 id = 1;
+    required uint32 progress = 2;
+}
+
+message DumpsProgress
+{
+    repeated DumpProgress progress = 1;
+}
+
+message QueryLog
+{
+    required uint64 timestamp = 1;                         // unix timestamp (milliseconds)
+    required string UID = 2;                               // user id
+    required uint32 EID = 3;                               // experiment id
+    required ShowedDocuments showedDocuments = 4;
+    repeated Click clicks = 5;
+    optional string query = 6;
+    optional string rid = 7;
+    optional string queryId = 8;
+    optional string rawGekkoLog = 9;
+    optional float replyQuality = 10;
+    optional string essrSourceType =11;
+    //SRCH-25884
+    optional string original_query = 12;
+    optional string spc_json = 13;
+    optional float webQuality = 14 [default = 1.0];
+    repeated Action actions = 15;
+    // SRCH-30524
+    repeated Qs qs = 16;
+    optional SuggNavig suggNavig = 17;              // SRCH-30783
+    optional SuggNavig suggNavigA = 18;
+    optional SuggNavig suggNavigB = 19;
+    optional string serp = 20;
+    repeated Play play = 21;                    // SRCH-47420
+    optional string experimentdData = 22;
+    optional string use_whole_response = 23;		// SRCH-52983
+}
+
+message ShowedDocuments
+{
+    repeated ShowedDocument showedDocuments = 1;
+}
+
+message ShowedDocument
+{
+    required bool showed_from_a = 1;              // if true => in interleaved serp doc was from A
+    optional uint32 position_a = 2;               // position of the document in serp A, starting from 0
+    optional uint32 position_b = 3;               // position of the document in serp B, starting from 0
+    required uint32 interleaved_position = 4;     // position of the document in the interleaved serp, starting from 1
+    optional bool clicked = 5;                    // true if document has been clicked
+    optional string url = 6;
+    optional string vertical = 7;
+    optional float sm_weight = 8;                 // sm_weight
+    optional uint32 rpos = 9;                     // required_position
+}
+
+message Click
+{
+    required uint32 position = 1;                          // position of this click in interlieved serp
+    required uint32 time_delay = 2;                        // seconds from query.timestamp till this click
+    optional string type = 3;                              // click type
+    optional uint32 sub_position = 4;                      // position in smack
+}
+
+message Play
+{
+    required uint32 position = 1;                          // position of this click in interlieved serp
+    required uint32 time_delay = 2;                        // seconds from query.timestamp till this click
+    required uint32 time = 3;                              // play video time
+    required uint32 duration = 4;                          // video duration
+    optional string type = 5;                              // play type
+}
+
+message Action
+{
+    enum Type
+    {
+        CLICK = 0;
+        SHARE = 1;
+        LIKE = 2;
+        CLOSE = 3;
+        DISLIKE = 4;
+    }
+    required Type type = 1;
+    required uint32 position = 2;
+}
+
+message Serp
+{
+
+    enum SourceType
+    {
+        UNDEF = 0;
+        YNDX = 1;
+        GOOGL = 2;
+    }
+    repeated string urls = 1;
+    required SourceType type = 2;
+    required string query = 3;
+    required uint32 rb_code = 4;
+    required uint64 timestamp = 5;
+}
+
+message EssrExperimentResult {
+    // Значение метрики. Metric_value > 0 a_win Metric_value < 0 b_win
+    required double metric_value = 1;
+    required uint32 a_win_count = 2;
+    required uint32 b_win_count = 3;
+    // Количество событий с кликами
+    required uint32 events_count = 4;
+}
+
+// один параметр строки запроса к демону
+message Qs {
+    required string name = 1;
+    required string value = 2;
+};
+
+message SuggNavig {
+    optional string url = 1;
+    optional string query = 2;
+    optional bool has_favicon = 3 [default = false];
+    optional bool clicked = 4 [default = false];
+    optional string source = 5;                     // источник навига во время эксперимента 0-no exp, 1=A, 2=B
+};
+
+message AlSession {
+    repeated string urls = 1;
+    optional uint32 freq = 2 [default = 1];
+}
+
+message AlSource {
+    enum SourceType
+    {
+        UNDEF = 0;
+        YNDX = 1;
+        GOOGL = 2;
+    }
+    required SourceType type        = 1;
+    repeated AlSession  sessions    = 2;
+}
+
+message AlQueryData {
+    required string     query       = 1;
+    required int32     rb_code     = 2;
+    repeated AlSource   sources     = 3;
+}
+
+message AlQueryDataList {
+    repeated AlQueryData queries = 1;
+}
+
+message DocumentStats {
+    required bool showed = 1;
+    required bool clicked = 2;
+    required bool satisfied = 3;
+    required bool long_click = 4;
+    optional string snippet = 5;
+}

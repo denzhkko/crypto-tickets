@@ -1,0 +1,50 @@
+syntax = "proto2";
+
+// google protocol buffer для геозависмых данных, которые помещаем в сниппеты. 
+// Для каждого типа документа в индексе свой message. 
+
+// ---------------------------------
+// message для Карточек CardGeodata 
+// ---------------------------------
+// CardGeodata::geoArray - массив uint [geoid, dataIndex, geoid, dataIndex ... ] 
+// передается сплошной строкой с бинарными данными, чтобы можно было использовать бинарный поиск при распаковке
+// CardGeodata::dataArray - массив данных, в котором индекс элемента соотвествует dataIndex
+// Пакуется в таком виде, чтобы сэкономить общий размер выходного буфера
+// Логика работы: ищем соответствующий geoid, берем данные dataArray[dataIndex]
+
+message CardGeoData {
+	message DataArray {
+		required uint32 priceFrom = 1;
+		required uint32 priceTo = 2;
+		required uint32 clientsCount = 3;
+		required uint32 sellsCount = 4;
+	}
+	required bytes geoArray = 1;
+	repeated DataArray dataArray = 2;
+}
+
+// ----------------------------------
+// message для категорий CatGeoData
+// ----------------------------------
+// Тут все проще, в строке байт лежит отсортированный массив [geoid1, models-count1, geoid2, models-count2 ... ]
+
+message CatGeoData {
+	required bytes geoArray = 1;
+}
+
+// ----------------------------------
+// message для топов карточек по регионам
+// ----------------------------------
+// Имеющаяся версия протобуффера для перла не поддерживает тип map<key, value>, что очень грустно.
+// Чтобы не плодить в буффере много текста, собираем текстовую инфу по отдельным офферам в массив offersInfo. Создаем второй массив topIndexes, 
+// где будут лежать массивы индексов первого в порядке приоритета офферов.
+// Третий массив geoArray - упорядоченный по список geoid с индексами из массива топов индексов, как и в предыдущих мессаджах в бинарном виде
+
+message TopCardsByGeo {
+	message OffersIndexes {
+		repeated uint32 offerindex = 1;
+	}
+	required bytes geoArray = 1;
+	repeated OffersIndexes topIndexes = 2;
+	repeated string offersInfo = 3;
+}

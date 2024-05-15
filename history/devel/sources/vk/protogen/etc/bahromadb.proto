@@ -1,0 +1,90 @@
+syntax = "proto2";
+
+package gogo.bahroma_db;
+
+option java_package = "ru.mail.go.webbase.bahroma";
+option java_outer_classname = "BahromaDefs";
+option cc_enable_arenas = true;
+
+message BElementStruct
+{
+  enum Type
+  {
+    String  = 1;
+    Hash    = 2;
+    Array   = 3;
+    Binary  = 4;
+  }
+
+  required Type type = 1;
+  optional string string_data = 2;
+  optional BArrayStruct array_data = 3;
+  optional BHashStruct  hash_data = 4;
+  optional BBinaryStruct binary_data = 5;
+}
+
+message BArrayStruct
+{
+  repeated BElementStruct data = 1;
+}
+
+message BHashStruct
+{
+  message BHashElement
+  {
+    required string key = 1;
+    required BElementStruct value = 2;
+  }
+  
+  repeated BHashElement data = 1;
+}
+
+message BBinaryStruct
+{
+  required sint32 storage_id = 1 [default = -1];
+  required bool  is_loaded  = 2 [default = false];
+  //this field isn't used in serialization 
+  optional bytes binary_data = 3; 
+}
+
+message ObjectStruct
+{
+  enum Mode
+  {
+    Add = 1;
+    Delete = 2;
+  }
+
+  optional uint32 id = 1 [default = 0xFFFFFFFF] ;
+  required BHashStruct properties = 2;
+  optional uint32 version = 3 [default = 1];
+  optional Mode mode = 4 [default = Add];
+}
+
+message BahromaDBStat
+{
+  required uint32 first_free_id = 1;
+}
+
+message AerospikeObject
+{
+    message Item
+    {
+        required uint32 timestamp = 1;
+        required ObjectStruct object = 2;
+    }
+    repeated Item items = 1;
+}
+
+message AerospikeDisbledSettings
+{
+    message Range
+    {
+        required uint32 id = 1;
+        required uint32 begin = 2;
+        required uint32 end = 3;
+    }
+
+    repeated Range ranges = 1;
+    required uint32 last_id= 2 [default = 0];
+}

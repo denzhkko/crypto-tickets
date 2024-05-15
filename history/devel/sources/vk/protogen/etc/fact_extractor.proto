@@ -1,0 +1,35 @@
+syntax = "proto2";
+
+package fact_extractor.pb;
+
+option java_outer_classname = "FactExtractor";
+
+message Request {
+    // В этом поле можно передать документы, в которых
+    // предложения разделены с помощью символа "|"
+    repeated string documents = 1;
+
+    // В этом поле можно передать документы в формате plain_index'а
+    repeated bytes plain_index_documents = 2;
+
+    // В этом поле можно передать урлы документов
+    repeated string documents_urls = 3;
+}
+
+message ResultSentence {
+    enum Confidence {
+        TRASH = 20;
+        LOW = 40;
+        HIGH = 60;
+    }
+
+    optional float score = 1;
+    optional string sentence = 2;
+    optional Confidence confidence = 3;
+}
+
+message Response {
+    optional int32 doc_index = 1;
+    repeated ResultSentence sentences = 2;
+    optional float q_score = 3;
+}

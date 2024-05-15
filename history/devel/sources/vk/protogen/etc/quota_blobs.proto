@@ -1,0 +1,412 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "QuotaBlobs";
+import "crawl_state.proto";
+import "doc_parser.proto";
+import "document_enums.proto";
+
+message UrlDataProto {
+    optional string keyUrl = 1;
+}
+
+message QuotaInfo {
+	optional CrawlDetails currentStatus					= 1;
+	optional ImportInfo importInfo						= 2;
+	optional NewUrlInfo newInfo							= 3;
+	optional int64 importDate							= 4;
+	optional Language language							= 5;
+	optional bool isStub								= 6;
+	optional bool isNavig								= 7;
+	optional bool isImmortal							= 8;
+	optional SitemapType sitemapType						= 9;
+	optional bool hasQlink								= 10;
+	optional bool hasWeakQlink							= 11;
+	optional bool disabledByRobots						= 12;
+	optional bool inBlackList							= 13;
+	optional bool notIndexType							= 14;
+	optional bool isPrivate								= 15;
+	optional bool skipUrl								= 16;
+	optional bool isNew									= 17;
+	optional bool gotNewInfo							= 18;
+	optional bool isRedirectChainPart					= 19;
+	optional bool isDuplicate							= 20;
+	optional int32 custra								= 21;
+	optional bool isNewsUrl								= 22;
+	optional bool hasRanksInfo							= 23;
+	optional bool isMultimediaUrl						= 24;
+	optional int64 firstMeetDate						= 25;
+	optional bool notDeleteable							= 26;
+	optional int32 extraCrawlRank						= 27;
+	repeated float urlRedownloadFeatures				= 28;
+	optional bool isSpam								= 29;
+	optional bool isPorn								= 30; 
+	optional bool isOldLanguage							= 31;
+	optional StubInfo stubInfo							= 32;
+	optional bool isInfoUrl								= 33;
+	optional bool isDeadUrl								= 34;
+	optional int64 deadTs								= 35;
+	optional bool wasInLastIndex						= 36;
+	optional ImageDiscoveryInfo	imageDiscoveryInfo		= 37;
+	optional bool shownInSerpRecently					= 38;
+	optional bool isFromSitemapBase						= 39;
+	optional int32 manualBanFlag						= 40;
+	optional int32 contentSize							= 41;
+	optional int32 textCount							= 42;
+	optional int64 qddbSize							= 43;
+	repeated BackRedirectInfo back_redirect_info					= 44;
+	optional bool isRootStub                                                = 45;
+	repeated string back_page_redirect_info			= 46;
+	optional bool shouldBePassedAtWPIIScanStage = 47;
+	optional bool passedAsMirrorTarget = 48;
+
+        optional bool isMonitoringUrl = 49;
+        optional string monitoringType = 50;
+        repeated string monitoringEnvironment = 51;
+        optional string monitoringInfo = 52;
+        optional bool isOnlyFromMonitoring = 53;
+
+        optional bool hasEssrRanks = 54;
+        optional bool wasInYandexSession = 55;
+
+	optional bool wasInLastIndexes = 56;
+	optional int32 liruUserRank = 57;
+	optional int64 userRank = 58;
+	optional int32 topUserRank = 59;
+
+	optional int32 nbrmo = 60;
+	optional int32 nbrsq = 61;
+
+	optional bool isExtendedStub = 62;
+	optional string redirect = 63;
+	optional bool isWeakStub = 64;
+
+	optional int32 gLiruUserRank = 65;
+	optional int32 yLiruUserRank = 66;
+	optional int32 gTopUserRank = 67;
+	optional int32 yTopUserRank = 68;
+
+	optional CrawlDetails currentDarkStatus	= 69;
+	optional CrawlDetails currentDarkStatusNew	= 70;
+
+	optional bool isInfoCard = 71;
+	optional bool isGoodInnerLink = 72;
+
+	optional int32 oldURDays = 73;
+
+	optional GoodTargetLink goodTargetLink = 74;
+
+	optional bool isStubVariable = 75;
+	optional int32 crawlRank = 76;
+	optional bool isScheduled = 77;
+
+	optional int64 scheduledSince = 78;
+
+    optional int32 vkShares = 79;
+    optional int32 vkAway = 80;
+
+	optional bool experimentalIsStub = 81;
+	optional StubInfo esperimentalStubInfo = 82;
+
+    optional int32 logCount = 83;
+
+    optional int64 visit = 84;
+    optional int64 visitAly = 85;
+    optional int64 visitAlg = 86;
+
+    optional int32 oks = 87;
+
+    optional int32 expdata = 88;
+
+    optional string backSocialCanonical = 89;
+    optional string socialCanonical = 90;
+
+    optional bool forceDeduplicate = 91;
+
+    optional string title = 92;
+
+	/* DESCRIPTION: Info for image discovery scheduler */
+	message ImageDiscoveryInfo {
+		optional bool isMarkerHome	= 1;
+		optional bool isUsualHome	= 2;
+		optional bool hasGifestData = 3;
+		optional bool isNeeded = 4;
+	}
+
+	/* DESCRIPTION: Info about back redirect url */
+	message BackRedirectInfo {
+		required bytes pageBytes = 1;
+		required QuotaInfo quotaInfo = 2;
+	}
+
+	enum SitemapType {
+		NOT_SITEMAP = 0;
+		POSSIBLE_SITEMAP = 1;
+		POSSIBLE_SITEMAP_FROM_ROBOTS = 2;
+		CERTAIN_SITEMAP = 3;
+		SITEMAP_INDEX = 4;	
+	}
+}
+
+message StubInfo
+{
+	optional string stubUrl								= 1;
+	optional int32 stubStatus							= 2;
+	repeated string stubUrls							= 3;	/*For back redirects*/
+}
+
+message ImportInfo
+{
+	optional string fullUrl								= 1; 
+	optional string canonicalUrl						= 2; 
+	optional string redirectUrl							= 3; 
+	optional bool isStatusOlderThenFullUrl				= 4;
+	optional bool wasDownloaded							= 5;
+	
+}
+
+message NewUrlInfo
+{
+	optional string fullUrl								= 1;  
+	optional bool flagDisabled							= 2;
+	optional bool flagFetcherBase						= 3;
+	optional bool flagAlienBase							= 4;
+	optional bool flagKwsBase							= 5;
+	optional bool flagLiruBase							= 6;
+	optional bool flagSputnikBase						= 7;
+	optional bool flagHighPriority						= 8;
+	optional bool flagImmortal							= 9;
+	optional bool flagQlinks							= 10;
+	optional bool flagSitemap							= 11;
+	optional bool flagSitemapLink						= 12;
+	optional bool flagImageSourceBase					= 13;
+	optional bool flagPeopleBase						= 14;
+	optional bool flagFirstmeetBase						= 15;
+	optional bool flagGMRBase							= 16;
+	optional bool flagNavigationBase					= 17;
+	optional bool flagNewsBase							= 18;
+	optional bool flagInfoBase							= 19;
+}
+
+message QuotaSiteInfo
+{
+	optional SiteLanguageArray langArray 				= 1;
+	optional int32 quota								= 2; 
+	optional bool isSandbox								= 3; 
+	optional bool isImported							= 4;
+	repeated float siteRedownloadFeatures				= 5;
+	optional bool extraRedownload						= 6;
+	optional int32 userRank								= 7;
+	optional int32 sandboxQuota							= 8; 
+	optional SiteStubInfo stubInfo						= 9;
+
+	/*This field corresponds to WebSiteTable.DETAIL_CF.SANDBOX_STATUS */	
+	optional bool isSandbox2							= 10; 
+	optional bool isUnresolved							= 11; 
+	optional bool isSpam								= 12; 
+
+	optional bool isTrashIndex							= 13;
+}
+
+message SiteStubInfo
+{
+	optional int64 userRankLong							= 1;
+	optional int32 siteStubStatus						= 2;
+}
+
+/* IMAGE SCHEDULER. Contains information about site for scheduling (sekitei,..) */
+message ISiteStat
+{
+	optional bytes sekitei = 1;
+	optional bool hostPresence = 2;
+}
+
+/* IMAGE SCHEDULER. Contains information about url for scheduling */
+message IUrlStat
+{
+	optional int32 crawlRank = 1;
+	optional bytes detailsBytes = 2;
+	optional int32 contentType = 3;
+	optional bool isMarker = 4 [ default = false ];
+	optional bytes pageRecordBytes = 5;
+	optional bool isDisabled = 6 [ default = false ];
+	repeated AdditionalCrawlRank additionalCrawlRanks = 7;
+
+	optional ImportInfo importInfo = 8;
+	optional NewUrlInfo newUrlInfo = 9;
+	optional bool isNew = 10 [ default = false ];		// = !(presence in hbase as key)
+	optional bool isImageBase = 11 [ default = false ];
+	optional bool isImportFromNewUrls = 12 [default = false];	// = from fetchers newurls folders
+	optional bool isSnippet = 13 [default = false];
+	optional bool isFromImageLinks = 14 [default = true];
+	optional bool isAnimated = 15 [default = false];
+	optional bool isGifestAnimated = 16 [default = false];
+	optional bool isNeeded = 17 [default = false];
+
+	//repeated HomeInfo homes = 15;	//info about N top homes
+
+	message AdditionalCrawlRank {
+		optional string name = 1;
+		optional int32 rank = 2;
+	}
+}
+
+/* IMAGE SCHEDULER: markers exctracter. Contains information about marker */
+message MarkerStat
+{
+	optional float ctr = 1;		//for usual markers
+	optional int32 imps = 2;	//for usual markers
+	optional int32 c = 3;		//for yandex/google markers
+	optional int32 u = 4;		//for yandex/google markers
+}
+
+//used between Map and Reduce phases in UrlsExtracterJob
+message UrlAdditionalInfo
+{
+    required string fullUrl = 1;
+	optional int32 maxHomeCrawlRank = 2;
+	optional int32 maxHomeBrowseCrawlRank = 3;
+	optional uint32 pages = 4;
+	//optional bytes homePage = 5;
+}
+
+message HomeInfo
+{
+	optional int32 homeBrowseCrawlRank = 1;
+	//optional bytes homePage = 2;
+}
+
+/* IMAGE SCHEDULER: sites stat */
+message ISchedulerSiteStat
+{
+	repeated ISSSegmentStat segments = 1;
+	optional ISSCommonStat commonStat = 2;
+	optional int32 trashQuota = 3 [default = 0];
+	optional bool isWithoutSekitei = 4 [ default = false ];
+}
+
+/* IMAGE SCHEDULER: sites stat:segments */
+message ISSSegmentStat
+{
+	required int32 segmentNum = 1;
+	optional string pattern = 2;
+	optional ISSCommonStat stat = 3;
+	optional int32 crawlRankTreshold = 4;
+}
+
+/* IMAGE SCHEDULER: sites stat:stat bunch */
+message ISSCommonStat
+{
+	optional int32 reservedQuota = 1 [default = 0];
+	optional int32 usedQuota = 2 [default = 0];
+
+	optional int32 urlsWithoutContentType = 3 [default = 0];
+	optional int32 imageUrls = 4 [default = 0];
+	optional int32 nonImageUrls = 5 [default = 0];
+
+	optional int32 blockedUrlsWithoutContentType = 6 [default = 0];
+	optional int32 blockedImageUrls = 7 [default = 0];
+	optional int32 blockedNonImageUrls = 8 [default = 0];
+}
+
+/*Info about site stone for index reducing*/
+message IRStoneInfo
+{
+	required int32 num = 1;
+	optional string regexp = 2;
+	repeated string example = 3;
+}
+
+message ScheduledUrlImportance {
+	required string url = 1;
+
+	optional bool isBWScheduled = 2;
+	optional bool isFWScheduled = 3;
+	
+	optional int32 qlinks = 4;
+	optional int32 urank = 5;
+}
+
+message IRStoneStat
+{
+	required int32 num = 1;
+	required string regexp = 2;
+	required int32 urlsCnt = 3;
+	required int32 impUrlsCnt = 4;
+	required int32 type = 5;	/*0 - usual, 1 - custom, 2 - failed usual*/
+}
+
+message LikeStat
+{
+	optional int64 user_id = 1;
+	optional int64 owner_id = 2;
+	optional int64 post_id = 3;
+	optional int64 timestamp = 4;
+}
+
+message QualityDistribution
+{
+	optional int32 size = 1;
+	optional int32 partSize = 2;
+	repeated QualityDistributionEntry entries = 3;
+}
+
+message QualityDistributionEntry
+{
+	optional int32 size = 1;
+	optional float crawlRank = 2;
+	optional float quoted = 3;
+	optional float marker = 4;
+	optional float qlinksCR = 5;
+	optional float qlinksALG = 6;
+	optional float qlinksALY = 7;
+}
+
+message CustomContentFeatures
+{
+	repeated CustomContentFeature features = 1;
+}
+
+message CustomContentFeature
+{
+	optional string name = 1;
+	optional int32 ivalue = 2;
+	optional float fvalue = 3;
+}
+
+message ESSRUrlInfo
+{
+	optional int32 daysDelay = 1;
+	optional string date = 2;
+}
+
+message BackFeatures
+{
+	optional int64 uruq2 = 1;
+	optional int32 liru = 2;
+	optional int32 lirugy = 3;
+	optional int32 top = 4;
+	optional int32 sry = 5;
+	optional int32 srg = 6;
+	optional int32 aly = 7;
+	optional int32 alg = 8;
+	optional int32 cr = 9;
+}
+
+message GoodTargetLink
+{
+	optional int32 cnt = 1;
+	optional GoodTargetLinkEntry maxes = 2;
+	optional GoodTargetLinkEntry sums = 3;
+}
+
+message GoodTargetLinkEntry
+{
+	optional int32 qlinks = 1;
+	optional int32 srgy = 2;
+	optional int64 uruq2 = 3;
+	optional int32 liru = 4;
+	optional int32 top = 5;
+	optional int32 gyliru = 6;
+	optional int32 gytop = 7;
+}

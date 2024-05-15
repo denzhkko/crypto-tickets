@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.utils;
+
+option java_outer_classname = "UniqueUserProto";
+
+message UniqueUser {
+    required string uid = 1;
+    required double repeat = 2;
+}
+
+message UniqueUserValues {
+    required uint64 filterMask = 1;
+    repeated UniqueUser uniqueUser = 2;
+}

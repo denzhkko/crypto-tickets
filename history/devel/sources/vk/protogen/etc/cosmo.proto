@@ -1,0 +1,1358 @@
+syntax = "proto2";
+
+package cosmo.pb;
+
+option java_outer_classname = "CosmoData";
+option cc_enable_arenas = true;
+import "cosmo_user_events.proto";
+
+
+message UserData
+{
+    optional int64 user_id = 1;
+
+    ///
+    /// Original user info
+    ///
+    message OriginalInfo
+    {
+        optional string id = 1;
+    }
+
+    ///
+    /// Some debug information about  Ok
+    ///
+    message OkInfo
+    {
+        required int64 user_id = 1;
+    }
+
+    ///
+    /// Long term feature's
+    /// the features set is updated rarely
+    ///
+    message SocDemFea
+    {
+        /// unknown - 0, male - 1, female - 2
+        optional int32 gender = 1 [default = 0];
+        optional int32 age = 2;
+        // optional uint32 version = 3;
+    }
+
+    ///
+    /// Recommendation for deti
+    ///
+    message DetiRecos
+    {
+        repeated int64 slim = 1;
+        repeated int64 wrmf = 2;
+        repeated int64 als_tuned = 3;
+        repeated int64 als_large = 4;
+        repeated int64 svd = 5;
+        repeated int64 svd_stupid = 6;
+        repeated int64 als_by_liker = 7;
+        repeated int64 als_by_homer = 8;
+    }
+
+    ///
+    /// Als for data for user
+    ///
+    message AlsFea
+    {
+        repeated float als = 1;
+    }
+
+    ///
+    /// Als item biases data for user
+    ///
+    message AlsItemsBiases
+    {
+        repeated float fea = 1;
+    }
+
+    ///
+    /// News sources for user
+    ///
+    message NewsSources
+    {
+        repeated float weight = 1;
+        repeated int64 id = 2;
+    }
+
+    ///
+    /// Stats, whatever that means
+    ///
+    message Stats
+    {
+        message SourceStats
+        {
+            required int64 source_id = 1;
+            optional int64 category_id = 2;
+            optional int32 views = 3;
+            optional int32 opens = 4;
+            optional int32 likes = 5;
+            optional int32 dislikes = 6;
+            optional int32 shares = 7;
+        }
+
+        repeated SourceStats sources_stats = 1;
+        optional uint32 version = 2;
+    }
+
+    message SourcesWebStats
+    {
+        message SourceVisit
+        {
+            required int64 source_id = 1;
+            required int32 visits = 2;
+        }
+
+        repeated SourceVisit SourceVisits = 1;
+        optional uint32 version = 2;
+    }
+
+    message UserLinks
+    {
+        optional string vid = 1;
+        optional string mail = 2;
+        optional string ok = 3;
+        optional string vk = 4;
+    }
+
+    message UserClusters
+    {
+        optional uint32 user_cluster_som = 1;
+    }
+
+    message SimilarSites
+    {
+        message SimilarSite
+        {
+            required int64 id = 1;
+            required float weight = 2;
+        }
+        repeated SimilarSite similar_site = 1;
+        optional uint32 version = 2;
+    }
+
+    message ContentThemes
+    {
+        optional uint32 version = 1;
+        optional uint32 model_version = 2;
+        optional uint32 urls = 3;
+        repeated float  themes_vector = 4;
+    }
+
+    message StaticRecos
+    {
+        optional uint32 version = 1;
+        repeated int64  source_id = 2;
+        repeated int64  doc_id = 3;
+    }
+
+    message VisitedDocs
+    {
+        optional uint32 version = 1;
+        repeated int64  source_id = 2;
+        repeated int64  doc_id = 3;
+    }
+
+    message LogsVisitedDocs
+    {
+        repeated int64  doc_id = 1;
+    }
+
+    message LogsVisitedSources
+    {
+        optional uint32 version = 1;
+        repeated LogsVisitedSource sources = 2;
+    }
+
+    message LogsVisitedSource
+    {
+        optional int64 source_id = 1;
+        optional int64 source_urls = 2;
+        optional int64 source_last_ts = 3;
+    }
+
+    message SitesForUser
+    {
+        required uint32 version = 1;
+        repeated int64  site_hash = 2;
+        repeated uint32 site_visits = 3;
+        repeated uint32  site_urls = 4;
+        repeated int64 site_last_ts = 5;
+    }
+
+    message VkGroupsForUser
+    {
+        required uint32 version = 1;
+        repeated int64  group_url_hash = 2;
+        repeated float rank = 3;
+    }
+
+    message UserKeywords
+    {
+        required uint32 version = 1;
+        repeated int64  keyword_hash = 2;
+        repeated float  keyword_weight = 3;
+    }
+
+    message UserEvents
+    {
+        message SiteDislike
+        {
+            required int64 site_hash = 1;
+            optional int64 last_ts = 2;
+        }
+
+        message SourceDislike
+        {
+            required int64 source_id = 1;
+            optional int64 last_ts = 2;
+        }
+
+        message DocumentDislike
+        {
+            required int64 doc_id = 1;
+            optional int64 last_ts = 2;
+        }
+
+        repeated SiteDislike site_dislikes = 1;
+        repeated SourceDislike source_dislikes = 2;
+        repeated DocumentDislike document_dislikes = 3;
+    }
+
+    message UserThemesEvents
+    {
+        message UserThemeEventInfo
+        {
+            required int64 last_timestamp = 1;
+            required int64 count = 2 [default = 0];
+        };
+
+        message UserThemeEvent
+        {
+            required int64 theme_hash = 1;
+            optional UserThemeEventInfo clicks = 2;
+            optional UserThemeEventInfo shows = 3;
+            optional UserThemeEventInfo doc_dislikes = 4;
+            optional UserThemeEventInfo doc_likes = 5;
+            optional UserThemeEventInfo site_dislikes = 6;
+       };
+
+        repeated UserThemeEvent events = 1;
+    }
+
+    message UserI2IEvents
+    {
+        message UserI2IEventInfo
+        {
+            required int64 last_timestamp = 1;
+            required int64 count = 2 [default = 0];
+        };
+
+        message UserI2IEvent
+        {
+            required int64 i2i_doc_id = 1;
+            optional UserI2IEventInfo clicks = 2;
+            optional UserI2IEventInfo shows = 3;
+            optional UserI2IEventInfo doc_dislikes = 4;
+            optional UserI2IEventInfo doc_likes = 5;
+            optional UserI2IEventInfo site_dislikes = 6;
+       };
+
+        repeated UserI2IEvent events = 1;
+    }
+
+    message UserSourcesEvents
+    {
+        message UserSourceEventInfo
+        {
+            required int64 last_timestamp = 1;
+            required int64 count = 2 [default = 0];
+        };
+
+        message UserSourceEvent
+        {
+            required int64 source_id = 1;
+            optional UserSourceEventInfo clicks = 2;
+            optional UserSourceEventInfo shows = 3;
+        };
+
+        repeated UserSourceEvent events = 1;
+    }
+
+    message UserVideos
+    {
+        required uint32 version = 1;
+        repeated int64 video_id = 2;
+    }
+
+    message UserMusic
+    {
+        message TrackInfo
+        {
+            required int64 hash_id = 1;
+            optional uint32 listens_count = 2;
+            optional int64 last_listen_ts = 3;
+        }
+
+        required uint32 version = 1;
+        repeated TrackInfo tracks = 2;
+    }
+
+    message UserVideoEvents
+    {
+        message UserVideoEvent
+        {
+            message DailyCounters
+            {
+                optional uint64 common = 1;
+                optional uint64 morning = 2;
+                optional uint64 day = 3;
+                optional uint64 evening = 4;
+                optional uint64 night = 5;
+            }
+
+            message Location
+            {
+                optional string block = 1;
+                optional string screen = 2;
+            }
+
+            message Emotion
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Favorite
+            {
+                optional int64 timestamp = 1;
+                optional bool value = 2;
+            }
+
+            message Rate
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Comment
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Block
+            {
+                optional int64 timestamp = 1;
+                optional bool value = 2;
+            }
+
+            message Share
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Watch
+            {
+                optional int64 timestamp = 1;
+                optional int32 duration = 2; // секунда до которой досмотрено
+                optional int32 percent = 3; // процент просмотра
+                optional int32 cumulative_duration = 4;
+                optional int32 cumulative_percent = 5;
+                optional Location location = 6;
+                optional int64 counter_timestamp = 7;
+                optional uint64 counter = 8;
+            }
+
+            message VideoNext
+            {
+                optional int64 timestamp = 1;
+                optional int32 duration = 2; // секунда до которой досмотрено
+                optional int32 percent = 3; // процент просмотра
+                optional int32 cumulative_duration = 4;
+                optional int32 cumulative_percent = 5;
+                optional DailyCounters daily_counters = 6;
+            }
+
+            message VideoStart
+            {
+                optional int64 timestamp = 1;
+                optional uint64 counter = 2;
+            }
+
+            message VideoInViewport
+            {
+                optional int64 timestamp = 1;
+                optional Location location = 2;
+                optional uint64 counter = 3;
+            }
+
+            message PlayStatus
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Like
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Dislike
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Norm
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Rate3
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message Rate10
+            {
+                optional int64 timestamp = 1;
+                optional int32 value = 2;
+            }
+
+            message VideoClick
+            {
+                optional int64 timestamp = 1;
+                optional Location location = 2;
+            }
+
+            required int64 doc_id = 1;             // идентификатор документа (ключ для сортировки)
+            required int64 last_timestamp = 2;     // время последнего изменения (ключ для удаления)
+
+            //reserved 3 to 10; // was been deprecated
+
+            // Информация о пришедших пикселях (если не указано иное, то сохраняется последнее значение)
+            optional Emotion emotion = 11;                  // значение пикселя emotion (эмоция)
+            optional Favorite favorite = 12;                // значение пикселя favorite (закладка)
+            optional Rate rate = 13;                        // значение пикселя rate (оценка видео)
+            optional Comment comment = 14;                  // количество пришедших пикселей comment (комментарии)
+            optional Block block = 15;                      // значение пикселя block (блокировать видео)
+            optional Share share = 16;                      // количество пришедших пикселей share (пошарить видео)
+            optional Watch watch = 17;                      // значение пикселя watch (просмотр видео), сохраняется максимум
+            optional VideoNext video_next = 18;             // значение пикселя video_next (при перелистывании видео)
+            optional VideoInViewport video_in_viewport = 19;
+            optional PlayStatus play_status = 20;
+            optional Like like = 21;
+            optional Dislike dislike = 22;
+            optional Norm norm = 23;
+            optional Rate3 rate3 = 24;
+            optional Rate10 rate10 = 25;
+            optional VideoClick video_click = 26;
+            optional Watch watch_in_search = 27;            // значение пикселя watch (просмотр видео), в поиске
+            optional VideoClick video_click_in_search = 28;
+            optional Rate cold_rate = 29;
+            optional Watch watch_with_sound = 30;
+            optional VideoStart video_start = 31;
+        }
+
+        repeated UserVideoEvent events = 1; // значения отсортированы по doc_id
+    }
+
+    message SubscriptionInfo {
+        message SubscriptionItem {
+            enum SubscriptionStatus {
+                OFF = 0;
+                ON = 1;
+            }
+
+            required int64 id = 1;
+            required SubscriptionStatus status = 2;
+            required int64 last_ts = 3;
+            optional int32 shows = 4;
+        }
+
+        repeated SubscriptionItem items = 1;
+        optional int32 onboarding_shows_count = 2;
+        optional int64 last_onboarding_show_ts = 3;
+    }
+
+    optional SocDemFea socdem_fea = 2;
+    optional AlsFea als_fea = 3;
+    optional OkInfo ok_info = 4;
+    optional DetiRecos deti_reco = 5;
+    optional AlsItemsBiases als_items_fea = 6;
+    optional NewsSources news_sources = 7;
+    optional Stats stats = 8;
+    optional OriginalInfo original_info = 9;
+    optional AlsFea als_fea_2 = 10;
+    optional SourcesWebStats sources_web_stats = 11;
+    optional Stats sources_reco_stats = 12;
+    optional UserLinks user_links = 13;
+    optional UserClusters user_clusters = 14;
+    optional SimilarSites similar_sites = 15;
+    // optional SocDemFea ok_socdem_fea = 14;
+    // optional SocDemFea vk_socdem_fea = 15;
+    // optional ContentProfiles content_profiles = 16;
+    optional ContentThemes content_themes = 17;
+    optional StaticRecos static_recos_1 = 18;
+    optional StaticRecos static_recos_2 = 19;
+    optional SitesForUser sites_for_user = 20;
+    optional UserKeywords keywords_daily = 21;
+    optional UserKeywords keywords_monthly = 22;
+    optional SitesForUser sites_for_user1 = 23;
+    optional SitesForUser sites_for_user2 = 24;
+    optional VisitedDocs visited_docs = 25;
+    optional SitesForUser sites_for_user3 = 26;
+    optional LogsVisitedDocs logs_visited_docs = 27;
+    optional SitesForUser sites_for_user4 = 28;
+    optional UserThemesEvents user_themes = 29;
+    optional UserEvents user_dislikes = 30;
+    optional UserVideos user_videos = 31;
+    optional UserVideoEvents user_video_events = 32;
+    optional UserMusic user_music = 33;
+    optional SubscriptionInfo recostream_categories_subscriptions = 34;
+    optional SubscriptionInfo recostream_domains_subscriptions = 35;
+    optional SubscriptionInfo kafka_categories_subscriptions = 36;
+    optional SubscriptionInfo kafka_domains_subscriptions = 37;
+    optional SubscriptionInfo recostream_sources_subscriptions = 38;
+    optional UserEvents recostream_dislikes = 39;
+    optional VkGroupsForUser vk_groups_for_user = 40;
+    optional LogsVisitedSources logs_visited_sources = 41;
+    optional SubscriptionInfo kafka_sources_subscriptions = 42;
+    optional UserEvents recostream_likes = 43;
+    optional UserEvents user_likes = 44;
+    optional UserSourcesEvents user_sources_events = 45;
+    optional SitesForUser narrow_sites = 46;
+    optional SitesForUser narrow_sites1 = 47;
+    optional PackedReactionsArr reactions = 48;
+    optional ShowsArr shows = 49;
+    optional UserI2IEvents i2i_user_themes = 50;
+}
+
+// Struct to send user data from sphered to cosmod.
+// We use meta message instead of UserData to have flexability in the future.
+message GroupedUserData
+{
+    optional UserData data = 1;
+}
+
+
+message SourceData
+{
+    required int64 source_id = 1;
+
+    ///
+    /// Original source info
+    ///
+    message OriginalInfo
+    {
+        optional string id = 1;
+    }
+
+    ///
+    /// Some debug information about  Ok
+    ///
+    message OkInfo
+    {
+        required int64 source_id = 1;
+    }
+
+    message NewsData
+    {
+        optional int32 rubric = 1;
+    }
+
+    ///
+    /// General Source info
+    ///
+    message SourceInfo
+    {
+        enum SourceType
+        {
+           OK = 0;
+           ADVERT = 1;
+           WEB  = 2;
+           NEWS = 3;
+           LENTA = 4;
+        }
+
+        required SourceType type = 1; // Describes source type
+        optional bool is_censored = 2; // Marks censored sources like vk groups, check document flag is_allowed for this source
+        repeated int32 category = 3; // Source category from adminka
+        optional bool tape_show = 4; // Flag of showing source in tapes
+        optional bool tape_whitelist = 5; // Whitelist of sites for main_mail_ru
+        optional bool tape_blacklist = 6; // Blacklist of sites for main_mail_ru
+    }
+
+    message LentaAdminSourceInfo
+    {
+        optional bool use_in_lenta = 1;  // Switch on source usage in all lenta-s except the Main
+        optional bool use_in_main  = 2;  // Switch on source usage in the Main
+        repeated uint32 regions = 3;      // Source geo tags
+        optional bool use_fulltext  = 4;
+    }
+
+    ///
+    ///  Group statistics
+    ///
+    message GroupStat
+    {
+        optional float sigma = 1;
+        optional float mean = 2;
+        optional float likes = 3;
+        optional float norm_likes = 4;
+        optional float norm_likes_kafka = 5;
+    }
+
+
+    ///
+    ///  Als information for groups
+    ///
+    message AlsFea
+    {
+        ///
+        /// Als vector
+        ///
+        repeated float als = 1;
+
+        ///
+        /// Als vector length
+        ///
+        optional float vector_length = 2;
+
+        ///
+        ///  Als cluster statistics
+        ///
+        optional GroupStat als_c_stat = 3;
+    }
+
+    ///
+    ///  Lda information for group
+    ///
+    message LdaFea
+    {
+        ///
+        ///  Lda Fea
+        ///
+        repeated float lda = 1;
+
+        ///
+        /// Lda vector length
+        ///
+        optional float vector_length = 2;
+
+        ///
+        ///  Als cluster statistics
+        ///
+        optional GroupStat als_c_stat = 3;
+    }
+
+    ///
+    /// Group statistics for the period of time
+    ///
+    message GroupPeriodStats
+    {
+        optional double all_likes_mean = 1;
+        optional double all_likes_variance = 2;
+        optional double period_likes_mean = 3;
+        optional double period_likes_variance = 4;
+        optional double period_clicks_mean = 5;
+        optional double period_clicks_variance = 6;
+        optional double period_reshares_mean = 7;
+        optional double period_reshares_variance = 8;
+        optional double period_comments_mean = 9;
+        optional double period_comments_variance = 10;
+        optional int64 all_likes = 11;
+        optional int64 period_likes = 12;
+        optional int64 period_clicks = 13;
+        optional int64 period_reshares = 14;
+        optional int64 period_comments = 15;
+    }
+
+    ///
+    ///  Source Popularity data
+    ///
+    message SourcePopularityStat
+    {
+        message PopularityStat
+        {
+            optional uint32 hits = 1;
+
+            optional float hits_mean = 2;
+
+            optional float hits_variance = 3;
+
+            optional uint32 urls = 4;
+        }
+
+
+        message GeoPopularity
+        {
+            ///
+            ///  http://adm.go.mail.ru/rbmap.map
+            ///
+            required uint32 geo = 1;
+
+            ///
+            ///  Popularity in this geo region
+            ///
+            required PopularityStat stat = 2;
+        }
+
+        ///
+        ///  Global popularity
+        ///
+        required PopularityStat stat = 1;
+
+        ///
+        ///  Popularity by geo
+        ///
+        repeated GeoPopularity geo_stat = 2;
+
+        ///
+        ///  Popularity by soc_dem ( male [0..9] buckets for every 10 years in age)
+        ///
+        repeated PopularityStat male_stat = 3;
+
+        ///
+        ///  Popularity by soc_dem ( female [0..9] buckets for every 10 years in age)
+        ///
+        repeated PopularityStat female_stat = 4;
+
+        ///
+        ///  SourcePopularity timestamp
+        ///
+        required uint32 version = 5;
+
+    }
+
+    ///
+    ///  Source events data (common source protobuf with socdem id)
+    ///
+    message SourceEventStat
+    {
+        message EventStat
+        {
+            optional uint32 events_count = 1;
+
+            optional float events_mean = 2;
+
+            optional float events_sigma = 3;
+
+            optional uint32 documents_count = 4;
+        }
+
+        message GeoEventStat
+        {
+            ///
+            ///  http://adm.go.mail.ru/rbmap.map
+            ///
+            required uint32 geo = 1;
+
+            ///
+            ///  Events in this geo region
+            ///
+            required EventStat stat = 2;
+        }
+
+        message SocDemEventStat
+        {
+            required uint32 socdem_id = 1;
+
+            ///
+            ///  Events by this socdem
+            ///
+            required EventStat stat = 2;
+        }
+
+        ///
+        ///  Global event statistics
+        ///
+        required EventStat stat = 1;
+
+        ///
+        ///  Event statistics by geo
+        ///
+        repeated GeoEventStat geo_stat = 2;
+
+        ///
+        ///  Event statistics by socdem
+        ///
+        repeated SocDemEventStat soc_dem_stat = 3;
+    }
+
+    ///
+    ///  Group events data
+    ///
+    message GroupEventStat {
+        required uint32 version = 1;
+        optional SourceEventStat likes_stat = 2;
+        optional SourceEventStat clicks_stat = 3;
+        optional SourceEventStat reshares_stat = 4;
+        optional SourceEventStat comments_stat = 5;
+    }
+
+    message SourceLocationStat
+    {
+        required uint32 version = 1;
+
+        message Stat
+        {
+            optional SourceEventStat shows_stat = 1;
+            optional SourceEventStat clicks_stat = 2;
+            optional SourceEventStat likes_stat = 3;
+            optional SourceEventStat dislikes_stat = 4;
+            optional SourceEventStat reshares_stat = 5;
+        }
+
+        message LocationStat
+        {
+            required string location = 1;
+            optional Stat stat = 2;
+            optional uint64 last_event_ts = 3;
+        }
+
+        repeated LocationStat stat_by_location = 2;
+        optional Stat summary_stat = 3;
+    }
+
+    message SourceSimilarity
+    {
+        required uint32 version = 1;
+        repeated int64 source = 2;
+        repeated float jaccard_similarity = 3;
+    }
+
+    message SourceGeo
+    {
+        required uint32 version = 1;
+        optional uint32 country_id = 2;
+        optional uint32 region_id = 3;
+    }
+
+    message ContentThemes
+    {
+        required uint32 version = 1;
+        repeated float themes_vector = 2;
+        optional bool  bad_content = 3;
+    }
+
+    optional LdaFea lda_fea = 2;
+    optional AlsFea als_fea = 3;
+    //optional GroupFea group_fea = 4;
+    //optional SimpleFea simple_fea = 5;
+    optional OkInfo ok_info = 6;
+    optional SourceInfo source_info = 7;
+    optional OriginalInfo original_info = 8;
+    optional GroupPeriodStats group_period_stats = 9;
+    optional NewsData news_data = 10;
+    optional SourcePopularityStat source_popularity = 11;
+    optional LdaFea lda_fea_2 = 12;
+    optional AlsFea als_fea_2 = 13;
+    optional SourcePopularityStat source_fresh_popularity = 14;
+    optional GroupEventStat ok_group_event_stat = 15;
+    optional GroupEventStat vk_group_event_stat = 16;
+    optional GroupEventStat vk_group_event_stat_week = 17;
+    optional GroupEventStat youtube_group_event_stat = 18;
+    optional GroupEventStat youtube_group_event_stat_week = 19;
+    // optional OkSocDemActions ok_socdem_actions = 20;
+    optional SourceLocationStat taped_location_stat = 21;
+    optional SourceLocationStat homer_location_stat = 22;
+    optional SourceSimilarity web_top_similar_sources = 23;
+    optional SourceSimilarity ok_top_similar_groups = 24;
+    optional SourceLocationStat hourly_location_stat = 25;
+    optional SourceLocationStat daily_location_stat = 26;
+    optional SourceLocationStat weekly_location_stat = 27;
+    optional SourceLocationStat monthly_location_stat = 28;
+    optional SourcePopularityStat source_new_popularity = 29;
+    optional GroupEventStat vk_group_event_stat_v2 = 30;
+    optional GroupEventStat vk_group_event_stat_week_v2 = 31;
+    optional GroupEventStat youtube_group_event_stat_v2 = 32;
+    optional GroupEventStat youtube_group_event_stat_week_v2 = 33;
+    optional SourceLocationStat fast_location_stat = 34;
+    optional SourceGeo source_stat_geo = 35;
+    optional ContentThemes content_themes = 36;
+    optional LentaAdminSourceInfo lenta_admin_source_info = 37;
+}
+
+message DocumentData
+{
+    optional int64 source_id = 1;
+    required int64 doc_id = 2;
+
+    ///
+    /// Original document info
+    ///
+    message OriginalInfo
+    {
+        optional string url = 2;
+    }
+
+    ///
+    /// Some debug information about  Ok
+    ///
+    message OkInfo
+    {
+        required int64 source_id = 1;
+        required int64 doc_id = 2;
+    }
+
+    ///
+    /// Describes document content data
+    /// Message is incremental, and has own version of algorithm
+    ///
+    message ContentData
+    {
+       repeated float  content_vector = 1;  // this vector describes content of document
+       required uint64 algo_version = 2;    // it contains version of algoritm content was prepared
+    }
+
+    /// If fields exists, it describes time, until document is fresh
+    message FreshnessData
+    {
+       required int64 expiration_timestamp = 1;
+    }
+    ///
+    ///  Information about news post
+    ///
+    message NewsData
+    {
+        required int32 clusterId = 1;  /// cluster identificator, arrives from news system
+        required int32 issue_ts = 2;   ///  issue time stamp.
+        optional int32 region_id = 3;
+        optional int32 parent_id = 4;
+    }
+
+    ///
+    /// Censor restrictions
+    ///
+    message Censor
+    {
+        optional bool is_allowed = 1;
+    }
+
+    ///
+    /// User statistics: likes, dislikes, views
+    ///
+    message UserStats
+    {
+        optional uint32 likes = 1;
+        optional uint32 dislikes = 2;
+        optional uint32 views = 3;
+    }
+
+    ///
+    /// Trends: delta of likes and views for a last hour
+    ///
+    message Trends
+    {
+        optional uint32 version = 1;
+        optional int32 likes = 2;
+        optional int32 views = 3;
+    }
+
+    ///
+    ///  Url hits in this geo for last 24 hours
+    ///
+    message GeoHits
+    {
+        ///
+        ///  http://adm.go.mail.ru/rbmap.map
+        ///
+        required uint32 geo = 1;
+
+        ///
+        ///  Hits in this geo for last 24 hours
+        ///
+        required int32 hits = 2;
+    }
+
+    ///
+    ///  Mediametrics data
+    ///
+    message MediametricsFea
+    {
+        ///
+        ///  Url hits for last 24 hours
+        ///
+        required int32 hits = 1;
+
+        ///
+        ///  Mediametrics timestamp
+        ///
+        required uint32 version = 2;
+
+        ///
+        ///  Hits in different geo for last 24 hours
+        ///
+        repeated GeoHits geo_hits = 3;
+
+       ///
+        ///  Hits [0..9] buckets for every 10 years in age
+        ///
+        repeated uint32 male_hits = 4;
+
+        ///
+        ///  Hits [0..9] buckets for every 10 years in age
+        ///
+        repeated uint32 female_hits = 5;
+    }
+
+    ///
+    /// Fetcher related info
+    ///
+    message Fetcher
+    {
+        optional int64 fetch_timestamp = 1;
+        optional uint32 region_id = 2;  // depricated field was moved to FetcherGeo due some reasons
+        optional bool has_title = 3;
+        optional bool has_img = 4;
+        optional bool has_description = 5;
+        optional int64 last_fetch_timestamp = 6;
+        optional int32 title_len= 7;
+        optional int32 description_len = 8;
+        optional bool has_fulltext = 9;
+        optional bool has_video = 10;
+    }
+
+    message FetcherFirstmeet
+    {
+        optional int64 firstmeet = 1;
+    }
+
+    message FetcherPubdate
+    {
+        optional int64 pubdate = 1;
+    }
+
+    ///
+    /// Geo info comes from fetcher or news
+    ///
+    message FetcherGeo
+    {
+        required uint32 region_id = 1;  // document region id
+    }
+
+    ///
+    /// Image info comes from fetcher or news
+    ///
+    message FetcherImage
+    {
+        required int32 width = 1;
+        required int32 height = 2;
+        required uint64 simhash = 3;
+    }
+
+    ///
+    /// Admin lenta display info
+    ///
+    message DocState
+    {
+        required bool banned = 1;
+        required bool shadowed = 2;
+        required bool disabled_in_channel = 3;
+    }
+
+    ///
+    /// Topic statistics for the period of time
+    ///
+    message TopicPeriodStats
+    {
+        optional int64 all_likes = 1;
+        optional int64 period_likes = 2;
+        optional int64 period_clicks = 3;
+        optional int64 period_reshares = 4;
+        optional int64 period_comments = 5;
+    }
+
+    ///
+    /// AppFilter logs statistic
+    ///
+    message AppFilterStats
+    {
+        required uint32 version = 1 ;
+        required int32 shows    = 2 ;
+        required int32 clicks   = 3 ;
+
+        optional int32 likes    = 4 ;
+        optional int32 shares   = 5 ;
+        optional int32 dislikes = 6 ;
+    }
+
+    ///
+    ///  Document events data (common document protobuf with socdem id)
+    ///
+    message DocumentEventStat
+    {
+        message GeoEventStat
+        {
+            ///
+            ///  http://adm.go.mail.ru/rbmap.map
+            ///
+            required uint32 geo = 1;
+
+            ///
+            ///  Events in this geo region
+            ///
+            required uint32 events_count = 2;
+        }
+
+        message SocDemEventStat
+        {
+            required uint32 socdem_id = 1;
+
+            ///
+            ///  Events by this socdem
+            ///
+            required uint32 events_count = 2;
+        }
+
+        ///
+        ///  Global event statistics
+        ///
+        required uint32 events_count = 1;
+
+        ///
+        ///  Event statistics by geo
+        ///
+        repeated GeoEventStat geo_stat = 2;
+
+        ///
+        ///  Event statistics by socdem
+        ///
+        repeated SocDemEventStat soc_dem_stat = 3;
+    }
+
+    ///
+    ///  Topic statistics
+    ///
+    message TopicEventStat {
+        required uint32 version = 1;
+        optional DocumentEventStat likes_stat = 2;
+        optional DocumentEventStat clicks_stat = 3;
+        optional DocumentEventStat reshares_stat = 4;
+        optional DocumentEventStat comments_stat = 5;
+    }
+
+
+    message DocumentLocationStat
+    {
+        required uint32 version = 1;
+
+        message Stat
+        {
+            optional DocumentEventStat shows_stat = 1;
+            optional DocumentEventStat clicks_stat = 2;
+            optional DocumentEventStat likes_stat = 3;
+            optional DocumentEventStat dislikes_stat = 4;
+            optional DocumentEventStat reshares_stat = 5;
+
+            //fields not for indexing !!!
+            optional DocumentEventStat unlikes_stat = 6;
+            optional DocumentEventStat undislikes_stat = 7;
+        }
+
+        message LocationStat
+        {
+            required string location = 1;
+            optional Stat stat = 2;
+            optional uint64 last_event_ts = 3;
+        }
+
+        repeated LocationStat stat_by_location = 2;
+        optional Stat summary_stat = 3;
+    }
+
+    message DocumentMutualStat
+    {
+        required uint32 version = 1;
+
+        message Stat
+        {
+            required int64 doc_id       = 1;
+
+            //recoman i2i features
+            optional float clicks       = 2;
+            optional float views        = 3;
+
+            //topmail mutual visits features
+            optional float visits       = 4;
+            optional float total_visits = 5;
+
+            //source ids for that doc_id
+            repeated int64 source_id    = 6;
+        }
+
+        message LocationStat {
+
+            required string location      = 1;
+            repeated Stat doc_mutual_stat = 2;
+        }
+
+        // stats for topmail pairwise visits
+        repeated Stat doc_mutual_stat = 2;
+        // location i2i stat for url
+        repeated LocationStat loc_doc_mutual_stat = 3;
+    }
+
+    message ContentVector
+    {
+        required string label = 1;
+        repeated float vector = 2;
+    }
+
+    message TitleContentFea
+    {
+        repeated ContentVector content_vectors = 1;
+    }
+
+    message ContentPornFea
+    {
+        optional float weight = 1;
+        optional bool  bad_content = 2;
+    }
+
+    message ImagePornFea
+    {
+        optional float weight = 1;
+    }
+
+    message ContentThemes
+    {
+        repeated float themes_vector = 1;
+        optional bool  bad_content = 2;
+    }
+
+    message StoryClusterId
+    {
+        required uint32 version = 1;
+        optional uint32 cluster_id = 2;
+    }
+
+    message NewsTagsData
+    {
+        repeated int32 tag_ids = 1;
+    }
+
+    message NewsStoryData
+    {
+        required int32 story_id = 1;
+    }
+
+    message NativeTargetIsActive
+    {
+        required uint32 version = 1;
+        required bool is_active = 2;
+    }
+
+    message DocumentKeywordsInfo
+    {
+        enum KeywordType
+        {
+            TITLE = 0;
+            DESCRIPTION = 1;
+        }
+
+        required uint32 version = 1;
+        repeated int64  keyword_hash = 2;
+        repeated KeywordType keyword_type = 3;
+        optional uint32 cluster_id = 4;
+    }
+
+    message RisksFields
+    {
+        optional float ero_score = 1;
+        optional float porno_score = 2;
+        optional float safe_content = 3;
+    }
+
+    //optional LikesFea likes_fea = 3;
+    //optional TextFea text_fea = 4;
+    //optional ClicksFea cliks_fea = 5;
+    //optional SimpleFea simple_fea = 6;
+    optional OkInfo ok_info = 7;
+    optional NewsData news_data = 8;
+    optional Censor censor = 10;
+    optional UserStats user_stats = 11;
+    optional Trends trends = 12;
+    optional OriginalInfo original_info = 13;
+    optional Fetcher fetcher = 14;
+    optional MediametricsFea mediametrics_fea = 15;
+    optional TopicPeriodStats topic_period_stats = 16;
+    optional AppFilterStats app_filter_stats = 17;
+    optional MediametricsFea week_mediametrics_fea = 18;
+    // optional LocationCTRs location_ctrs = 19;
+    optional TopicEventStat ok_topic_event_stat = 20;
+    optional TopicEventStat vk_topic_event_stat_day = 21;
+    optional TopicEventStat vk_topic_event_stat_week = 22;
+    optional TopicEventStat youtube_topic_event_stat_day = 23;
+    optional TopicEventStat youtube_topic_event_stat_week = 24;
+    optional DocumentLocationStat taped_location_stat = 25;
+    optional DocumentLocationStat homer_location_stat = 26;
+    optional DocumentLocationStat hourly_location_stat = 27;
+    optional DocumentLocationStat daily_location_stat = 28;
+    optional DocumentLocationStat weekly_location_stat = 29;
+    optional DocumentLocationStat monthly_location_stat = 30;
+    optional FetcherGeo fetcher_geo = 31;
+    optional MediametricsFea hourly_fast_mediametrics_fea = 32;
+    optional MediametricsFea daily_fast_mediametrics_fea = 33;
+    optional FetcherImage fetcher_image = 34;
+    optional ContentData content_data = 35;
+    optional TopicEventStat vk_topic_event_stat_day_v2 = 36;
+    optional TopicEventStat vk_topic_event_stat_week_v2 = 37;
+    optional TopicEventStat youtube_topic_event_stat_day_v2 = 38;
+    optional TopicEventStat youtube_topic_event_stat_week_v2 = 39;
+    optional DocumentMutualStat document_i2i_stat = 40;
+    //optional TitleContentFea title_content_fea = 41;
+    optional DocumentMutualStat document_mv_stat = 42;
+    optional NewsTagsData news_tags_data = 43;
+    optional NewsStoryData news_story_data = 44;
+    optional NativeTargetIsActive native_target_is_active = 45;
+    optional DocumentLocationStat fast_location_stat = 46;
+    //optional ContentFea content_fea = 47;
+    optional ContentPornFea content_porn_fea = 48;
+    optional ContentThemes content_themes = 49;
+    optional StoryClusterId story_cluster_id = 50;
+    optional DocumentKeywordsInfo document_keywords_info = 51;
+    optional ImagePornFea image_porn_fea = 52;
+    optional FetcherFirstmeet fetcherFirstmeet = 53;
+    optional FetcherPubdate pubdate = 54;
+    optional FreshnessData freshness_data = 55;
+    optional DocState state = 56;
+    optional RisksFields risks_fields = 57;
+    repeated int32 doc_region_ids = 58;
+}
+
+message DocumentSourceLink
+{
+    required int64 source_id = 1;
+    required int64 doc_id = 2;
+}
+
+message StorageEvent
+{
+    enum Type
+    {
+        CREATE_OR_UPDATE = 0;
+        DELETE = 2;
+    }
+    optional Type type = 1 [ default = CREATE_OR_UPDATE ];
+    required int32 event_time = 2;
+
+    message Data
+    {
+        optional UserData user_data = 1;
+        optional SourceData source_data = 2;
+        optional DocumentData document_data = 3;
+        optional DocumentSourceLink document_source_link = 4;
+    }
+    required Data data = 3;
+}

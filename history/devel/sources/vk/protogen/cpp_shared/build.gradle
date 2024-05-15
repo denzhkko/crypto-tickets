@@ -1,0 +1,15 @@
+apply plugin: 'ru.mail.go.release'
+
+configurations {
+    published
+}
+
+def soFile = file("${projectDir}/../../../bin/libprotogen_shared.so")
+
+artifacts {
+    published(soFile) {
+        name 'libprotogen_shared'
+        type 'so'
+    }
+}
+

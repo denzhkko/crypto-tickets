@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package qsuggd.pb;
+
+message QSugg {
+    optional string query = 1;
+    optional string query_hl = 2;
+}
+
+message QSuggs {
+    repeated QSugg suggs = 1;
+}

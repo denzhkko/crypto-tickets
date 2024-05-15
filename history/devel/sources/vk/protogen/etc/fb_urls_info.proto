@@ -1,0 +1,40 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase;
+
+option java_outer_classname = "FBUrlsInfo";
+
+import "fetch_list.proto";
+import "fb_url_stat.proto";
+
+message BaseInfo {
+    required ru.mail.go.webbase.blobs.FetchUrl.Fastbases base = 1;
+    required int32 microbase = 2;
+    required string url = 3;
+}
+
+message QuotaPerSite {
+    repeated Quota quota = 1;
+}
+
+message Quota {
+    optional ru.mail.go.webbase.blobs.FetchUrl.Fastbases base = 1;
+    optional int32 goodPages = 2;
+    optional int32 totalPages = 3;
+    optional int32 quota = 4;
+    optional int32 balancedQuota = 5;
+    optional int32 youngPages = 6;
+}
+
+message Info {
+    optional UrlStat yStat = 1;
+    optional UrlStat gStat = 2;
+    optional UrlStat mStat = 3;
+
+    optional int32 loads = 4;
+    optional int32 users = 5;
+    optional bool isBad = 6;
+    optional int64 timestamp = 7;
+    repeated BaseInfo bases = 8;
+    optional int64 indexTime = 9;
+}

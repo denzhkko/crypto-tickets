@@ -1,0 +1,41 @@
+syntax = "proto2";
+
+package ns_mailru_spider;
+option java_outer_classname = "UrlContext";
+
+message url_context {
+    required string url = 1; // canonicalized url of page
+    required int64 last_modified = 2; // timestamp of last page status change 
+
+	enum state_t {
+      us_new = 0;		// new document
+      us_ok = 2;		// downloaded page 
+      us_bad = 3;		// doc can't be parsed by spider
+      us_disabled = 4;	// existing page, but excluded from index (robots disallow, html meta noindex)
+      us_removed = 5;	// HTTP 404,410,301 - removed page
+      us_duplicate = 6; // page exist in twin-site, thus it was deleted in this site
+      us_failure = 7;	// page access failure HTTP 500, timeout, etc.
+      us_reload = 8;	// URL forced to be reload
+      us_shingle_dup = 9; // URL was treated as duplicate by shingles
+      us_redirect = 10;	// URL redirected
+    };
+    required state_t state = 3; // document state
+
+    required uint32 state_duration = 4; // state duration
+    required uint32 depth = 5; // page depth
+
+    enum language_t {
+      lang_unknown = 0;
+      lang_russian = 1;
+      lang_cyrillic = 2;
+      lang_bolgarian = 3;
+      lang_ukrainian = 4;
+    };
+    optional language_t language = 6;
+
+    optional bool fetch_forced = 7;
+    optional bool indexed = 8;
+
+    optional uint32 browse_rank = 9;
+    optional int64 browse_rank_ts = 10; // timestamp of browse rank
+}

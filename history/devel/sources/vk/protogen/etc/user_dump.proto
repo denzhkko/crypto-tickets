@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.userhistory;
+
+option java_outer_classname = "UserDump";
+
+message UserInfo 
+{
+    required string vid = 1;
+    repeated QSession sessions = 2;
+}
+
+message QSession
+{
+    required uint64 time = 1;
+    required string query = 2;
+    required string search_engine = 3;
+}
+

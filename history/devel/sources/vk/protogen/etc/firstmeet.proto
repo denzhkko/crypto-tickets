@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.firstmeet;
+
+
+option java_outer_classname = "FirstmeetData";
+
+
+message FirstmeetRequest {
+    required string url = 1;
+    optional int64 knownFirstmeetMs = 2;
+    optional string responseTopic = 3;
+}
+
+
+message Firstmeet {
+    required string url = 1;
+    optional int64 firstmeetMs = 2;
+}

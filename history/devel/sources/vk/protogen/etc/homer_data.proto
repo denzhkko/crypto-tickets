@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.logsParsers;
+
+option java_outer_classname = "HomerData";
+
+enum SearcherType
+{
+    CMS = 1;
+    RECIPE_BY_TITLE = 2;
+    RECIPE_BY_CONSIST = 3;
+    TOPIC_BY_TITLE = 4;
+    TOPIC_BY_CONSIST = 5;
+    TOPIC_BY_ID = 6;
+    NEWS = 7;
+    SIMPLE9 = 8;
+    NEWS_CLASSIFIER = 9;
+    ITEM2ITEM = 10;
+    SIMPLE9_LOW_FREQ = 11;
+    TOPIC_BY_ID_SPLIT = 12;
+    NEWS_BY_URL_HEALTH = 13;
+    NEWS_BY_TEXT_HEALTH = 14;
+    NEWS_BY_URL_ANTIMAIDAN = 15;
+    NEWS_BY_TEXT_ANTIMAIDAN = 16;
+    NEWS_BY_RUBRIC_HEALTH = 17;
+    NEWS_SIMPLE9_HEALTH = 18;
+    NEWS_SIMPLE9_ANTIMAIDAN = 19;
+}
+
+message HomerStat
+{
+    message Statistic
+    {
+        optional SearcherType searcher_type = 1;
+        optional uint32 views = 2 [ default = 0 ];
+        optional uint32 clicks = 3 [ default = 0 ];
+        optional uint32 cancels = 4 [ default = 0 ];
+    }
+
+    optional uint64 hash = 1;
+    repeated Statistic stats = 2;
+}

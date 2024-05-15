@@ -1,0 +1,284 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase;
+
+option java_outer_classname = "TargetProto";
+
+message TargetStatMsg {
+  optional uint32 ev_type = 1;
+  /*
+  тип события:
+   0 - показ
+   1 - клик
+   ... другое
+  */
+  optional uint32 flags = 2;
+  /*
+  флаги:
+   1 - считать уников
+   2 - считать уников за неделю и месяц
+   4 - считать уников только по слоту (не считать по баннерам и группам)
+   8 - считать статистику по сайтзонам
+  */
+
+  optional fixed32 toplog_vid = 3; // parsed from VID cookie
+  optional uint64 vid = 153;
+
+  optional uint32 banner = 4;
+  optional uint32 slot = 5;
+  optional uint32 group = 6;
+
+  optional uint32 version = 7;// RB client version, see rb2.master/include/protocol.h for rb_version_t
+
+  optional uint32 age = 9;
+  optional uint32 sex = 10;
+  optional uint32 geo = 11;
+
+  optional uint64 user_id = 12;
+  /* id пользователя из куки p */
+
+  optional fixed32 user_ip = 13; // client's address goes here
+  repeated fixed32 src_ip_chain = 14; // ip address chain added by our daemons
+  /*
+  ip-адрес отправителя пакета.
+  каждый сервер по маршруту пакета должен дописывать адрес отправителя в конец сообщения
+  т.е.:
+  * в src_ip_chain -- rbstatd допишет ip фронта, rcvd допишет ip rbstatd и тд
+  */
+
+  optional fixed32 timestamp = 15;
+  /* (???) я бы писал в районе rbstatd для уменьшения проблем со смещением дня */
+
+  optional uint32 campaign = 17;
+  /* рекламная кампания */
+  optional uint32 phrase = 18;
+  /* id фразы для контекстных баннеров */
+  optional uint32 banner_url = 19;
+  /* id ссылки клика (для баннеров с раздельным подсчетом ссылок) */
+
+  optional uint32 sitezone = 27;
+  /* сайтзона */
+
+  optional uint32 experiment_id = 29;   // id эксперимента из запроса
+  optional uint32 cpm = 30;
+  optional uint32 site_id = 31;
+  optional uint32 orig_slot = 43;  // original slot for merged slot scheme (RB-3867)
+
+  optional uint32 filter = 32;     // Filter ID, if it's set then the click or show was filtered and shouldn't be counted in statistics
+
+  optional uint32 cln = 40;        // ID of click-through counter
+  optional uint32 goal = 42;       // Goal ID
+
+  optional bytes user_ipv6 = 48; // IPv6 address of client
+
+  optional fixed32 user_ip_from_proxy = 50; // acquired from X-Forwarded-For and the like
+  optional uint32 banner_event = 51;  // banner event for movies
+
+
+  optional bytes device_id = 55; //android device id
+  optional bytes advertising_id = 128;
+  optional bytes android_id = 56;
+  optional bytes idfa = 57;
+  optional bytes waid = 152;
+
+  repeated uint32 matched_targets = 70 [packed=true]; // matched targeting ids
+  optional TargetMsg target = 100;
+  /*
+  переменные таргета, может быть вложенным протобуф-сообщением,
+  в контексте РБ будет скипаться как одно значение
+  */
+
+  optional bytes target_win_notice = 106;
+
+  optional bytes rutube = 102;
+  /* вложенное сообщение с данными по рутубу, работаем так же как и с target */
+  optional uint32 ssp_id = 103;
+  optional bytes request_id = 104;
+  optional bytes sitename = 105;
+
+  optional uint64 ok_id = 107;
+  optional uint32 random = 111;
+  optional uint32 mid = 112;
+
+  // таймстамп с фронта (который подставляли в ClickId). Только для ссылок с ClickId
+  optional uint32 action_timestamp = 114;
+  optional uint32 postback_vendor = 119;
+  /*
+      1 - appsflyer
+      2 - MAT
+      3 - Ad-X
+      4 - tapstream
+      5 - adjust
+      6 - gameloft (RB-8027)
+      7 - kochava (RB-8443)
+      8 - Yandex.AppMetrika (RB-8440)
+      9 - Apsalar (RB-8936)
+  */
+
+  optional uint64 vk_id = 130;
+  optional bytes sha1_idfa = 131;
+  optional bytes sha1_advertising_id = 132;
+  optional bytes sha1_dpid = 133;
+
+  optional uint64 uid = 167;
+  repeated uint64 ok_viral_chain = 171;     // id пользователей вирального распространения топика (RB-10380)
+
+  optional uint32 winner_cpm = 185;         // цена, выигравшая RTB аукцион (заполняется для loose-notice)
+}
+
+
+message TargetMsg {
+    optional uint32 repeat = 17;            // вместо одного события имеем repeat+1 одинаковых событий (для непоказов)
+
+    optional uint32 pad_id = 1;             // площадка
+    optional uint32 advertiser_id = 4;      // юзер-рекламодатель
+    optional uint32 package_id = 5;         // пакет
+    optional uint32 misc_id = 6;            // misc_id (идентификатор "способа подбора" - kiwid там или что-то еще)
+    optional uint32 campaign_id = 8;        // кампания
+    optional uint32 server_id = 9;          // id баннерного демона
+    optional uint32 order_number = 12;      // порядковый номер в выдаче
+    optional fixed32 campaign_version = 16; // версия кампании в момент выполнения запроса
+
+    optional uint32 ctr_origin = 11;        // происхождение ctr
+    optional float  model_ctr = 14;         // предсказанный моделью ctr.
+    optional float  expected_ctr = 15;      // ожидаемый ctr (тот, что участвует в аукционе). Не равен model_ctr из-за различных коррекций
+    optional float  expected_clicks_cr = 85;// ожидаемая доля конверсий для клика
+
+    optional uint32 expected_cpm = 7;       // ожидаемый cpm этого показа (cost * ctr * 1000) в рублях
+    optional uint32 cost = 3;               // цена за данное событие в копейках (в случае показа - цена за 1000 штук)
+    optional uint32 currency_cost = 19;     // цена за данное событие в 1/100 валюты (в случае показа - цена за 1000 штук)
+
+    optional uint32 currency_id = 26;       // идентификатор валюты пользователя
+    optional float  currency_rate = 97 [default = 1.0]; // курс валюты на момент подбора
+
+    optional uint32 paid_ev_type = 96;      // тип события, за которое снимают деньги в данном баннере
+    optional uint32 paid_banner_event = 113;// тип кастомного события в случае paid_ev_type = 10
+    optional uint32 currency_cost_ppe = 99; // стоимость события типа paid_ev_type в 1/100 валюты
+    optional uint32 currency_cost_per_goal_for_ocpm = 100 [deprecated = true]; // стоимость конверсии для ocpm баннера
+    optional uint32 currency_base_ppe = 101;// цена за событие из базы типа paid_ev_type в 1/100 валюты
+                                            // и за 1000 событий в случай показов
+                                            // если paid_ev_type != priced_ev_type, считается из
+                                            // базовой цены priced_ev_type, как currency_cost_ppe
+                                            // считается из цены priced_ev_type после автоторгов
+
+    optional int32 priced_ev_type = 115 [default = -1];
+                                                // тип события, за которое выставляется цена в данном баннере
+                                                // выставляется только если не равен paid_ev_type
+                                                // сейчас это только в случае oCPM
+                                                // !! Внимание !! Невыставленное это поле не означает 0!
+                                                // Чтобы не путались, по-дефолту задается значение -1
+    // Следующие три поля выставляются только при выставленном priced_ev_type
+    optional uint32 priced_banner_event = 116;  // тип кастомного события в случае priced_ev_type = 10
+    optional uint32 currency_cost_ppre = 117;   // стоимость события типа priced_ev_type в 1/100 валюты
+    optional uint32 currency_base_ppre = 118;   // цена за событие из базы типа priced_ev_type в 1/100 валюты
+                                                // и за 1000 событий в случай показов
+
+    optional uint32 src_currency_cost = 109;// исходная цена вирального события или клика для события 1080
+    optional uint32 src_event_type = 114;   // исходный ev_type (или banner_event для ev_type=10) для событий 1070 и 1080
+
+    message TPS_cost {
+        optional uint32 tps_id          = 1;    // id стороннего сервиса
+        optional uint32 currency_cost   = 2;    // списание за услугу стороннего сервиса в валюте рекламодателя
+        optional uint32 cost            = 3;    // списание за услугу стороннего сервиса в рублях
+    }
+
+    repeated TPS_cost tps_costs = 27;       // списания за услуги Third-Party services
+
+    optional uint32 geo = 20;               // geo полученной заменой региона на регион из пользователького профиля
+    optional uint32 req_geo = 81;           // geo пришедшее в запросе без каких-либо подмен
+
+    optional fixed64 impression_id = 21;    // идентификатор запроса
+    optional fixed64 original_impression_id = 77; // идентификатор оригинального запроса
+    optional fixed32 original_req_ts = 78;        // время оригинального запроса
+    optional uint32  subrequest_id = 22;    // идентификатор подзапроса (для множественных запросов)
+    optional fixed32 req_ts = 2;            // время запроса на показ рекламы
+
+    optional fixed32 req_user_ip   = 18;    // ip юзера в момент запроса рекламы
+    optional bytes   req_user_ipv6 = 23;    // ipv6 юзера в момент запроса рекламы
+    optional uint32  image_id      = 24;    // идентификатор картинки
+    optional uint32  audience_id   = 25;    // флаг наличия аудитории в таргетинге: бит 0 - есть позитивная, бит 1 - есть негативная
+
+    optional uint32 bannerd_test_id = 30;   // test_id из конфига баннерного демона
+    optional int32  limited_bannerd_test_id = 31 [default = -1]; // test_id из конфига баннерного демона, если для него выделена доля лимитов
+
+    optional float  alive_money_ratio = 35; // доля живых денег пользователя на момент показа
+
+    optional uint32 filter = 40;            // статус таргетовского антифрода
+    optional uint32 fake_filter = 41;       // статус антифрода, когда правило сработало, но оно заблокированно для данной площадки
+
+    optional fixed32 banner_text_hash = 57; // хэш текста     баннера по алгоритму super_fast_hash
+    optional fixed32 banner_title_hash = 58;// хэш заголовка  баннера по алгоритму super_fast_hash
+
+    optional fixed64 mm_user_id = 61;       // id пользователя ММ
+
+    optional uint32 shows_count = 13;       // количество показов баннеров кампании для пользователя
+    optional uint32 clicks_count = 82;      // количество кликов пользователя по баннернам кампании
+    optional uint32 banner_shown_times = 84; // номер показа баннера по куки
+
+    repeated uint32 apps = 79 [packed=true]; // apps_installed
+    optional uint32 mobile_osver = 80;       // хеш от строки с версией мобильной ос
+    optional uint32 mobile_region = 106;     // BT_MOBILE_REGION
+
+    optional fixed32 conversion_ts = 83;     // время конверсии
+    optional fixed32 click_ts      = 86;     // время клика
+    optional string  top_goal      = 89;     // Достигнутая цель ТОПа
+    optional fixed32 top_counter_id = 105;   // ID счетчика ТОПа
+
+    optional uint32 conversion_cost          = 90;  // цена за конверсию в рублях (копейки)
+    optional uint32 conversion_currency_cost = 91;  // цена за конверсию в валюте (1/100 валюты)
+
+    message RTB_Banner {
+        optional uint32 cpm_limit = 1;        // лимит cpm объявления для автоторгов (в рублях) (проставляет bannerd)
+                                              // нужно только для k*-режимов, но пока проставляем для всех
+        optional uint32 site_place_id = 4;    // идентификатор размещения на rb2.sitename       (проставляет bannerd)
+
+        optional uint32 trg_cpm = 2;          // ставка за блок, которая торгуется в RTB        (проставляет bannerd)
+                                              // равна rtb_block.a_block_cpm_trg, проставляется для целей дебага
+        optional uint32 ssp_cpm = 3;          // ставка из win_notice                           (проставляет antifraud)
+                                              // проставляется для целей дебага
+
+        message Figures {
+            optional uint32 expected_cpm = 1;   // ожидаемый CPM от показа
+            optional uint32 cost = 2;           // цена за данный тип события в копейках
+            optional uint32 currency_cost = 3;  // цена за данный тип события в 1/100 валюты
+            optional uint32 currency_cost_ppe = 99; // стоимость платного события данного баннера в 1/100 валюты
+            optional uint32 conversion_cost          = 90;  // цена за конверсию в рублях (копейки)
+            optional uint32 conversion_currency_cost = 91;  // цена за конверсию в валюте (1/100 валюты)
+        }
+        message History {
+            optional Figures src_figures = 1;   // исходные цены до автоторгов                  (проставляет antifraud)
+        }
+
+        optional History history = 6;           // история правки цен в антифроде               (проставляет antifraud)
+
+        message SecondPriceInfo {
+            optional uint32 a_block_cpm = 1;    // суммарный a_block_cpm после автоторгов
+                                                // может быть как настоящим, так и пересчитанным
+                                                // из общих денег через коэффициент живых денег
+                                                // на площадке (зависит от настроек площадки)
+            optional Figures figures = 2;       // показатели после автоторгов
+        };
+
+        optional SecondPriceInfo second_price_info = 9; // информация для применения
+                                                        // second_price-аукциона в антифроде    (проставляет bannerd)
+    }
+
+    optional RTB_Banner rtb_banner = 70;    // rtb-инфо
+
+    optional uint32 flags          = 87;    // флаги. значения см. в include/target/stat_msg_flags.hpp
+    optional uint32 custom_event_flags  = 103;  // флаги кастомных событий, значения см. в include/target/stat_msg_flags.hpp
+
+    optional uint32 max_cpm_limit  = 88;    // самый большой cpm лимит для баннеров в этом запросе
+    repeated uint32 clicked_campaigns = 92 [packed=true]; // история кликов пользователя по кампаниям
+    optional int64  content_id = 94;
+    optional int32  service_id = 95;
+    optional uint32 url_id     = 98;
+    optional uint32 template_id = 102;      // позволяет видеть правильный шаблон по расшифровке ссылки, если использовался шаблон из запроса
+    repeated uint32 limited_pad_ids = 104 [packed=true]; // площадки события, для которых задано ограничение доли трафика
+    optional uint32 matched = 107; // проставляется демоном matcherd, нашли или нет положительное событие для оригинального отрицательного
+    optional uint32 matched_ts = 108; // проставляется демоном matcherd, timestamp соответствующего положительного события
+    repeated uint32 contents = 110 [packed=true]; // контенты баннера
+    optional float model_playback_rate = 111; // предсказание модели playback
+    optional float expected_cer = 112; // используемая в аукционе оценка вероятности кастомного события
+}
+

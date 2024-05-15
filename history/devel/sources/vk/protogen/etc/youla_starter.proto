@@ -1,0 +1,75 @@
+syntax = "proto2";
+
+
+package pb;
+
+option java_outer_classname = "YoulaStarter";
+
+message YoulaQueryData
+{
+    enum SourceType
+    {
+        other_interests = 0;
+        auto_interests = 1;
+        user_queries_interests = 2;
+        commercial_interests = 3;
+        shopping_interests = 4;
+    }
+
+    required uint64 time = 1;
+    required string text = 2;
+    optional SourceType source_type = 3;
+    optional uint64 ttl = 4;
+}
+
+message UserQueries
+{
+    repeated YoulaQueryData queries = 1;
+}
+
+message MatchEntry
+{
+    required string liru     = 1;
+    required uint64 time    = 2;
+}
+
+message MatchRecord
+{
+    repeated MatchEntry matches = 1;
+}
+
+message MatchOK2VIDEntry
+{
+    required string vid = 1;
+    required uint64 time  = 2;
+}
+
+message MatchOK2VIDRecord
+{
+    repeated MatchOK2VIDEntry matches = 1;
+}
+
+message UidInfo
+{
+    required uint64 seed              = 1;
+    required uint64 ts                = 2;
+    optional uint64 date_updated_to   = 3;
+    required uint64 date_now          = 4;
+}
+
+message UserCoordinates
+{
+    required float longitude = 1;
+    required float latitude  = 2;
+}
+
+message UserInfo
+{
+    required uint64 last_visit_ts        = 1;
+    optional UserCoordinates coordinates = 2;
+}
+
+message Interests
+{
+    repeated string queries = 1;
+}

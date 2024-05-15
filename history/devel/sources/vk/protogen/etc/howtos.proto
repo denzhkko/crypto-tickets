@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.howtos;
+
+option java_outer_classname = "HowtosData";
+
+message Howtos {
+    optional string query_text = 1;
+    optional string title_site = 2;
+    optional string doc_url = 3;
+    optional string answer = 4;
+}

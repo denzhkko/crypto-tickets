@@ -1,0 +1,56 @@
+syntax = "proto2";
+
+
+message TapeDocument
+{
+    enum Type {
+        IMG = 0;
+        WEB = 1;
+        NEWS = 2;
+        CAT = 3;
+        MYATA = 4;
+    }
+
+    message Tag {
+        optional string text = 1;
+        optional int32 freq = 2;
+        optional int32 pos = 3;
+    }
+
+    optional uint64 id = 1;
+    optional Type type = 2;
+    optional string anchor = 3;
+    optional string text1 = 4;
+    optional string text2 = 5;
+    optional string keywords = 6;
+    optional string page_title = 7;
+    optional string h_text = 8;
+    optional string dest_url = 9;
+    optional string img_url = 10;
+    optional string img_preview_url = 11;
+    optional int32 img_width = 12;
+    optional int32 img_height = 13;
+    optional float rank = 14;
+    optional string anchor_tag = 15;
+    repeated Tag tags = 16;
+}
+
+message TagRecommendation
+{
+    optional uint64 tag_hash = 1;
+    optional float rank = 2; 
+    optional string name = 3;
+}
+message TagRecommendations
+{
+    repeated TagRecommendation recos = 1;
+}
+
+message UserRecommendation
+{
+    optional string user_id = 1;
+    optional TagRecommendations anchor_reco = 2;
+    optional TagRecommendations connected_reco = 3;
+    optional TagRecommendations connected_weighted_reco = 4;
+}
+

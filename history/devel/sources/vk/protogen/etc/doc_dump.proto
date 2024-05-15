@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "DocDump";
+
+message DocContent {
+  required string url = 1;
+  required int64 ts = 2;
+  required bytes content = 3;
+};

@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+package youla.owner_data.pb;
+
+option java_outer_classname = "YoulaOwnerData";
+
+message OwnerData {
+  required string id = 1;
+  repeated SimpleFeature simple_features = 2;
+  repeated FeaturesById category_features = 3;
+  repeated FeaturesById subcategory_features = 4;
+
+  message SimpleFeature {
+    required int32 id = 1;
+    optional float value = 2;
+  }
+
+  message FeaturesById {
+    required int32 id = 1;
+    repeated SimpleFeature features = 2;
+  }
+
+}
+
+message FeatureNames {
+  repeated string feature_names = 1;
+}
+
+
+
+
+
+	
+

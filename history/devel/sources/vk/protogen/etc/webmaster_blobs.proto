@@ -1,0 +1,121 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "WebmasterBlobs";
+import "crawl_state.proto";
+import "document_enums.proto";
+import "image_defs.proto";
+
+message FetcherData {
+    optional CrawlDetails current_status     = 1;
+    optional bool         disabled_by_robots = 2;
+    optional string       redirect           = 3;
+    optional int64        index_time         = 4;
+    optional string       full_url           = 5;
+    optional int64        first_index_time   = 6;
+    optional int64        first_crawl_time   = 7;
+    optional ContentType  content_type       = 8;
+    optional bool         should_be_indexed  = 9;
+}
+
+
+message RankingData {
+    optional int64   BRSQ = 1 [default = 0];
+    optional double  BRV  = 2 [default = 0];
+    optional int64   URUQ = 3 [default = 0];
+}
+
+message Link {
+    required string from  = 1;
+    optional string text  = 2;
+    optional double rank  = 3 [default = 0];
+    optional uint32 count = 4 [default = 1];
+}
+
+message LinksData {
+    optional int32  backlinks_count    = 1 [default = 0];
+    optional int32  unique_texts_count = 2 [default = 0];
+    repeated Link   url_backlinks      = 3;
+    repeated Link   site_backlinks     = 4;
+    repeated Link   back_redirects     = 5;
+}
+
+message QuerySession {
+    optional int64   date           = 1;
+    optional int32   views          = 2;
+    optional int32   clicks         = 3;
+    optional double  avg_position   = 4;
+    optional int32   min_position   = 5;
+    optional int32   max_position   = 6;
+    optional int64   min_ts         = 7;
+    optional int64   max_ts         = 8;
+    optional int32   shows          = 9;
+    optional int32   last_clicks    = 10;
+}
+
+message QueryInfo {
+    required string       text             = 1;
+    repeated QuerySession sessions         = 2;
+    optional double       attractability   = 3;
+    optional double       satisfactibility = 4;
+    optional int32        users            = 5;
+    optional double       actuality        = 6;
+}
+
+message GeoQueryInfo {
+    required int32      geo_code = 1;
+    repeated QueryInfo  queries  = 2;
+}
+
+message QueryData {
+    repeated GeoQueryInfo geo_queries = 1;
+}
+
+message DailyQueryData {
+    repeated QueryData query_data = 1;
+}
+
+
+message SekiteiQuotaData
+{
+    required string description = 1;
+    required int32 maxQuota = 2;
+    required int32 urlsInQuota = 3;
+}
+
+message SiteData {
+    optional int32 maxQuota                = 1;
+    optional int32 urlsInQuota             = 2;
+    repeated SekiteiQuotaData sekiteiQuota = 3;
+    optional bool isBanned                 = 4;
+}
+
+message Result {
+    required string         url                = 1;
+    required FetcherData    fetcher_data       = 2;
+    required RankingData    ranking_data       = 3;
+    required LinksData      links_data         = 4;
+    required QueryData      query_data         = 5;
+    optional int32          pik                = 6;
+    required DailyQueryData daily_query_data   = 7;
+    optional SiteData       site_data          = 8;
+}
+
+message SqInfo {
+    optional string         query_text         = 1;
+    optional string         serp_url           = 2;
+    optional int64          timestamp          = 3;
+    optional string         http_request       = 4;
+    optional string         http_response      = 5;
+    optional string         http_redirect      = 6;
+    optional bytes          raw_html           = 7;
+    optional bytes          rendered_html      = 8;
+    optional string         parser_output      = 9;
+}
+
+message Robots {
+    optional bytes        robots_txt           = 1;
+    optional bytes        robots_txt_www       = 2;
+    optional bytes        robots_txt_https     = 3;
+    optional bytes        robots_txt_https_www = 4;
+}

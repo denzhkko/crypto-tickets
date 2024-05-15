@@ -1,0 +1,164 @@
+syntax = "proto3";
+
+package cosmoefir.pb;
+
+import "google/protobuf/wrappers.proto";
+
+
+enum Gender {
+    NONE = 0;
+    MALE = 1;
+    FEMALE = 2;
+}
+
+message UserSimpleMetaInfo {
+    google.protobuf.UInt64Value email_hash = 1;
+    google.protobuf.UInt64Value vid = 2;
+    string partner_user_id = 3;
+}
+
+message UserMetaInfo {
+    oneof optional_gender {
+        Gender gender = 1;
+    }
+
+    google.protobuf.UInt32Value age = 2;
+    google.protobuf.UInt32Value watched_videos_count = 3;
+    google.protobuf.UInt32Value site_count = 4;
+    repeated uint64 sources = 5;
+
+    message RetrieverMetaInfo {
+        google.protobuf.UInt32Value video_count = 1;
+        google.protobuf.UInt32Value music_count = 2;
+        google.protobuf.UInt32Value youtube_count = 3;
+        google.protobuf.UInt32Value news_count = 4;
+        google.protobuf.UInt32Value kids_count = 5;
+        google.protobuf.UInt32Value trailers_count = 6;
+        google.protobuf.UInt32Value sport_count = 7;
+        google.protobuf.UInt32Value podcasts_count = 8;
+        google.protobuf.UInt64Value relevant_documents_count = 50;
+    };
+    RetrieverMetaInfo retriever = 10;
+}
+
+message DocumentMetaInfo {
+    message OriginOfRecommendation {
+        enum _ {
+            UNKNOWN = 0;
+            USER_VIDEO = 1;
+            USER_MUSIC = 2;
+            USER_SOURCE = 3;
+            FEEDBACK_LIKE = 4;
+            SOC_DEM = 5;
+            TOP = 6;
+            START_ID = 7;
+            LATEST = 8;
+            DEFERED = 9;
+            FEEDBACK_NEXT = 10;
+            PROMO = 11;
+            SOURCE_MODEL = 12;
+            RANDOM = 13;
+            SIMILAR_DOCUMENTS = 14;
+            TOP_PERSONAL = 15;
+            TOP_SAMPLING = 16;
+            URL = 17;
+        };
+        _ value = 1;
+    };
+
+    message RetrieverKind {
+        enum _ {
+            UNKNOWN = 0;
+            VIDEO = 1;
+            MUSIC = 2;
+            YOUTUBE = 3;
+            NEWS = 4;
+            KIDS = 5;
+            TRAILERS = 6;
+            SPORT = 7;
+            PODCASTS = 8;
+        };
+        _ value = 1;
+    };
+
+    OriginOfRecommendation origin = 1;
+    int64 origin_id = 2;
+    RetrieverKind retriever_kind = 3;
+    string category = 4;
+    repeated uint64 tags = 5;
+}
+
+message PixelMetaInfo {
+    bytes document = 1;
+    bytes user_common = 2;
+    bytes user_simple = 3;
+}
+
+message VideoInfo {
+    message Player {
+        string type = 1;
+        string url = 2;
+        uint32 width = 3;
+        uint32 height = 4;
+    }
+
+    message Preview {
+        string url = 1;
+        string local_url = 2;
+        uint32 width = 3;
+        uint32 height = 4;
+    }
+
+    string url = 1;
+    string id = 2;
+    string name = 3;
+    string description = 4;
+    uint32 duration = 5;
+    bool hd = 6;
+    bool full_hd = 7;
+    string sig = 8;
+    uint32 source_id = 9;
+    string source_name = 10;
+    uint64 time = 11;
+    Player player = 12;
+    Preview preview = 13;
+    Preview poster_preview = 14;
+}
+
+message Document {
+    reserved 50; // TODO: remove it
+    reserved "meta_info"; // TODO: remove it
+
+    int64 doc_id = 1;
+    float rank = 2;
+    google.protobuf.StringValue name = 3;
+    google.protobuf.StringValue category = 4;
+    google.protobuf.UInt32Value age_restrict = 5;
+    google.protobuf.BoolValue is_published = 6;
+
+    VideoInfo video_info = 8;
+    google.protobuf.StringValue image_poster = 9;
+    google.protobuf.StringValue preview_url = 10;
+    google.protobuf.BoolValue is_series = 11;
+
+    oneof variant_external_id {
+        google.protobuf.Int64Value external_int_id = 12;
+        google.protobuf.StringValue external_string_id = 13;
+    }
+
+    bytes compact_meta_info = 51; // Serialized DocumentMetaInfo
+}
+
+message CosmoResponse {
+    reserved 2; // TODO: remove it
+    reserved "user_meta_info"; // TODO: remove it
+
+    repeated Document documents = 1;
+    bytes compact_user_meta_info = 3; // Serialized UserMetaInfo
+    repeated uint32 channels = 4;
+}
+
+message DocumentIdList {
+    repeated int64 ids = 1;
+    uint32 ids_limit = 2;
+}

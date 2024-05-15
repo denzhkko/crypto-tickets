@@ -1,0 +1,140 @@
+syntax = "proto2";
+
+package gogo.storage;
+option java_outer_classname = "ContentStorage";
+
+import "fetch_list.proto";
+import "crawl_state.proto";
+
+message document_attributes {
+    required string name = 1;
+    required string value = 2;
+}
+
+message Region {
+    required int32 start = 1;
+    required int32 end   = 2;
+}
+
+message RegionBlob {
+    required int32 num   = 1;
+    repeated Region data = 2;
+}
+
+message extra_info {
+  enum encoding_t {
+      none = 0;     // raw binary data
+      utf8 = 1;     // utf-8 text
+  }
+  required string type = 1;
+  // encoding of data
+  required encoding_t encoding = 2;
+  required bytes data = 3;
+  repeated uint32 props_ui32 = 4;
+}
+
+message spider_document_detail {
+    required string url = 1;
+    required uint64 download_time = 2;   // UNIX time in seconds
+    optional bytes content = 3;
+
+    enum flag_t {
+        empty = 0;
+        original = 1;
+        remove_page_from_index = 2;
+        converted = 3;
+        remove_site_from_index = 4;
+        metainformation = 5;
+        not_found = 6;
+        redirect = 7;
+        index_extra_info = 8;
+    }
+
+    required flag_t flag = 4;
+
+    enum type_t {
+        unknown = 0;
+        html = 1;
+        xml = 2;
+        wml = 3;
+        rss = 4;
+        pdf = 5;
+        doc = 6;
+        rtf = 7;
+        ppt = 8;
+        pps = 9;
+        ps = 10;
+        jpeg = 11;
+        gif = 12;
+        png = 13;
+        xls = 14;
+        txt = 15;
+        mid = 16;
+        wav = 17;
+        mp3 = 18;
+        ogg = 19;
+        aac = 20;
+        wma = 21;
+        aif = 22;
+        vqf = 23;
+        ra = 24;
+        riff_webp = 25;
+    }
+    optional type_t type = 5;
+
+    enum language_t {
+        lang_unknown = 0;
+        lang_russian = 1;
+        lang_cyrillic = 2;
+        lang_bolgarian = 3;
+        lang_ukrainian = 4;
+        lang_byelorussian = 5;
+        lang_kazakh = 6;
+        lang_english = 7;
+    }
+    optional language_t language = 6;
+
+    repeated document_attributes attributes = 7;
+
+    enum encoding_t {
+    	enc_undefined = 0;
+    	enc_unknown = 1;
+    	enc_utf8 = 2;
+    	enc_cp1251 = 3;
+    	enc_koi8 = 4;
+    }
+    optional encoding_t encoding = 8;
+
+    optional uint64 publication_time = 9;
+    
+    repeated extra_info extra_info = 10;
+
+    optional bool origin_fetcher = 11 [default = false];
+    
+    optional uint32 porno_level = 12;
+   
+    optional uint32 spam_level  = 13;
+
+    optional RegionBlob cuttedBlob = 14;
+
+    optional bytes meta_description = 15;
+    
+    optional bool disabled_stub = 16 [default = false];
+
+    repeated string redirects = 17;
+
+    optional bool reindexing = 18 [default = false];
+
+    optional bytes plainIndex = 19;
+
+    optional bytes titles_vector = 20;
+
+    optional bool update_video = 21;
+
+     extensions 1000 to max;
+
+     extend spider_document_detail {
+            optional ru.mail.go.webbase.blobs.FetchUrl fetchUrl = 1000;
+            optional ru.mail.go.webbase.blobs.CrawlDetails.stateTypes fetchStatus = 1001;
+     }
+}

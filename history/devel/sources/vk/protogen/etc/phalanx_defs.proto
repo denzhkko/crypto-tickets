@@ -1,0 +1,30 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "PhalanxDefs";
+
+message Document {
+  required uint32 version = 1;         // Serialization version. Current version is defined in db.hpp
+  required string key = 2;             // Arbitrary string key like url, data hash, etc
+  required bytes data = 3;             // Actual data to return to client
+  optional string contentType = 4;     // Content type to return to client (e.g. "image/jpeg"). Ignored if not set
+  repeated CropImageMeta crop = 5;     // additional info where intelligent crop is placed
+  optional bool prevCompat = 6;        // this document is stored for backward compatibility with previous data release
+}
+
+message CropImageMeta { //will somehow stored in aerospike with some key
+  required int32 x1 = 2;
+  required int32 y1 = 3;
+  required int32 x2 = 4;
+  required int32 y2 = 5;
+  enum type_t {
+    face = 1;
+    text = 2;
+  }
+  optional type_t type = 6;
+}
+
+message CropImageMetaBin {
+  repeated CropImageMeta data = 1;
+}

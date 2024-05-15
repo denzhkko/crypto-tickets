@@ -1,0 +1,216 @@
+syntax = "proto2";
+
+package cosmo.pb;
+option java_outer_classname = "CosmoResult";
+
+import "cosmo.proto";
+
+
+message InterleavingInfo
+{
+    required bool showed_from_a = 1;
+    optional int32 position_a = 2;
+    optional int32 position_b = 3;
+    optional string ranker_name = 4;
+    optional bool is_interleaving_experiment_ruined = 5;
+}
+
+message DocumentFlags
+{
+    optional bool may_be_skipped = 1;
+}
+
+message PromoInfo
+{
+    // pixels
+    repeated string hit_pixels = 1;
+    repeated string click_pixels = 2;
+    repeated string readup_pixels = 3;
+    repeated string show_pixels = 4;
+    repeated string redirect_pixels = 5;
+
+    optional string pulse_utm_labels = 10;
+    optional int64 id_ac = 11;
+    optional string rub_price = 12;
+    optional string user_geo = 13;
+}
+
+message DocumentInfo
+{
+    optional bool is_from_socdem_source = 1;
+    optional bool is_from_similar_source = 2;
+    optional bool is_from_visited_source = 3;
+    optional bool is_from_clicked_source = 4;
+    optional float porn_weight = 5;
+    optional int64 theme_hash = 6;
+    optional int64 clicks_count = 7;
+    optional int64 shows_count = 8;
+    optional bool is_fulltext = 9;
+    optional int64 pubdate = 10;
+    optional bool is_first_doc = 11;
+    optional bool is_commercial_fulltext = 12;
+    optional bool is_vk = 13;
+    optional int64 i2i_doc_id = 14;
+    optional bool is_relap_doc = 15;
+    optional PromoInfo promo_info = 16;
+    optional int32 likes = 17;
+    optional int32 comments = 18;
+    optional bool is_user_fulltext = 19;
+    optional bool is_video = 20;
+    optional bool is_exploration = 21;
+    optional float source_price = 22;
+}
+
+message Document
+{
+    enum Type
+    {
+        BASE = 0;
+        TEXT = 1;
+    }
+
+    optional int32 category_id = 2;
+    required int64 doc_id = 3;
+    optional int64 source_id = 4;
+    optional Type type = 5;
+    optional InterleavingInfo interleaving_info = 7;
+    optional float rank = 9;
+    optional float source_rank = 10;
+    optional int64 site_hash = 11;
+    optional DocumentFlags flags = 13;
+    optional DocumentInfo document_info = 14;
+    optional string erid = 15;
+}
+
+message RankerInfo
+{
+    message Item
+    {
+        required string name = 1;
+        required string value = 2;
+    }
+
+    repeated Item items = 1;
+}
+
+message Error
+{
+    enum Code
+    {
+        DEFAULT = 0;
+        INCOMPLETE_DATASET = 1;
+    }
+
+    optional string msg = 1;
+    optional Code code = 2;
+}
+
+message RetrieverStats
+{
+    optional int32 documents_total = 1;
+    optional int32 documents_processed = 2;
+    optional int32 documents_skipped = 3;
+    optional int32 sources_selected = 4;
+}
+
+message MixerInfo
+{
+    required uint32 experiment_id = 1;
+    optional bool showed_from_a = 2;
+    optional bool not_affected = 3;
+}
+
+message Geo
+{
+    optional int32 country_id = 1;
+    optional int32 region_id = 2;
+    optional int32 city_id = 3;
+}
+
+message Metrics
+{
+    message SubscriptionMetrics
+    {
+        required uint32 cnt = 1;
+        required int64 last_ts = 2;
+    }
+    optional int32 age = 1;
+    optional int32 gender = 2;
+
+    optional bool has_email =3;
+    optional bool has_ok = 4;
+    optional bool has_vk = 5;
+
+    optional uint32 similar_sources_cnt = 6;
+    optional uint32 visited_sources_cnt = 7;
+    optional uint32 clicked_sources_cnt = 8;
+
+    optional uint32 similar_sites_cnt = 9;
+    optional uint32 visited_sites_cnt = 10;
+    optional uint32 clicked_sites_cnt = 11;
+
+    optional uint32 visited_sources_visits = 12;
+    optional uint32 clicked_sources_visits = 13;
+
+    optional int64 sites_for_user_cnt = 14;
+
+    optional bool show_category_subscription = 16;
+
+    optional Geo geo = 17;
+
+    optional bool show_cold_sources_subscription = 18;
+    optional bool show_hot_sources_subscription = 19;
+
+    optional SubscriptionMetrics category_subscription_metrics = 20;
+    optional SubscriptionMetrics cold_sources_subscription_metrics = 21;
+    optional SubscriptionMetrics hot_sources_subscription_metrics = 22;
+
+    optional bool cold_lenta = 23;
+    optional bool empty_lenta = 24;
+}
+
+message DebugInfo
+{
+    message UserDataEntry
+    {
+        optional string source = 1;
+        optional UserData data = 2;
+    }
+
+    repeated UserDataEntry user_data = 1;
+}
+
+message Source
+{
+    required int64 source_id = 1;
+    optional int32 category_id = 2;
+    optional int64 site_hash = 3;
+    optional uint32 documents_count = 4;
+    optional float rank = 5;
+}
+
+message Category
+{
+    required int64 category_id = 1;
+    optional float rank = 2;
+}
+
+message CosmoOutput
+{
+    repeated Document documents = 4;
+    optional RankerInfo ranker_info = 9;
+    repeated Error errors = 10;
+    optional RetrieverStats retriever_stats = 11;
+    optional MixerInfo mixer_info = 12;
+    optional Metrics metrics = 13;
+    optional DebugInfo debug_info = 14;
+    repeated Source sources = 15;
+    repeated Category categories = 16;
+}
+
+message FeaturesDump
+{
+    repeated float features = 1;
+    repeated string features_names = 2;
+}
+

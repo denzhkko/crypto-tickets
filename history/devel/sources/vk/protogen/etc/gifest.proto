@@ -1,0 +1,35 @@
+syntax = "proto2";
+
+package ru.mail.go.gifest;
+
+option java_outer_classname = "Gifest";
+import "document_enums.proto";
+
+message GifItem {
+    required string url = 1;
+    required string canonicalized_url = 2;
+    optional bytes data = 3;
+}
+
+enum GifestPostStatus {
+    FETCHED = 1;
+    FETCHED_AGAIN = 2;
+}
+
+message GifestPostContent {
+    required bytes html = 1;
+    required ru.mail.go.webbase.blobs.Encoding encoding = 2;
+    repeated GifItem items = 3;
+}
+
+message GifestPost {
+    required string page_url = 1;
+    required string canonicalized_url = 2;
+    required string site = 3;
+    required string source = 4;
+    required uint64 download_time = 5;
+    required GifestPostStatus status = 6;
+    optional GifestPostContent content = 7;
+    optional string tag = 8;
+}
+

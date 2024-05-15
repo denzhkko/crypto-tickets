@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package ru.mail.go.recobase;
+
+option java_outer_classname = "WebLikesScheme";
+
+
+message WebLikeMessage {
+  required uint64  uid  = 1;
+  required string  url  = 2;
+  required double  prop = 3;
+  required int32   dwelTime = 4;
+}
+

@@ -1,0 +1,29 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.serp;
+
+option java_outer_classname = "QDDBNorm";
+
+message QddbNorm
+{
+	message Normalization
+	{
+		enum Type
+		{
+			None = 0;
+			Lemm = 1;
+			Sort = 2;
+		}
+		required Type type = 1;
+	}
+
+	message QddbEntry
+	{
+		required uint64 hash = 1;
+		optional uint32 sessions = 2;
+	}
+
+	optional string query_text = 1;
+	optional Normalization norm = 2;
+	repeated QddbEntry entries = 3;
+}

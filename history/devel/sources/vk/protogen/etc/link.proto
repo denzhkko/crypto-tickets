@@ -1,0 +1,30 @@
+syntax = "proto2";
+
+package gogo.hadoop;
+
+option java_package = "ru.mail.go.depricated";
+option java_outer_classname = "OldLinkProto";
+
+message Link {
+
+// -- TYPES -- //
+	enum LinkType {
+		EXTLINK = 1;	// External link
+	  	REDIRECT = 2;	// Redirect
+		DELSIG = 3;		// *Signal that the page is deleted
+	}
+	// Star sign in comment means that the link of this type has only <to> field
+
+// -- REQUIRED -- //
+	required string to = 1;
+	required LinkType type = 2;
+
+// -- OPTIONAL -- //
+	optional string  from = 5;
+	optional string  text = 6;
+	optional fixed64 time = 7 [default = 0];
+	
+	optional bool    is_resolved = 8 [default = false];
+
+}
+

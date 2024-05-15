@@ -1,0 +1,69 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.ranking;
+option java_outer_classname = "LogRecords";
+
+message UrlLogRecord
+{
+    enum Type {
+        MAIN = 0;
+        SMACKS = 1;
+        VK_MUSIC = 2;
+        SOCIAL_URLS = 3;
+    }
+    required string queryId = 1;
+    repeated string url = 2;
+    optional uint64 time = 3;
+    optional Type type = 4 [ default = MAIN ];
+    optional uint32 pos = 5;
+    optional string data = 6;
+}
+message ParamList
+{
+    repeated string paramName = 1;
+    repeated string paramValue = 2;
+}
+message BartertownLogRecord
+{
+    required string queryId = 1;
+    required string query = 2;
+    required uint64 time = 3;
+    optional ParamList parameters = 4;
+}
+message AccessLogRecord
+{
+    required string queryId = 1;
+    required string pixelNum = 2;
+    required uint64 time = 3;
+    optional ParamList parameters = 4;
+    optional string ip = 5;
+    required string pixelLocation = 6;
+}
+message SerpLogRecord
+{
+    required string queryId = 1;
+    required uint64 time = 2;
+    optional string serp = 3;
+}
+
+/*
+import "suggests.proto";
+
+message SuggSession {
+    required string vertical = 1;
+    required string queryNormalized = 2;
+    required string query = 3;
+    optional string queryMisspelled = 4;
+    optional string userId = 5;
+    optional uint64 dateTime = 6;
+    optional uint64 serpCount = 7;
+    optional bool   isPorno = 8;
+    optional bool   isRobot = 9;
+    optional bool   isMusic = 10;
+    optional uint32 regionId = 11;
+
+    optional ru.mail.go.sugg.indexer.Clicks clicks = 12;
+    optional bool   isFromSugg = 13;
+    optional bool   isSpcBanned = 14;
+}
+*/

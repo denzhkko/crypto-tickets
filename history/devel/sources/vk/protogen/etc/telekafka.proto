@@ -1,0 +1,21 @@
+
+syntax = "proto2";
+
+package tkf.pb;
+
+option java_outer_classname = "Telekafka";
+
+message HttpHeader
+{
+    required string name   = 1;
+    required string value  = 2;
+}
+ 
+message TelemeterEvent
+{
+    required bytes body         = 1;
+    required uint64 timestamp   = 2;
+    repeated HttpHeader headers = 3;
+    optional string ip          = 4;
+}
+

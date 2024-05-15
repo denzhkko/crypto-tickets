@@ -1,0 +1,46 @@
+syntax = "proto2";
+
+package ru.mail.go.recobase;
+
+option java_outer_classname = "EventsScheme";
+
+message EventMessage {
+  optional OkLike okLike = 1;
+  optional WebLike webLike = 2;
+  optional TopicClick topicClick = 3;
+}
+
+message WebLike {
+  required string  url  = 1;
+  required double  prop = 2;
+  required int32   dwelTime = 3;
+}
+
+message OkLike {
+  required int64 groupId = 1;
+  required int64 postId = 2;
+  required OkLikeType type = 3;
+}
+
+message TopicClick {
+  required int64 groupId = 1;
+  required int64 postId = 2;
+  required string type = 3;
+}
+
+enum OkLikeType {
+   CREATE = 0;
+   DISLIKE = 1;
+   SHARE = 2;
+}
+
+message LogRecord {
+  required LogRecordType type = 1;
+  required int64 qid = 2;
+}
+
+enum LogRecordType {
+   VIEW = 0;
+   CLICK = 1;
+}
+

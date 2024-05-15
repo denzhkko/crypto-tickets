@@ -1,0 +1,149 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "ExtractedUrlsBlob";
+
+import "fetch_list.proto";
+
+
+message ExtractedUrl {
+    required string url = 1;
+    optional string feedUrl = 2;
+    optional int64 time = 3; // only publicationDate etc. May be abscent
+// for rss
+    optional string title = 4;
+    optional string description = 5;
+    optional string imageUrl = 6;
+// for common sitemaps
+    optional double priority = 7;
+
+    enum Frequency {
+        ALWAYS = 1;
+        HOURLY = 2;
+        DAILY = 3;
+        WEEKLY = 4;
+        MONTHLY = 5;
+        YEARLY = 6;
+        NEVER = 7;
+        UNKNOWN = 8;
+    }
+
+    optional Frequency freq = 8;
+// from parent
+    optional SplitFlags splitFlags = 9;
+    repeated FetchUrl.Fastbases targetBases = 10;
+
+// from news
+    repeated NewsInfo news = 11;
+
+// discovery data
+    optional int64 discoveryTime = 12; // in ms; fetcher's time
+    optional string fukushimaText = 13;
+
+    optional string routeKey = 14;
+
+    optional int64 parserTimestamp = 15;
+    optional int64 discoveryBatchingTimestamp = 16;
+}
+
+message NewsInfo
+{
+    optional string title = 11;
+    optional string link = 12;
+    optional string sentence = 13;
+}
+
+message FastbaseUrlInfo {
+    repeated int32 targetBases = 1;
+    repeated ExtractedUrl parsedInfo = 2;
+    optional string urldataUrl = 3;
+    optional int32 microbase = 4;
+
+    enum SourceType {
+		RSS_INFO_BASE = 0;
+		SITEMAP_INFO_BASE = 1;
+		URL_DISCOVERY_INFO_BASE = 2;
+		SPUTNIK_INFO_BASE = 3;
+		NEWS_NAVIG_BASE = 4;
+		SITEMAP_SITEMAP_BASE = 5;
+		URL_DISCOVERY_URL_DISCOVERY_BASE = 6;
+		MAIN_INDEX = 7;
+		RSS_COMMON = 8;
+		SITEMAP_COMMON = 9;
+		URL_DISCOVERY_COMMON = 10;
+		SPUTNIK_COMMON = 11;
+		NEWS_COMMON = 12;
+		FUKUSHIMA_COMMON = 13;
+		FASTBASE_INDEX = 14;
+        	SPUTNIK_BEHAVIORAL_BASE = 15;
+		SILVER_INDEX = 16;
+	}
+	
+    repeated SourceType sources = 5;
+}
+
+message FastbaseParsedInfo {
+    repeated FetchUrl.Fastbases targetBases = 1;
+    optional ExtractedUrl parsedInfo = 2;
+    optional int64 timestamp = 3;
+}
+
+message SourcesInfo 
+{
+    optional int64 meetDate = 1;
+    optional int64 publicationDate = 2;
+    repeated FetchUrl.Fastbases targetBases = 3;
+    repeated SourceInfo sources = 4;
+    optional SplitFlags splitFlags = 5;
+    repeated BaseInfo targetBasesInfo = 6;
+    optional int64 microDate = 7;
+    optional int64 firstPublicationDate = 8;
+}
+
+message BaseInfo
+{
+	required FetchUrl.Fastbases base = 1;
+	optional SplitFlags splitFlags = 2;
+}
+
+message SourceInfo
+{
+	required FastbaseUrlInfo.SourceType sourceType = 1;
+	required ExtractedUrl parsedInfo = 2;
+}
+
+message UrlDataInfo
+{
+	required string urlDataUrl = 1;
+	required int32 microbaseNum = 2;
+}
+
+message FbBanInfo
+{
+        optional string url = 1;
+	repeated int32 microbases = 2;
+	optional int64 timestamp = 3;
+}
+
+message BanSourceInfo
+{
+        optional string url = 1; // any form of the url (e.g. as is from spk)
+	optional int64 timestamp = 2; 	
+	enum StatusType {
+	    STATUS_200 = 1;
+	    STATUS_404 = 2;
+	}
+	optional StatusType status = 3;
+}
+
+message FeedUrls
+{
+	repeated string feedUrls = 1;
+}
+
+message SourcePrepareInfo
+{
+	required FetchUrl urlInfo = 1;
+	required FastbaseUrlInfo.SourceType sourceType = 2;
+}

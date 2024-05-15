@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+// Blobs for siteStats
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "DuplicatesBlobs";
+
+import "doc_parser.proto";
+import "crawl_state.proto";
+
+message ShingleList {
+    repeated uint32 shingles = 1;
+}
+
+message BaseStructure {
+	required string post_id = 1;
+        required string group_id = 2;
+	required ShingleList shingles = 3;
+        optional string text = 4;
+}
+
+message BRStructure {
+	required string url = 1;
+	required double BR = 2;
+	required ShingleList shingles = 3;
+	required CrawlDetails status = 4;
+	optional bool notDeletable = 5;
+	optional int64 firstMettTs = 6;
+        optional bool isActualStub = 7;
+}
+
+message DiffStructure {
+	required double diff = 1;
+	required double m_br = 2;
+	required string s_url = 3;
+	required bool notDeletable = 4;
+	required CrawlDetails currentStatus = 5;
+}

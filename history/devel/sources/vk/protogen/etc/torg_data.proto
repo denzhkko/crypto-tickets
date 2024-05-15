@@ -1,0 +1,41 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "TorgData";
+
+enum ItemType {
+  OFFER = 0;
+  CARD = 1;
+  PSEUDO_CARD = 2;
+  UNKNOWN = 3;
+}
+
+message MetaSection {
+  required uint64 id = 1;
+  required string name = 2;
+}
+
+message PriceRange {
+  required uint64 min = 1;
+  required uint64 max = 2;
+  repeated uint32 rb_code = 3;
+}
+
+message TorgItem {
+  required string id = 1;
+  required ItemType type = 2;
+  required string url = 3;
+  required string img_url = 4;
+  required string title = 5;
+  required string short_description = 6;
+  required string full_description = 7;
+  required MetaSection category = 8;
+  required MetaSection vendor = 9;
+  optional MetaSection client = 10;
+  required uint64 min_price = 11;
+  required uint64 max_price = 12;
+  required uint64 avg_price = 13;
+  repeated PriceRange price_ranges = 14;
+  optional uint32 offers_cnt = 15;
+}

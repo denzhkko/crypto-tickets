@@ -1,0 +1,184 @@
+syntax = "proto2";
+
+package gogo.fetcher;
+
+option java_outer_classname = "outputFormat";
+
+import "fetch_list.proto";
+import "document_enums.proto";
+
+// copied from block_storage of elephant
+message SerializedBlock {
+  // The version of the block format we are writing. Always set to 1.
+  optional int32 version              = 1;
+  // The class_name of the message, e.g. "com.twitter.data.proto.Tables.Status"
+  optional string proto_class_name    = 2;
+  // A list of serialized byte blobs of the contained protocol buffers.
+  // Generally there should be no more than 1000 or so blobs per block,
+  // because all of them get parsed into memory at once during analysis.
+  // The number of blobs per block can vary arbitrarily, and can even be
+  // just 1 if necessary (somewhat space-inefficient).
+  repeated bytes proto_blobs          = 3;
+};
+
+message fetcher_image {
+    required string url = 1;
+    required bytes content = 2;
+    optional uint64 download_time = 3;
+    optional uint32 width  = 4;
+    optional uint32 height = 5;
+    optional ru.mail.go.webbase.blobs.ContentType format = 6;
+
+    enum type_t {
+        picture = 1;
+        video = 2;
+    }
+    optional type_t type = 7;
+}
+
+message fetcher_document_detail {
+    required string url = 1;
+    required uint64 download_time = 2;
+    optional bytes content = 3;
+
+    enum flag_t {
+        empty = 0;
+        fetched = 1;
+        conn_failure = 2;
+        fetch_err = 3;
+        skipped = 4;
+        robots_filtered = 5;
+        blacklisted = 6;
+        rkn_ban = 7;
+    }
+    required flag_t flag = 4;
+
+    optional bytes http_head = 5;
+
+    enum error_t {
+        none = 0;
+        resolve = 1;
+        connection = 2;
+        empty_head = 3;
+        invalid_protocol = 4;
+        socket_buf_size = 5;
+        head_size = 6;
+        body_size = 7;
+        error_in_parsing = 8;
+        filtered_by_robots = 9;
+        skipped_by_blacklist = 10;
+        connection_lost = 11;
+    }
+    optional error_t error = 6;
+    optional string ip = 7;
+    optional uint32 flags = 8;
+    repeated string redirects = 9;
+    optional ru.mail.go.webbase.blobs.FetchUrl fetch_url_proto = 10;
+    optional ru.mail.go.webbase.blobs.ForumType forumType = 11;
+    optional ru.mail.go.webbase.blobs.RobotsState robotsState = 12;
+    optional ru.mail.go.webbase.blobs.RenderType renderType = 13;
+    optional ru.mail.go.webbase.blobs.Encoding forcedEncoding = 14;
+    optional bool leadToProviderBlock = 18 [default = false];
+    optional bool isFromRedirectChain = 19 [default = false];
+    optional ru.mail.go.webbase.blobs.SourceMark sourceMark = 20;
+
+    enum redirect_t {
+        redirect_none = 0;
+        redirect_normal = 1;
+        redirect_outer = 2;
+        redirect_overflow = 3;
+        redirect_infinite = 4;
+        redirect_failure = 5;
+        redirect_other = 6;
+    }
+    optional redirect_t redirect_type = 21;
+    optional bool scriptRemoved = 23;
+    optional fetcher_image profileImage = 24;
+    optional fetcher_image coverImage = 25;
+    optional ru.mail.go.webbase.blobs.PublicationMarkup microdata_markup = 26;
+    optional images_discovery imagesOnPage = 27;
+}
+
+message fetcher_host_details {
+    required string hostname = 1;
+    optional uint32 thread_limit = 2;
+    optional uint32 crawl_delay = 3;
+    optional double avg_response_time = 4;
+}
+
+message url_upload_detail {
+    optional string url = 1;
+    optional bool flag_disabled = 2;
+}
+
+message post_document_detail {
+    required string url = 1;
+    required string title = 2;
+    required string text_context = 3;
+    optional string user_name = 4;
+    optional string user_url = 5;
+    optional string public_name = 6;
+    optional string public_url = 7;
+    required uint64 download_time = 8;
+    repeated fetcher_image image = 9;
+    optional uint64 post_time = 10;
+    optional uint32 views = 11;
+    optional uint32 likes = 12;
+    optional uint32 share = 13;
+    optional uint32 spam_level = 14;
+    optional uint32 porno_level = 15;
+
+    enum type_t {
+        post = 1;
+        longread = 2;
+        video = 3;
+        topic = 4;
+        profile = 5;
+        group = 6;
+        organic = 7;
+    }
+    optional type_t type = 16;
+
+    enum source_t {
+        vk = 1;
+    }
+    optional source_t source = 17;
+}
+
+message insta_profile_extra {
+    required string name = 1;
+    required string login = 2;
+    required uint64 posts = 3;
+    required uint64 followers = 4;
+    required uint64 following = 5;
+    required bool official = 6;
+    required uint64 download_time = 7;
+    optional fetcher_image avatar = 8;
+    repeated fetcher_image last = 9;
+}
+
+message vk_snippet_data {
+    required string bahroma_json = 1;
+    repeated fetcher_image phalanx_images = 2;
+}
+
+message image_discovery {
+    required string url = 1;
+    required uint32 http_status = 2;
+    optional string headers = 3;
+    optional bytes content = 4;
+    optional uint32 width = 5;
+    optional uint32 height = 6;
+    optional int32 left = 7;
+    optional int32 top = 8;
+    optional int32 zindex = 9;
+    optional string href = 10;
+    optional string meta = 11;
+}
+
+message images_discovery {
+    required string url = 1;
+    required uint64 download_time = 2;
+    repeated image_discovery images = 3;
+    optional string html = 4;
+}

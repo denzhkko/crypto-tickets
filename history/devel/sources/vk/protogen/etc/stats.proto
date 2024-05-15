@@ -1,0 +1,48 @@
+syntax = "proto2";
+
+// stats blobs
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "StatsBlobs";
+
+import "crawl_state.proto";
+
+message SiteInfo {
+	required bool isIp = 1 [default = false];
+
+
+	optional int32 DAY_CRAWL_CODE_200 = 2;
+	optional int32 DAY_CRAWL_CODE_300 = 3;
+	optional int32 DAY_CRAWL_CODE_400 = 4;
+	optional int32 DAY_CRAWL_CODE_500 = 5;
+	optional int32 NEED_FIRST_CRAWL = 6;
+	optional int32 NEED_RECRAWL = 7;
+	optional int32 PRIORITY_BY_SCHEDULER = 8;
+	optional int32 PRIORITY_BY_BIG_WEB = 9;
+	optional int32 PRIORITY_BY_FOREIGN_WEB = 10;
+	optional int32 WITHOUT_STATUS = 11;
+	optional int32 WITH_STATUS_DISABLED = 12;
+	optional int32 WITH_STATUS_FAILURE = 13;
+	optional int32 WITH_STATUS_FETCHED = 14;
+	optional int32 WITH_STATUS_REDIRECT = 15;
+	optional int32 WITH_STATUS_REMOVED = 16;
+	optional int32 DOMAINS_ON_IP = 17;
+	optional int32 UAPPG_TYPE = 18;
+	optional int32 UAPPY_TYPE = 19;
+	optional double AVG_RESPONSE = 20;
+	optional int32 THREAD_NUM = 21;
+	optional int32 CRAWL_DELAY = 22;
+	optional int64 BRLQ2 = 23;
+	optional string main_host = 24;
+
+	required bool isBanned = 25 [default = false];
+}
+
+message TextCandidates {
+
+	repeated TextCandidate candidates = 1;
+
+	message TextCandidate {
+		optional string value = 1;
+		optional int32 weight = 2;
+	}
+}

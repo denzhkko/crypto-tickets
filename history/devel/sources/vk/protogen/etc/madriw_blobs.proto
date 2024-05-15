@@ -1,0 +1,46 @@
+syntax = "proto2";
+
+import "qessr_blobs.proto";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "MadriwBlobs";
+
+message UrlInfo {
+    optional bool canIndex = 1;
+    optional FetcherReason fetcherReason = 2 [default = F_NONE];
+    optional bool isImported = 3;
+    optional bool shouldBeStub = 4;
+    optional int32 alyAge = 5 [default = 100000];
+    optional int32 algAge = 6 [default = 100000];
+    optional bool hasStrongSignals = 7;
+    optional bool hasSignals = 8;
+    optional BanReason banReason = 9 [default = B_NONE];
+    optional int32 firstInStatusAge = 10;
+    optional int32 lastInStatusAge = 11;
+    optional bool wasInIndex = 12;
+    optional bool wasStub = 13;
+    optional int32 quotaPowerMultiplier = 14;
+    optional int32 logsAge = 15 [default = 100000];
+
+    enum BanReason {
+        B_NONE = 0;
+        B_FLAGGED = 1;
+        B_BLACKLISTED = 2;
+        B_SPAM = 3;
+        B_DISABLED = 4;
+        B_PRIVATE = 5;
+    }
+}
+
+message HostInfo {
+    optional bytes sekiteiBytes = 1;
+    optional bool isSpam = 2;
+}
+
+message RankedUrl {
+    optional int32 rank = 1;
+    optional int64 order = 2;
+    optional bool canIndex = 3;
+    optional bool noNeedToDownload = 4;
+    optional FetcherReason fetcherReason = 5 [default = F_NONE];
+}

@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package kg_sugg.pb;
+
+message KGSugg {
+    optional string query = 1;
+    optional string query_hl = 2;
+}
+
+message KGSuggs {
+    repeated KGSugg suggs = 1;
+}

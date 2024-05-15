@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package gogo.storage;
+option java_outer_classname = "ChopperData";
+message ChopperSources {
+
+    message Source     {
+        required string key = 1;
+        required string rss_url = 2;
+        required string host = 3;
+        required string source_type = 4;
+        optional string category_filter = 5;
+        optional string prefix_filter = 6;
+        repeated string samples = 7;
+    }
+    
+    repeated Source sources = 1;
+}

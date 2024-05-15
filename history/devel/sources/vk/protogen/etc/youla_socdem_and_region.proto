@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package youla.socdem_and_region.pb;
+
+option java_outer_classname = "YoulaSocdemAndRegion";
+
+message SocdemAndRegionInfo {
+  optional int32 region_id = 1;
+  optional int32 socdem_id = 2;
+
+  message Category {
+    optional int32 category_id = 1;
+    optional float low = 2;
+    optional float medium = 3;
+    optional float high = 4;
+    optional int32 low_abs = 5;
+    optional int32 medium_abs = 6;
+    optional int32 high_abs = 7;
+  }
+
+  repeated Category categories = 3;
+
+}
+

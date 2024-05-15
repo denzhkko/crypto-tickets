@@ -1,0 +1,39 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.clickrank.utils;
+
+option java_outer_classname = "UserFeedbackModelProto";
+
+
+message SiteFeedBack
+{
+    required string site = 1;
+    repeated UrlFeedBack urls = 2;
+}
+
+
+message UrlFeedBack 
+{
+    required string url = 1;
+    required UserFeedBackModel feedback = 2;
+}
+
+message UserFeedBackModel
+{
+    required uint32 posiion = 1; // position of the URL in SERP
+    required bool clicked = 2;   // true if the url was clicked
+    required bool clicked_next = 3;   // true if clicked on next position
+    required bool clicked_previous = 4;   // true if clicked on previous position
+    required bool clicked_below = 5;   // true if there is a click below
+    required bool clicked_above = 6;   // true if there is a click above
+    required uint64 time_on_page = 7; // page dwell time in seconds
+    required uint64 cumulative_time_on_page = 8; // cumulative time for all subsequent pages
+    required bool clicked_last = 9; // true if URL was clicked last
+    required uint32 clicks_from_search = 10; // number of clicks from query issue
+    required uint64 total_time = 11; // time spent on all URLs in SERP
+    required uint32 total_clicks = 12; // number of clicks in SERP for this query
+    required sint64 query_hash = 13; //query hash
+    required sint64 uid_hash = 14; //unique user id hash
+    optional uint32 label = 15;
+}
+

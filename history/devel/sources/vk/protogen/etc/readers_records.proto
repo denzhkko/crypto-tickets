@@ -1,0 +1,44 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.readers;
+
+option java_outer_classname = "LogRecords";
+
+
+enum HTTPMethod
+{
+    GET     = 0;
+    POST    = 1;
+    HEAD    = 2;
+    PUT     = 3;
+    DELETE  = 4;
+    TRACE   = 5;
+    OPTIONS = 6;
+    CONNECT = 7;
+    PATCH   = 8;
+}
+
+// representation of log_format logman (nginx access logs)
+message LogmanLogRecord
+{
+    required string remote_addr = 1;
+    // unix time of request
+    required fixed32 unixts = 2;
+
+    required HTTPMethod request_method = 3;
+    // requested path (without query-string)
+    required string request_path = 4;
+    optional string query_string = 5;
+    
+    // http referer, string as-is
+    optional string http_referrer = 6;
+    
+    // http User-Agent header, string as-is
+    optional string user_agent = 7;
+    
+    // http cookies, string as-is
+    optional string cookies = 8;
+    
+    // http response status code
+    optional uint32 response_code = 9;
+}

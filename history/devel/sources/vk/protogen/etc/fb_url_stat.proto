@@ -1,0 +1,25 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase;
+
+option java_outer_classname = "FBUrlStat";
+
+message UrlStat
+{
+    optional string type = 1;
+    optional int32 show_number = 2;
+    optional int32 queries_number = 3;
+    optional float queries_shows_rate = 4;
+    optional float average_position = 5;
+    optional int32 clicks_number = 6;
+}
+
+message CheckpointsStat
+{
+    required string url = 1;
+    optional int64 publication = 2;
+    optional int64 discovery = 3;
+    optional int64 send_to_index = 4;
+    optional int64 indexed = 5;
+    optional int64 firstmeet_in_serp = 6;
+}

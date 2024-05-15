@@ -1,0 +1,45 @@
+syntax = "proto2";
+
+package recostream.pb;
+option java_outer_classname = "RecostreamDumpInfo";
+
+import "cosmo_result.proto";
+import "cosmo.proto";
+import "recostream_pixel_info.proto";
+
+message Pixel
+{
+    required string p = 1;
+    optional uint64 ts = 2;
+    optional int32 split = 3;
+    optional string block_label = 4;
+}
+
+
+message Document
+{
+    required uint64 doc_id = 1; //из дампа
+    optional cosmo.pb.FeaturesDump features = 2; //из дампа из файла cosmo_result.proto
+    optional uint64 source_id = 3;  //из пикселя
+    optional string url = 4;  //из пикселя 
+    optional string type = 5; //из пикселя
+    optional DocumentMetaInfo meta_info = 6; //из recostream_pixel_info.proto
+    repeated Pixel pixels = 7; // перечисляем разные p= которые встретили
+}
+
+message RecoSessionDump
+{
+    required string reco_session_id = 1;
+    optional string stream_id = 2;
+    optional uint32 geo = 3;
+    optional uint64 app_id = 4;
+    optional uint32 age = 5;
+    optional string gender = 6;
+    optional string vid = 7;
+    optional string vk_id = 8;
+    optional string ok_id = 9;
+    optional string email = 10;  
+    optional cosmo.pb.GroupedUserData user_data = 11;
+    ///выше все из query.В случае конфликта всё берем из query.
+    repeated Document documents = 12;
+}

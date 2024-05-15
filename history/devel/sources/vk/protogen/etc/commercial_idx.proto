@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+import "commercial.proto";
+
+package pb.commercial;
+
+message RidIdxDocument {
+    optional string query_text = 1;
+    optional RidQueries data = 2;
+};
+
+message VidIdxDocument {
+    optional string query_text = 1;
+    optional VidQueries data = 2;
+};

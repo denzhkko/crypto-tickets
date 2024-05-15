@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+package pb.srch.music;
+
+message Track {
+    optional string track = 1;
+    optional string artist = 2;
+
+    optional string user_id = 3;
+    optional string file_id = 4;
+
+    optional uint32 duration = 5;
+};

@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.similarq;
+
+option java_outer_classname = "SimilarQueriesData";
+
+message SimilarQueryInfo {
+    message SimilarQueryStats {
+        optional string text = 1;
+        optional uint32 clicks = 2;
+        optional uint32 words = 3;
+    };
+
+    optional string query_text = 1;
+    repeated SimilarQueryStats query_stats = 2;
+}

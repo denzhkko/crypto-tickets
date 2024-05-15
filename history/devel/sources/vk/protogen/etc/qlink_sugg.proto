@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package qlink_sugg.pb;
+
+message Qlink {
+    optional string text = 1;
+    optional double rank = 2;
+}
+
+message QlinkSugg {
+    // It is url!
+    // After fix kv_daemon, we'll fix name
+    optional string query_text = 1;
+    repeated Qlink qlinks = 2;
+}

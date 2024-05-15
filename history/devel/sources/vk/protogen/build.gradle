@@ -1,0 +1,326 @@
+ext.protogenVersion = '1.194--SRCH-73417-100'
+
+group = 'ru.mail.go'
+version = protogenVersion
+
+
+apply plugin: 'de.undercouch.download'
+apply plugin: 'java'
+apply plugin: 'ru.mail.go.release'
+
+
+
+sourceSets{
+    main {
+        java {
+            srcDir "${projectDir}/java/src.gen"
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        maven {
+            name = 'go.mail.ru'
+            url = 'https://artifactory.g.smailru.net/artifactory/repo/'
+        }
+    }
+    dependencies {
+        classpath 'de.undercouch:gradle-download-task:4.0.0-SNAPSHOT'
+    }
+}
+
+project.ext {
+    protobufVersion = "2.5.0p1"
+
+    protocUrl = ""
+    project.repositories.all { repo ->
+        if (repo.name.equals("go.mail.ru")) {
+            protocUrl = repo.url.toString() + "/protobuf/protobuf/${protobufVersion}/protobuf-${protobufVersion}.tar.gz"
+        }
+    }
+    protobufLibraryPath = "${buildDir}/protobuf-${protobufVersion}"
+    protocShPath = "${protobufLibraryPath}/bin/protoc.sh"
+    protocPath = "${protobufLibraryPath}/bin/protoc"
+    generatedFileDir = "${projectDir}/java/src.gen"
+    protoFiles = [
+            "${projectDir}/etc/advert.proto",
+            "${projectDir}/etc/articles.proto",
+            "${projectDir}/etc/additive_app.proto",
+            "${projectDir}/etc/annoy.proto",
+            "${projectDir}/etc/backends_quality.proto",
+            "${projectDir}/etc/bahroma_db_content.proto",
+            "${projectDir}/etc/bahromadb.proto",
+            "${projectDir}/etc/bki.proto",
+            "${projectDir}/etc/blobfish.proto",
+            "${projectDir}/etc/chopper_data.proto",
+            "${projectDir}/etc/clickrank_blobs.proto",
+            "${projectDir}/etc/common_stats.proto",
+            "${projectDir}/etc/content_storage.proto",
+            "${projectDir}/etc/cosmo.proto",
+            "${projectDir}/etc/cosmo_i2i.proto",
+            "${projectDir}/etc/cosmo_result.proto",
+            "${projectDir}/etc/cosmo_user_events.proto",
+            "${projectDir}/etc/crawl_state.proto",
+            "${projectDir}/etc/currency.proto",
+            "${projectDir}/etc/doc_dump.proto",
+            "${projectDir}/etc/doc_parser.proto",
+            "${projectDir}/etc/document_dbctl.proto",
+            "${projectDir}/etc/document_enums.proto",
+            "${projectDir}/etc/dump_redirects.proto",
+            "${projectDir}/etc/duplicates.proto",
+            "${projectDir}/etc/dzen_articles.proto",
+            "${projectDir}/etc/experiment.proto",
+            "${projectDir}/etc/extracted_url.proto",
+            "${projectDir}/etc/fb_qddb_clinkrank.proto",
+            "${projectDir}/etc/fb_url_news_texts.proto",
+            "${projectDir}/etc/fb_url_stat.proto",
+            "${projectDir}/etc/fb_urls_info.proto",
+            "${projectDir}/etc/feature_store_java.proto",
+            "${projectDir}/etc/featured_snippet.proto",
+            "${projectDir}/etc/fetch_list.proto",
+            "${projectDir}/etc/fetcher_batcher.proto",
+            "${projectDir}/etc/fetcher_hbase.proto",
+            "${projectDir}/etc/fetcher_index_marker.proto",
+            "${projectDir}/etc/fetcher_load_logs.proto",
+            "${projectDir}/etc/fetcher_logs.proto",
+            "${projectDir}/etc/fetcher_storage.proto",
+            "${projectDir}/etc/firstmeet.proto",
+            "${projectDir}/etc/generic_storage.proto",
+            "${projectDir}/etc/gifest.proto",
+            "${projectDir}/etc/hbase.proto",
+            "${projectDir}/etc/homer_data.proto",
+            "${projectDir}/etc/puzzle.proto",
+            "${projectDir}/etc/youla_socdem_and_region.proto",
+            "${projectDir}/etc/youla_search_geo_info.proto",
+            "${projectDir}/etc/hydra_url_options.proto",
+            "${projectDir}/etc/image_bki.proto",
+            "${projectDir}/etc/image_blobs.proto",
+            "${projectDir}/etc/image_defs.proto",
+            "${projectDir}/etc/image_match_indexer.proto",
+            "${projectDir}/etc/imaginator.proto",
+            "${projectDir}/etc/infholder_blobs.proto",
+            "${projectDir}/etc/likemore_metrics.proto",
+            "${projectDir}/etc/lingvo_dump.proto",
+            "${projectDir}/etc/link.proto",
+            "${projectDir}/etc/linkgraph_blobs.proto",
+            "${projectDir}/etc/log_parser.proto",
+            "${projectDir}/etc/mycroft.proto",
+            "${projectDir}/etc/madriw_blobs.proto",
+            "${projectDir}/etc/markov.proto",
+            "${projectDir}/etc/mb_splitter.proto",
+            "${projectDir}/etc/mytracker.proto",
+            "${projectDir}/etc/ok.proto",
+            "${projectDir}/etc/pandao_imgsearcher.proto",
+            "${projectDir}/etc/parsed_blobs.proto",
+            "${projectDir}/etc/person.proto",
+            "${projectDir}/etc/phalanx_defs.proto",
+            "${projectDir}/etc/phantomas.proto",
+            "${projectDir}/etc/qddb_norm.proto",
+            "${projectDir}/etc/qddb_spc.proto",
+            "${projectDir}/etc/qembedder.proto",
+            "${projectDir}/etc/qessr_blobs.proto",
+            "${projectDir}/etc/qinformer.proto",
+            "${projectDir}/etc/qp_proxy_result.proto",
+            "${projectDir}/etc/query_db_stat_data.proto",
+            "${projectDir}/etc/query_translations.proto",
+            "${projectDir}/etc/quick_links.proto",
+            "${projectDir}/etc/quota_blobs.proto",
+            "${projectDir}/etc/readers_records.proto",
+            "${projectDir}/etc/recoman_pixel_info.proto",
+            "${projectDir}/etc/recommender.proto",
+            "${projectDir}/etc/recommender_events.proto",
+            "${projectDir}/etc/recommender_web_snippet.proto",
+            "${projectDir}/etc/recostream_pixel_info.proto",
+            "${projectDir}/etc/recostream_merge.proto",
+            "${projectDir}/etc/result.proto",
+            "${projectDir}/etc/search_result.proto",
+            "${projectDir}/etc/sekitei.proto",
+            "${projectDir}/etc/sekitei_experimental.proto",
+            "${projectDir}/etc/sessions_container.proto",
+            "${projectDir}/etc/silicon_data.proto",
+            "${projectDir}/etc/site_stats.proto",
+            "${projectDir}/etc/smp_history.proto",
+            "${projectDir}/etc/snippetdata.proto",
+            "${projectDir}/etc/social.proto",
+            "${projectDir}/etc/social_transfer.proto",
+            "${projectDir}/etc/spam_mi_matrix.proto",
+            "${projectDir}/etc/sputnik_logs.proto",
+            "${projectDir}/etc/stackexchange_storage.proto",
+            "${projectDir}/etc/stats.proto",
+            "${projectDir}/etc/stepan_pixel_info.proto",
+            "${projectDir}/etc/subj_schema.proto",
+            "${projectDir}/etc/suggests.proto",
+            "${projectDir}/etc/support_system.proto",
+            "${projectDir}/etc/tagger_blobs.proto",
+            "${projectDir}/etc/tapelogd.proto",
+            "${projectDir}/etc/target.proto",
+            "${projectDir}/etc/toplogs.proto",
+            "${projectDir}/etc/unique_user_values.proto",
+            "${projectDir}/etc/url_context.proto",
+            "${projectDir}/etc/urllog_record.proto",
+            "${projectDir}/etc/user_dump.proto",
+            "${projectDir}/etc/user_feedback.proto",
+            "${projectDir}/etc/user_history.proto",
+            "${projectDir}/etc/uuid.proto",
+            "${projectDir}/etc/vertical_transfer.proto",
+            "${projectDir}/etc/video.proto",
+            "${projectDir}/etc/vk_music.proto",
+            "${projectDir}/etc/vk_reco.proto",
+            "${projectDir}/etc/vydra.proto",
+            "${projectDir}/etc/webmaster_blobs.proto",
+            "${projectDir}/etc/webmaster_ds_blobs.proto",
+            "${projectDir}/etc/youla_adv_stat.proto",
+            "${projectDir}/etc/youla_carusel.proto",
+            "${projectDir}/etc/youla_starter.proto",
+            "${projectDir}/etc/youla_paid_ad.proto",
+            "${projectDir}/etc/youla_owner_data.proto",
+            "${projectDir}/etc/yandex_news_session.proto",
+            "${projectDir}/etc/yandex_news_document.proto",
+    ]
+}
+
+
+dependencies {
+    compile libraries.protobuf
+}
+
+
+jar {
+    version = project.version
+    manifest.attributes(
+            'Class-Path': configurations.runtime.files.collect { it.name }.join(' ')
+    )
+}
+
+
+task downloadProtoc() {
+    description "Download protobuf library ${protobufVersion}"
+
+    ext.tarDest = new File(buildDir, "protobuf-${protobufVersion}.tar.gz")
+    doLast {
+        if (!tarDest.exists()) {
+            download {
+                src protocUrl
+                dest tarDest
+                onlyIfModified = true
+            }
+        }
+    }
+
+}
+task unpackProtobuf(dependsOn: downloadProtoc) {
+    description "Unpack protobuf library ${protobufVersion}"
+    inputs.file(downloadProtoc.tarDest)
+
+    doLast {
+        def dirDest = new File(buildDir, "protobuf-${protobufVersion}")
+        if (!dirDest.exists()) {
+            def proc = "tar -xzf ${downloadProtoc.tarDest.toString()} -C ${buildDir}".execute()
+            proc.in.eachLine { line -> println line }
+            proc.err.eachLine { line -> println 'ERROR: ' + line }
+            proc.waitFor()
+
+            def protocSh = new File(protocShPath)
+            protocSh.text = """
+#!/bin/bash
+LD_LIBRARY_PATH=\"${protobufLibraryPath}/lib\" ${protocPath} \$@
+"""
+            protocSh.setExecutable(true, false)
+
+        }
+    }
+}
+
+
+task genJavaProto(dependsOn: [unpackProtobuf]) {
+    description = 'Generates Java class files from protobuf sources'
+    group = 'build'
+
+    inputs.files(protoFiles)
+    outputs.dir(new File("${generatedFileDir}"))
+
+
+    doLast {
+        new File("${generatedFileDir}").mkdirs();
+
+        inputs.getFiles().each { File file ->
+               println "Compile [${file.name}]"
+               def cmd =  "${protocShPath}    --java_out=${generatedFileDir} --proto_path=${protobufLibraryPath}/include    --proto_path=${file.parentFile.absolutePath}   ${file.absolutePath}"
+               def proc = cmd.execute()
+               proc.in.eachLine { line -> println line }
+               proc.err.eachLine { line -> println 'ERROR: ' + line }
+               if (proc.waitFor() != 0) {
+                   return 1;
+               }
+
+           }
+    }
+
+}
+
+task cleanSrcGen(type: Delete) {
+    outputs.upToDateWhen { false }
+    delete "${generatedFileDir}"
+}
+
+clean {
+    dependsOn cleanSrcGen
+}
+
+compileJava {
+    dependsOn genJavaProto
+    options.compilerArgs += [
+            "-Xlint:-static"
+    ]
+}
+
+
+subprojects {
+    group = "ru.mail.go.protogen"
+    version = protogenVersion
+}
+
+
+project("etc") {
+
+    apply plugin: 'ru.mail.go.release'
+
+    configurations {
+        published
+    }
+    task protoArchive(type: Zip) {
+//        baseName "proto-files"
+        from "."
+        include 'advert.proto'
+        include 'fetch_list.proto'
+        include 'crawl_state.proto'
+        include 'document_enums.proto'
+        include 'silicon_data.proto'
+        include 'image_defs.proto'
+        include 'fetcher_storage.proto'
+        include 'doc_parser.proto'
+        include 'gifest.proto'
+        include 'extracted_url.proto'
+        include 'image_bki.proto'
+        include 'social.proto'
+        include 'content_storage.proto'
+
+    }
+
+    install {
+        repositories.mavenInstaller {
+            pom.packaging = 'zip'
+        }
+    }
+
+
+    artifacts {
+        published protoArchive
+        archives protoArchive
+    }
+
+    artifactoryPublish {
+        dependsOn protoArchive
+    }
+}

@@ -1,0 +1,32 @@
+syntax = "proto3";
+package pb.suggests.vk_video;
+
+import "options.proto";
+
+message IdxMainData {
+    message Variant {
+        string query = 1 [(gogo.json).name = "query"];
+        uint32 uniq = 2 [(gogo.json).name = "uniq"];
+        uint32 flags = 3 [(gogo.json).name = "flags"];
+        uint32 uniq_safe = 4 [(gogo.json).name = "uniq_safe"];
+    };
+
+    string query = 1 [(gogo.json).name = "query"];
+    uint64 frequency = 6 [(gogo.json).name = "frequency"];
+    double freshness = 8 [(gogo.json).name = "freshness"];
+
+    repeated Variant variants = 5 [(gogo.json).name = "variants"];
+    repeated int64 glue_ids = 7 [(gogo.json).name = "glue_ids"];
+};
+
+message IdxMainNgramData {
+    string ngram = 1 [(gogo.json).name = "ngram"];
+    uint64 count = 2 [(gogo.json).name = "count"];
+    uint64 count_at_end = 3 [(gogo.json).name = "count_at_end"];
+};
+
+message IdxNgramStats {
+    string ngram = 1 [(gogo.json).name = "ngram"];
+    uint64 count = 2 [(gogo.json).name = "count"];
+    uint64 count_allowed = 3 [(gogo.json).name = "count_allowed"];
+};

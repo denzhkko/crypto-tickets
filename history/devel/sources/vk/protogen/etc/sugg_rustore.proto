@@ -1,0 +1,65 @@
+syntax = "proto3";
+package pb.suggests.rustore;
+
+import "options.proto";
+
+message UInt64ByUsageType {
+    uint64 no_usage = 1 [(gogo.json).name = "0"];
+    uint64 short_usage = 2 [(gogo.json).name = "1"];
+    uint64 long_usage = 3 [(gogo.json).name = "2"];
+};
+
+message IdxNavig {
+    string object_id = 1 [(gogo.json).name = "object_id"];
+
+    uint32 days_total = 2 [(gogo.json).name = "days_total"];
+    UInt64ByUsageType uniq_by_usage_type = 3 [(gogo.json).name = "uniq_by_usage_type"];
+};
+
+message IdxVariant {
+    string query = 1 [(gogo.json).name = "query"];
+    uint64 uniq_total = 2 [(gogo.json).name = "uniq_total"];
+};
+
+message IdxQuery {
+    string query = 1 [(gogo.json).name = "query"];
+
+    uint32 days_total = 2 [(gogo.json).name = "days_total"];
+    uint64 count_total = 3 [(gogo.json).name = "count_total"];
+    uint64 uniq_total = 4 [(gogo.json).name = "uniq_total"];
+    uint64 uniq_latest = 5 [(gogo.json).name = "uniq_latest"];
+
+    repeated IdxVariant variants = 6 [(gogo.json).name = "variants"];
+    repeated IdxNavig navigs = 7 [(gogo.json).name = "navigs"];
+
+    repeated uint64 glue_ids = 8 [(gogo.json).name = "glue_ids"];
+};
+
+message IdxNavigData {
+    string app_id = 1 [(gogo.json).name = "appId"];
+    string app_name = 2 [(gogo.json).name = "appName"];
+    string package_name = 3 [(gogo.json).name = "packageName"];
+    string icon = 4 [(gogo.json).name = "icon"];
+    uint32 age_legal = 5 [(gogo.json).name = "ageLegal"];
+};
+
+message StorageNavig {
+    uint64 nid = 1;
+    uint64 app_id = 2 [(gogo.json).name = "appId"];
+    string app_name = 3 [(gogo.json).name = "appName"];
+    string package_name = 4 [(gogo.json).name = "packageName"];
+    string icon = 5 [(gogo.json).name = "iconUrl"];
+    uint32 age_legal = 6;
+};
+
+message ResponseItem {
+    string text = 1 [(gogo.json).name = "text"];
+    string text_marked = 2 [(gogo.json).name = "textMarked"];
+    string rich_category = 3 [(gogo.json).name = "rich_category"];
+    StorageNavig rich_data = 4 [(gogo.json).name = "rich_data"];
+}
+
+message Response {
+    repeated ResponseItem items = 1 [(gogo.json).name = "items"];
+    repeated ResponseItem history = 2 [(gogo.json).name = "history"];
+};

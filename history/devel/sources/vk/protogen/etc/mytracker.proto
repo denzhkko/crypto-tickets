@@ -1,0 +1,297 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.rb;
+option java_outer_classname = "Mytracker";
+
+message MytrackerAppUser {
+    optional uint32 app_version_id = 1;
+    optional uint32 geo = 2;
+    optional uint32 adman_version_id = 3;
+    optional uint32 mytracker_version_id = 4;
+    optional uint64 am_stat = 5;
+    optional uint64 pm_stat = 6;
+}
+
+message MytrackerEvent {
+    message PairMsg {
+        optional bytes key = 1;
+        optional bytes value = 2;
+    }
+    optional bytes name = 1;
+    repeated PairMsg param = 2;
+    optional uint32 timestamp = 3;
+}
+
+message MytrackerMessage {
+    message Event {
+        message PairMsg {
+            optional bytes key   = 1;
+            optional bytes value = 2;
+        }
+        message Session {
+            optional int32 start = 1;
+            optional int32 end   = 2 [default = -1]; // -1 - interrupted session
+        }
+
+        optional uint32 app_event           = 1;
+        // 0 - unknown. Should never happen
+        // 1 - install
+        // 2 - install_referrer
+        // 3 - launch
+        // 4 - (skipped. Used to be 'appsinstalled' in old protocol)
+        // 5 - update
+        // 6 - custom event
+        // 7 - login
+        // 8 - registration
+        // 9 - invite
+        // 10 - purchase
+        // 11 - session
+        // 12 - iad_attribution
+        // 13 - level_achieved
+        // 14 - install_referrer2
+
+        repeated int32 timestamp            = 2;
+        // This timestamp is an offset relative to timestamp_base
+        // Some event types may have several timestamps (meaning they occured
+        // several times - at specified moments)
+
+        optional bytes name                 = 3; // for custom events
+        repeated PairMsg params             = 4; // for custom events and iad attributed installs
+
+        // these are expected to appear rarely and have tags > 15
+        optional int32 first_install_time   = 16; // for install
+        optional bytes referrer             = 17; // for install_referrer
+        optional uint32 timestamps_skipped  = 19; // if len(timestamp) > 1
+
+        // update params
+        optional bytes app_version          = 18; // for update
+        optional bytes from_app_version     = 48; // previous version
+        optional bytes from_app_build       = 49; // previous build
+
+        // purchase params
+        optional bytes revenue                 = 30;
+        optional bytes currency                = 31;
+        optional bytes receipt                 = 32;
+        optional bytes receipt_gz              = 50; // gzipped receipt
+        optional bytes product_id              = 33;
+        optional bytes transaction_id          = 34;
+        optional bytes original_transaction_id = 51;
+        optional bytes purchase_data           = 35;
+        optional bytes data_signature          = 36;
+
+        // purcahse_data params
+        optional bytes orderId              = 39;
+        optional bytes packageName          = 40;
+        optional bytes productDataId        = 41;
+        optional uint64 purchaseTime        = 42;
+        optional uint32 purchaseState       = 43;
+        optional bytes developerPayload     = 44;
+        optional bytes purchaseToken        = 45;
+        optional bool autoRenewing          = 46;
+
+        repeated Session sessions           = 37; // for app_event=11(session). Sessions duration
+
+        optional bytes installer            = 38;
+
+        optional bool has_iad_attribution   = 47; // iad attribution details in params
+
+        // --- Deeplink ---
+        optional bool get_attribution       = 52;
+        optional bytes deeplink             = 53;
+        optional uint32 deeplink_timestamp  = 54;
+        optional uint32 deeplink_key_type   = 55;
+        optional bool deeplink_error        = 56;
+        // === Deeplink ===
+
+        // Flag for non-verified purchases
+        optional bool not_verified          = 58;
+
+        // level_achieved param
+        optional bytes level                = 59;
+
+        // install_referrer2 params
+        optional uint32 click_timestamp     = 60;
+        optional uint32 install_timestamp   = 61;
+    }
+    message App {
+        // tags compatible with AppsInstalled.App
+        optional bytes bundle         = 1; // mobile_app.store_id
+        optional uint32 id            = 6; // mobile_app.id
+        optional bytes app_id         = 7; // mobile_app.app_id
+    }
+
+    // --- Base ---
+    optional bytes mytracker_version  = 1;  // tag < 15
+    optional uint32 mobile_app_pk     = 2;  // tag < 15
+    repeated Event events             = 3;  // tag < 15
+
+    optional uint32 banner            = 4; // banner ID
+
+    repeated App apps               = 9;  // apps installed
+    repeated fixed32 src_ip_chain   = 14; // added by rcvd.
+    optional fixed32 timestamp      = 15; // added by rcvd.
+
+    optional bytes app_id           = 16;
+    optional uint32 timestamp_base  = 17; // base time, from which all events' timestamps are offset
+    optional fixed32 user_ip        = 18; // client IP address
+    optional bytes user_ipv6        = 19; // client IPv6 address (binary)
+    optional uint32 remote_addr     = 83;
+    optional uint32 x_forwarded_for = 84;
+
+    optional uint32 geo             = 80; // region id deduced from IP
+    optional uint32 hacks           = 81; // applied hacks binary mask (RB-8591)
+    // 1 - timestamp_base, timestamp_send = event.timestamp, event.timestamp = 0 for install_referer event
+    // 2 - app_id got from store_id for android
+    // 4 - timestamp_base = timestamp_send - max(event.timestamp) for ios
+    // 8 - changed app_id from 25681355483282681380 to 06026796928914610107 (RB-12374)
+    optional bool tracker_v1        = 88; // message was generated by tracker v1 (location /appevent/)
+
+    optional fixed32 timestamp_send  = 82; // time on the device when message was sent
+
+    optional uint32 custom_events_skipped = 103; // custom events lost due to buffer overflow
+    optional uint32 random                = 104; // used for install id
+    // === Base ===
+
+
+    // --- App ---
+    optional bytes app_version      = 20;
+    optional bytes app_build        = 21;
+    optional bytes app_language     = 22;
+    optional bytes app_bundle       = 23;
+    optional uint32 mrgs_app_id     = 24;
+    // === App ===
+
+
+    // --- User ---
+    optional uint32 gender          = 30;
+    optional uint32 age             = 31;
+    optional bytes mrgs_user_id     = 32;
+    repeated int64 ok_id            = 33;
+    repeated uint32 vk_id           = 34;
+    repeated bytes email            = 35;
+    repeated uint32 icq_id          = 36;
+    repeated bytes custom_user_id   = 37;
+    repeated bytes phone            = 102;
+    // === User ===
+
+
+    // --- Device ---
+    optional bytes idfa                 = 40; // packed (.replace('-', '').decode('hex'))
+    optional bytes advertising_id       = 41; // packed (.replace('-', '').decode('hex'))
+    optional bytes android_id           = 42; // packed (.decode('hex'))
+    optional bytes android_device_id    = 43; // packed ( struct.pack('<Q', int(_)) )
+    optional bytes waid                 = 74; // packed (.decode('hex'))
+    optional bytes wna_id               = 89; // packed, same as advertising_id
+    optional bytes mna_id               = 93; // packed, same as advertising_id
+    optional bytes mrgs_device_id       = 44;
+    optional bytes mac                  = 96; // packed (.replace(':', '').decode('hex'))
+    optional bytes open_udid            = 85;
+    optional bytes ios_vendor_id        = 86; // packed, same as idfa
+    optional bytes ios_vendor_id_cached = 95; // packed, same as idfa
+    optional uint32 mid                 = 87;
+
+    optional int32 advertising_tracking_enabled = 45;
+    // 0 - unknown
+    // 1 - enabled
+    // 2 - disabled
+
+    optional bytes device           = 46; // rename ??
+    optional bytes euname           = 47;
+    optional bytes manufacture      = 48;
+
+    optional uint32 os              = 49;
+    // 0 - unknown
+    // 1 - other (failed to parse)
+    // 2 - iPhone OS
+    // 3 - Android
+    // 4 - Windows Mobile
+    optional bytes os_ver           = 50;
+    optional bytes os_lang          = 51;
+    optional bytes timezone         = 52;
+
+    optional uint32 screen_width    = 53;
+    optional uint32 screen_height   = 54;
+    optional uint32 dpi             = 94;
+    optional uint32 xdpi            = 97;
+    optional uint32 ydpi            = 98;
+    // === Device ===
+
+
+    // --- Network ---
+    optional bytes sim_loc              = 60;
+    optional uint32 operator_id         = 61;
+    optional bytes operator_name        = 62;
+    optional uint32 sim_operator_id     = 63;
+    optional bytes sim_loc_str          = 99;
+    optional bytes operator_id_str      = 100;
+    optional bytes sim_operator_id_str  = 101;
+    optional uint32 connection          = 64;
+    optional bytes connection_type      = 78;
+    optional uint32 bluetooth_enabled   = 73;
+    // 0 - unknown
+    // 1 - other (failed to parse)
+    // 2 - mobile
+    // 3 - wifi
+    // === Network ===
+
+
+    // --- Location ---
+    optional double lat = 70;
+    optional double lon = 71;
+    optional double speed = 77;
+    optional double location_accuracy = 75;
+    optional uint32 location_timestamp = 76;
+    optional uint32 location_provider = 72;
+    // 0 - unknown
+    // 1 - other (failed to parse)
+    // 2 - gps
+    // 3 - network
+    // 4 - passive
+    // 5 - bssid
+    // 6 - photo gps label
+    // 7 - cell
+    // === Location ===
+
+    // --- Environment ---
+    message Wifi {
+        optional bytes bssid       = 1;
+        optional bytes ssid        = 2;
+        optional int32 level       = 3; // same as rssi
+        optional uint32 wifi_id    = 5;
+        optional uint32 link_speed = 6;
+    }
+    optional Wifi wifi        = 90; // connected network
+    repeated Wifi wifi_around = 91; // available networks
+
+    message Cell {
+        optional bytes type     = 1;
+        optional uint32 cell_id = 2;
+        optional uint32 lac     = 3;
+        optional uint32 mcc     = 4;
+        optional uint32 mnc     = 5;
+        optional uint32 level   = 6;
+        optional int32 dbm      = 7;
+        optional uint32 asu     = 8;
+        optional uint32 ta      = 9;
+        optional uint32 rfcn    = 10;
+        optional uint32 bsic    = 11;
+        optional uint32 psc     = 12;
+        optional uint32 tac     = 13;
+
+        // cdma params
+        optional uint32 network_id      = 14;
+        optional uint32 system_id       = 15;
+        optional uint32 base_station_id = 16;
+        optional int32 cdma_lat         = 17;
+        optional int32 cdma_lon         = 18;
+        optional uint32 cdma_level      = 19;
+        optional uint32 evdo_level      = 20;
+        optional int32 cdma_dbm         = 21;
+        optional int32 evdo_dbm         = 22;
+        optional uint32 evdo_ecio       = 23;
+        optional uint32 cdma_ecio       = 24;
+        optional uint32 evdo_snr        = 25;
+    }
+    repeated Cell cell = 92;
+    // === Environment ===
+}

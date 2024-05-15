@@ -1,0 +1,645 @@
+syntax = "proto2";
+
+import "parsed_blobs.proto";
+import "image_defs.proto";
+import "document_enums.proto";
+import "result.proto";
+import "doc_parser.proto";
+import "content_storage.proto";
+import "sekitei.proto";
+import "qembedder.proto";
+
+// Blobs that are stored in the 'parsed' column family
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "ImageBlobs";
+
+
+/**********************************************/
+/********** Парсер картинок и HTML ************/
+/**********************************************/
+
+enum Tag {
+  ALT = 0;
+  TITLE = 1;
+  STRONG =2;
+  H1 = 3;
+  H2 = 4;
+  H3 = 5;
+  H4 = 6;
+  H5 = 7;
+  H6 = 8;
+  B = 9;
+  U = 10;
+  A = 11;
+  P = 12;
+
+  DIV = 13;
+  SPAN = 14;
+  TABLE = 15;
+  TR = 16;
+  TD = 17;
+  LINK = 18;
+  BR = 19;
+  FONT = 20;
+  CENTER = 21;
+  FAKE_TEXT = 22;
+  UL = 23;
+  LI = 24;
+  IMG = 25;
+  SECTION = 26;
+  ARTICLE = 27;
+  EM = 28;
+  BODY = 29;
+  HEAD = 30;
+  ROOT = 31; //маркер для отличия старого формата от нового.
+  TBODY = 32;
+}
+
+message TextItem {
+  required string text = 1;
+  optional string url = 2; // если текст внутри ссылки
+  repeated Tag tags = 3;
+  optional bool from_alt = 4 [default = false]; //
+  optional string title = 5; //   from_alt
+  optional string urlkey = 6;
+}
+
+//TODO unused?
+enum ParserID {
+  LIRU = 0; // здесь в будущем добавим парсеров
+}
+
+//TODO unused?
+message ExplicitDescription { // Используется парсерами фотохостингов и (в будущем) schema.org
+  required ParserID pid = 1;
+  optional string caption = 2;    // это photoName из ImageRef
+  optional string author = 3;
+  optional string path = 4;
+  repeated string keywords = 5;   // это photoTag из ImageRef
+  optional string imgUrl = 6;
+  optional string htmlUrl = 7;
+}
+
+/* Список картинок для урла. Юзается в IMAGE_LINKS@LINKS_CF */
+message ImageLinks {
+  repeated ImageLinksItem links = 1;
+}
+
+/* Элемент сообщения ImageLinks */
+message ImageLinksItem {
+  required string url = 1;
+}
+
+message ImagePropsWithUrl {
+  required string url = 1;
+  optional ImageProps imageProps  = 2;
+}
+
+message ImageItem {
+  required string url = 1; // @src
+  optional string alt = 2; // @alt
+  optional uint32 declaredWidth = 3; // @width
+  optional uint32 declaredHeight = 4; // @height
+  repeated ExplicitDescription descrs = 5; // потенциально для одной картинки может быть несколько сработавших парсеров
+  optional string title = 6; // @title
+  optional string urlkey = 7; // @urlkey
+}
+
+message VarItem {
+  // есть либо img, либо txt. oneof уже нельзя использовать
+  optional ImageItem img = 1;
+  optional TextItem txt = 2;
+
+  repeated VarItem children = 3;
+  optional Tag tag = 4;
+}
+
+message MetaAttr {
+  required string name = 1;
+  required string value = 2;
+}
+
+message MetaItem {
+  repeated MetaAttr attrs = 1;
+}
+
+message CustomItem {
+  required string url = 1;
+  repeated string texts = 2;
+}
+
+message GifestData {
+  repeated CustomItem items = 1;
+}
+
+message HtmlPage {
+  required uint32 porn = 1;
+  repeated VarItem items = 3;
+  optional FeatureList features_list = 4;
+  repeated MetaItem meta_items = 5;
+}
+
+message ParseHtmlInput {
+  required string url = 1;
+  required bytes content = 2;
+  required Encoding enc = 3;
+};
+
+message BOW {
+  repeated uint32 words = 1;
+}
+
+message DCT {
+  repeated float values = 1;
+}
+
+message ImageProps {
+  required uint32 width = 1;
+  required uint32 height = 2;
+  required ru.mail.go.webbase.parsing.img.ImageFormat format = 3;
+  required uint64 hash = 4; // simhash
+  required uint32 enthropy = 5; // value [0..100]
+  optional ru.mail.go.webbase.parsing.img.Exif exif = 6;
+  required uint32 size = 7;
+  optional double sharpness = 8; //value [0.0..10.0]
+  optional uint32 brightness = 9; //value [0.0..255.0]
+  optional uint32 contrast = 10; //value [0.0..127.0]
+  optional uint32 colors = 11;
+  optional bool transparent = 12;
+  optional ru.mail.go.webbase.parsing.img.CvFeatures cv_features = 13;
+  optional bool is_demotivator = 14;
+  optional uint32 short_hash = 15;
+  repeated uint32 visual_words = 16;
+  optional BOW bow = 17;
+  optional DCT dct = 18;
+  optional ru.mail.go.webbase.parsing.img.ImageClass category = 19;
+  optional bool animated = 20;
+  optional uint64 animation_length = 21;
+}
+
+message ParserSignature {
+  required bool img = 1;
+  required bool ppl = 2;
+  required uint64 time = 3;
+};
+
+message ImgParserBlob
+{
+  required bytes key = 1;
+  required ImageProps props = 2;
+  required ru.mail.go.webbase.parsing.img.Thumb thumb = 3;
+  optional ru.mail.go.webbase.parsing.img.VideoClip video_thumb = 4;
+  repeated float sifts = 5;
+  optional ru.mail.go.webbase.parsing.img.Thumb thumb_hidpi = 6;
+  optional ru.mail.go.webbase.parsing.img.VideoClip video_thumb_hidpi = 7;
+}
+
+message ImgParserBlobList
+{
+  required uint32 num = 1;
+  repeated ImgParserBlob images = 2;
+}
+
+
+/*************************************************************************************/
+/************************* Структуры для индексации **********************************/
+/*************************************************************************************/
+
+/* Вытаскивается из websites */
+message DomainStruct {
+  required string keyDomain = 1;
+  required string fullDomain = 2;
+  optional uint32 ic = 3;
+  optional uint32 trusted_ic = 4;
+  optional bool cloaking = 5;
+  optional uint32 nbrsq2 = 6;
+  optional WOTInfo wot_info = 7;
+  repeated gogo.storage.extra_info domain_extra_info = 8;
+  optional uint32 spam = 9;
+}
+
+/* Вытаскивается из webpages */
+message ImageStruct {
+  message AdditionalProps {
+    optional float porn_prob = 22;
+    optional float porn_prob_v2 = 23;
+  }
+  required string keyUrl = 1; // канонический реверснутый урл
+  required string fullUrl = 2; // полный урл, отдаем на верстку
+  optional ru.mail.go.webbase.parsing.img.Thumb thumb = 3; // в конечном счете required, но изначально тумбнейлы храним отдельно для скорости
+  required ImageProps props = 4;
+  optional uint32 broken = 5;
+  optional ru.mail.go.webbase.blobs.ExtraTextArray imageExtraTexts = 6;
+  optional uint32 preview_db = 7; // preview DB id
+  optional ru.mail.go.webbase.parsing.img.VideoClip video_thumb = 8; // video preview for animated GIFs
+  optional VisitInfo YGVisitInfo = 9;
+  optional AdditionalProps additional_props = 10;
+  optional qembedder.pb.Embedding cnn_embedding = 11;
+  optional qembedder.pb.Embedding cnn_serp_embedding = 12;
+  optional qembedder.pb.Embedding vit_serp_embedding = 14;
+  optional bool required_for_assessor = 13;
+  optional float aws_probability = 15;
+  optional qembedder.pb.Embedding img_match_embedding = 16;
+  optional bool previous = 17; // картинка от прошлого индекса (нужно при варке фаланксов)
+}
+
+/* Вытаскивается из webpages */
+message PageStruct {
+  required string keyUrl = 1; // канонический реверснутый урл
+  required string fullUrl = 2; // полный урл, отдаем на верстку
+  required HtmlPage page = 3;
+  optional ru.mail.go.webbase.blobs.ExtraTextArray extraTexts = 4;
+  optional ru.mail.go.webbase.blobs.ExtraTextArray imageExtraTexts = 5;
+  repeated gogo.storage.extra_info page_extra_info = 6;
+  optional uint32 spam = 7;
+  required float limiterRank = 8;
+}
+
+/* Вытаскивается из queries */
+message QueryStruct {
+  required string query = 1;
+  required string keyUrl = 2;
+  required double ctr = 3;
+  required uint32 imps = 4;
+  required uint32 gyimps = 5;
+};
+
+
+/* Восстановленная страница (вместе с картинками) */
+message FullPage {
+//  required DomainStruct domain = 1;
+  required PageStruct page = 2;
+  repeated ImageStruct image = 3;
+}
+
+
+/* Иформация о документе для разметки*/
+message LimitingInfo {
+  required string imageKeyUrl = 1;
+  required string pageUrl = 2;
+  required float limiterRank = 3;
+}
+
+/* Картинка как документ для индексации */
+message BoundImage {
+  required ImageStruct image = 1;
+  optional DomainStruct pageDomain = 3;
+  required string pageKeyUrl = 4; // канонический реверснутый урл
+  required string pageFullUrl = 5; // полный урл, отдаем на верстку
+  repeated TextBlock block = 6;
+  optional ru.mail.go.webbase.blobs.ExtraTextArray extraTexts = 7;
+  repeated QueryStruct query = 8;
+  required uint32 imagesMedium = 10; // number of medium-sized images on page
+  required uint32 imagesLarge = 11; // number of large-sized images on page
+  optional uint32 imagesDups = 12; // number of differently sized images sharing the same hash
+  required uint32 porn = 13;
+  optional uint32 preview_db = 14; // preview DB id
+  optional uint32 time = 15 [default=0]; // For news images - news time
+  optional uint32 maxPorn = 16; // max porn rank among all similar images by sim-hash
+  optional FeatureList featuresList = 17;
+  optional ClusteringResult clusteringResult = 18;
+  repeated gogo.storage.extra_info page_extra_info = 21;
+  optional uint32 imageCopies = 22; // number of copies of image
+  optional uint32 numPages = 23; // number of pages where image can be found
+  repeated uint32 pornStat = 24;
+  optional uint32 spam = 25;
+  optional uint32 altlen = 26;
+  optional uint64 cluster_id = 27;
+  optional uint32 numTextBlocks = 28;
+  optional float limiterRank = 29;
+}
+
+enum ZoneName {
+  ZN_ALT = 1;
+  ZN_CTX = 2;
+  ZN_PAGE_TITLE = 3;
+  ZN_H1 = 4;
+  ZN_H2 = 5;
+  ZN_H3 = 6;
+  ZN_PAGE_URL = 7;
+  ZN_IMAGE_URL = 8;
+  ZN_PH_AUTHOR = 9;
+  ZN_PH_CAPTION = 10;
+  ZN_PH_PATH = 11;
+  ZN_CTX_TEXT = 12;
+  ZN_OG = 13;
+}
+
+message TextBlock {
+  required string text = 1;
+  required ZoneName zname = 2;
+  optional uint32 dist = 3;
+  repeated Tag tags = 4;
+}
+
+message VisitInfo {
+  required int64 lastYVisit = 1;
+  required int64 lastGVisit = 2;
+//  required int64 lastClickTs = 5;
+//  required int32 clicks = 6;
+//  required int32 shows = 7;
+}
+
+message UrlPair {
+  required string image = 1;
+  required string page = 2;
+}
+
+/* Враппер для MR */
+message Any {
+  optional DomainStruct domain = 1;
+  optional ImageStruct image = 2;
+  optional PageStruct page = 3;
+  optional string keyDomain = 4;
+  optional string pageKeyUrl = 5;
+  optional FullPage fullPage = 6;
+  optional BoundImage boundImage = 7;
+  optional LimitingInfo limitingInfo = 8;
+  optional uint64 cluster_id = 9;
+  optional ru.mail.go.webbase.sekitei.Sekitei_m sekitei = 10;
+  repeated UrlPair duplicates = 11;
+}
+
+message ImageMarkerUrlTrace {
+  enum StageInfo {
+    PassedImageDump = 0;
+    PassedHtmlJoin = 1;
+    NotPassedHtmlJoin = 2;
+    PassedMaxHtmlJoin = 3;
+    NotPassedMaxPageLimit = 4;
+    PassedMaxPageLimit = 5;
+    NotPassedManualSimhash = 6;
+    PassedManualSimhash = 7;
+    NotPassedCollectionClustering = 8;
+    PassedCollectionClustering = 9;
+    NotPassedSimhashDup = 10;
+    PassedSimhashDup = 11;
+    NotPassedSekiteiLimiter = 12;
+    PassedSekiteiLimiter = 13;
+  }
+  required StageInfo stage = 1;
+  optional int64 limiterPos = 2;
+  optional string mainDup = 3;
+}
+
+/* Интерфейс для взаимодействия с мехинизмом кластеризации */
+
+message ImageTexts
+{
+  message PageTexts
+  {
+    repeated TextBlock text = 1;
+  }
+  repeated PageTexts texts = 1;
+}
+
+message ClusteringResult
+{
+  repeated float pagesWeights = 1;
+  repeated string keywords = 2;
+  repeated float kWeights = 3;
+}
+
+
+/***********************************/
+/*************** Unsorted **********/
+/***********************************/
+
+message HostWithImgUrls {
+  optional string host = 1;
+  repeated string url = 2;
+};
+
+message ThumbList {
+  repeated ru.mail.go.webbase.parsing.img.Thumb thumb = 1;
+}
+
+message ThumbDoc {
+  required string url = 1;
+  required ThumbList thumblist = 2;
+}
+
+message RatioStats {
+  required string query = 1;
+  required uint64 time = 2;
+  enum Kind {
+    WEB_SHOW = 0;
+    IMG_SHOW = 1;
+  }
+  required Kind kind = 3;
+  required string mrcu = 4;
+};
+
+message FaviconObj {
+  required string siteURL = 1;
+  required string faviconURL = 2;
+  required ru.mail.go.webbase.parsing.img.Thumb favicon = 3;
+  optional string faviconURL_high_res = 4;
+  optional ru.mail.go.webbase.parsing.img.Thumb favicon_high_res = 5;
+}
+
+message ImageStructInfo
+{
+  enum ImageSource
+  {
+    NEWS = 0;
+    TORG = 1;
+    AFISHA = 2;
+    APPS = 3;
+    GIFEST = 4;
+    RESERVED2 = 5;
+    RESERVED3 = 6;
+    RESERVED4 = 7;
+  }
+
+  required ImageSource source = 1;
+  required string page_full_URL = 2;
+  optional string title = 3;
+  optional string text = 4;
+  optional int64  image_time = 5;
+}
+
+message NewsImageInfo
+{
+  required int64  news_id = 1;
+  required string news_img_hash = 2;
+  required int32  src_id = 3;
+}
+
+message ImageKeywords
+{
+  repeated string keywords = 1;
+  repeated float  weights = 2;
+  optional int32  cluster_size = 3;
+}
+
+message ImageObj {
+  required string imageURL = 1;
+  required int32 result_code = 2;
+  optional bytes image = 3;
+}
+
+message ImageIndexObj
+{
+  required ThumbDoc thumb = 1;
+  required string xml_doc = 2;
+}
+
+message WOTInfo
+{
+  message WOTElement
+  {
+    required int32 confidence = 1;
+    required int32 reputation = 2;
+  }
+
+  message WOTCategory
+  {
+    required int32 category = 1;
+    required int32 value = 2;
+  }
+
+  optional WOTElement trust_worthiness = 1;
+  optional WOTElement vendor_reliability = 2;
+  optional WOTElement privacy = 3;
+  optional WOTElement child_safety = 4;
+  repeated WOTCategory category = 5;
+}
+
+message WOTInfoObj
+{
+  required string host = 1;
+  required WOTInfo wot_info = 2;
+}
+
+message UrlRankInfo
+{
+  required string rank_name = 1;
+  repeated ru.mail.go.webbase.ComputedValues.Record kvRecords = 2;
+  optional ru.mail.go.webbase.ComputedValues query_info = 3;
+}
+
+message UrlQueryInfo
+{
+  optional string url = 1;
+  optional int32 mb_number = 2;
+  optional string query = 3;
+  optional uint64 hash = 5;
+  optional string main_url = 6;
+  optional uint64 cluster_id = 9;
+  repeated UrlRankInfo ranks = 10;
+  optional string vk_music_hash = 11;
+}
+
+message UrlQueryInfoKey
+{
+  required string full_url = 1;
+  required string rank_name = 2;
+}
+
+message ThumbIndexKey
+{
+  required string full_url = 1;
+  required uint32 priority = 2;
+  required uint32 partition = 3;
+}
+
+message TextIndexKey
+{
+  required uint32 partition = 1;
+  required string keyDomain = 2;
+}
+
+message MarkersInfo
+{
+  enum Type {
+    Domain = 0;
+    Page = 1;
+  }
+
+  message PageInfo
+  {
+    required string url = 1;
+    required uint32 webMarkersCnt = 2;
+    required uint32 ImgMarkersCnt = 3;
+  }
+
+  required Type type = 1;
+  optional PageInfo pageinfo = 2;
+  optional ru.mail.go.webbase.sekitei.Sekitei_m sekitei = 3;
+}
+
+message ResClustInfo
+{
+   required int64 id = 1;
+   optional string res_part1 = 2;
+   optional string res_part2 = 3;
+}
+
+message DiscoveryVisitUrlInfo {
+  enum Source {
+    KVAKIN = 0;
+    TELEMETRY = 1;
+    INTERLEAVING_DOC_A = 2;
+    INTERLEAVING_DOC_B = 3;
+    WPIIDUMP = 4;
+  }
+
+  required Source source = 1;
+  required uint64 ts = 2;
+  required string url = 3;
+}
+
+message DarkImageLinks {
+  repeated DarkImageLinksItem items = 1;
+}
+
+message DarkImageLinksItem {
+  required string url = 1;
+  required uint32 httpStatus = 2;
+  optional uint32 width = 3;
+  optional uint32 height = 4;
+  optional int32 left = 5;
+  optional int32 top = 6;
+  optional int32 zindex = 7;
+  optional string meta = 8;
+}
+
+message EmbeddingData {
+  required string url = 1;
+  required qembedder.pb.Embedding embedding = 2;
+}
+
+
+
+message ImageHashItem {
+  enum Source {
+    PARSER = 1;
+    INTERLEAVING_DOC_A = 2;
+    INTERLEAVING_DOC_B = 3;
+    WPIIDUMP = 4;
+  }
+  required string url = 1;
+  required Source souce = 2;
+  required uint32 width = 3;
+  required uint32 height = 4;
+}
+
+
+message VideoFrames {
+  required ThumbDoc frames = 1;
+}
+
+message OCRSentence {
+  required string text = 1;
+  required float score = 2;
+  required int32 x = 3;
+  required int32 y = 4;
+  required int32 w = 5;
+  required int32 h = 6;
+}
+
+message OCRResult {
+  repeated OCRSentence sentences = 1;
+}

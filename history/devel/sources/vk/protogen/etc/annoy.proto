@@ -1,0 +1,47 @@
+syntax = "proto2";
+
+package annoy.pb;
+
+option java_outer_classname = "AnnoyData";
+
+message DocumentData
+{
+    optional int64 source_id = 1;
+    required int64 doc_id = 2;
+    repeated float features = 3;
+
+    ///
+    /// Original document info
+    ///
+    message OriginalInfo
+    {
+        optional string url = 1;
+        optional string text = 2;
+    }
+
+    ///
+    /// Debug information about Ok
+    ///
+    message OkInfo
+    {
+        required int64 group_id = 1;
+        required int64 topic_id = 2;
+    }
+
+    optional OriginalInfo original_info = 4;
+    optional OkInfo ok_info = 5;
+}
+
+
+
+message AnnoyOutput
+{
+    message AnnoyResult
+    {
+        required int64 doc_id = 1;
+        required float distance = 2;
+        optional int64 topic_id = 3;
+    }
+
+    repeated AnnoyResult results = 1;
+}

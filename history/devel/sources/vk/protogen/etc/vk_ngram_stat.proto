@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+package trends_vkd.pb;
+
+message NgramStat {
+    optional string text = 1;
+    required uint64 freq = 2;
+}
+
+message WindowStat {
+    repeated NgramStat unigram = 1;
+    repeated NgramStat bigram = 2;
+    repeated NgramStat trigram = 3;
+}
+
+message ScoreInfo {
+    optional string text = 1;
+    optional double score = 2;
+}
+
+message NgramScores {
+    optional ScoreInfo unigram_info = 1;
+    optional ScoreInfo bigram_info = 2;
+    optional ScoreInfo trigram_info = 3;
+}
+
+message VkNgramStat {
+    optional WindowStat now = 1;
+    optional WindowStat day_ago = 2;
+    optional WindowStat week_ago = 3;
+    optional double trend_score = 4;
+    optional uint64 index_version = 5;
+    optional NgramScores ngram_scores = 6;
+}

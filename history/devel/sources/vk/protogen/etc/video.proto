@@ -1,0 +1,508 @@
+syntax = "proto2";
+
+import "document_enums.proto";
+
+// Data for video search
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "Video";
+
+enum LiveVideoState {
+    LIVE_UNKNOWN = 0;
+    ONLINE  = 1; // трансляция идет
+    RECORD  = 2; // сохраненная запись трансляции
+    VK_LIVE = 3;
+}
+
+enum ProtobufSourceType {
+    UNKNOWN            = 0;
+    ODKL_KAFKA         = 1;
+    ODKL_KAFKA_ULTRA   = 2;
+}
+
+enum ExclusiveProviders {
+    NONE               = 0;
+    NMG_SERIES         = 1;
+    DORAMA_CHANNEL     = 2;
+    ANIME_CHANNEL      = 3;
+    TELESPORT_LALIGA   = 4;
+    TELESPORT_SERIE_A  = 5;
+}
+
+enum VideoQualityValue {
+    UNDEFINED_QUALITY = 0; // желательно не прописывать значение в поле videoQualityOptions
+                           // если тип качества невозможно определить и логировать ошибку,
+                           // чтобы потом добавить вариaнт в этот enum, если такой вариант 
+                           // создает сложности, то прописывает UNDEFINED_QUALITY и логируем
+    LOWEST = 1;
+    LOW    = 2;
+    MEDIUM = 3;
+    HIGH   = 4;
+    FULLHD = 5;
+    QUADHD  = 6;
+    ULTRAHD = 7;
+    MOBILE  = 8;
+};
+
+enum VideoQueryClass {
+  NOT_CLASSIFIED = 0;
+  NEWS = 1;
+  MOVIE = 2;
+  COMMON_MOVIE = 3;
+  INFOMOVIE_ACTOR = 4;
+  NEW_MOVIE = 5;
+  SUPERNEW_MOVIE = 6;
+  SERIES_WITH_EPISODE = 7;
+}
+
+// Статусы превьюшек для роликов
+// Должны быть целыми числами из 0..15
+enum VideoThumbnailStatus {
+  STATUS_INITIAL = 0;
+  STATUS_READY = 1;
+  STATUS_NETWORK_ERROR = 2;
+  STATUS_3XX = 3;
+  STATUS_4XX = 4;
+  STATUS_5XX = 5;
+  STATUS_NOTFOUND = 6; // 404 (not STATUS_4XX)
+  STATUS_FORBIDDEN = 7; // 403 (not STATUS_4XX)
+  STATUS_UNKNOWN = 8;
+  STATUS_SPECIAL_PREVIEW = 9;
+  STATUS_BAD_URL = 10; // Возникла URLError при обработке
+  STATUS_IMAGE_ERROR = 11;
+  STATUS_ADULT_SPECIAL_PREVIEW = 12;
+}
+
+message VideoThumbnail {
+  required bytes data = 1;
+  required string hash = 2;
+  required string video_url = 3;
+};
+
+// By what checker this video status has been modified last time.
+enum VideoCheckType {
+    PREVIEW_ACCESSIBILITY_CHECK = 1;
+    PREVIEW_ACCESSIBILITY_RECHECK = 2;
+    YOUTUBE_TOP_QUERIES_CHECK = 3;
+    YOUTUBE_POPULAR_CHECK = 4;
+    YOUTUBE_COMPLETE_CHECK = 5;
+    YOUTUBE_WEB_EMBEDDED_CHECK = 6;
+    VK_CHECK = 7;
+    DESCRIPTION_TEXT_CHECK = 8;
+    IMAGEHASH_CHECK = 9;
+    HOURLY_CHECK = 10;
+    PREVIEW_ACCESSIBILITY_CHECK_V2 = 11;
+    BIG_FETCHER_STATUS_CHECK = 12;
+    DARK_FETCHER_CHECK = 13;
+    HYDRA_CHECK = 14;
+    REDIRECT_FOUND_CHECK = 15;
+    UPLOAD_CHECK = 16;
+    PREVIEW_ACCESSIBILITY_CHECK_DARK = 17;
+}
+
+enum VideoLiveStreamType {
+    VIDEO_LIVE_STREAM_UNKNOWN = 0;
+    ODKL_LIVE_TV_APP = 1;
+    ODKL_LIVE_TV_ODLK = 2; // misprint, deprecate
+    ODKL_LIVE_TV_ODKL = 3;
+    VK_LIVE_WAITING = 4;
+    VK_LIVE_STARTED = 5;
+    VK_LIVE_ENDED = 6;
+    VK_LIVE_FAILED = 7;
+    VK_LIVE_UPCOMING = 8;
+    VK_LIVE_PRE_CHECK = 9;
+    VK_LIVE_NOT_STARTED = 10;
+}
+
+message Status {
+  optional bool success = 1;
+  optional int64 timestamp = 2;
+  optional int32 failsCount = 3;
+  optional VideoCheckType checkType = 4;
+}
+
+enum DzenCertainGrade {
+    DCG_UNKNOWN = 1;
+    DCG_SUBSCRIBERS_ONLY = 2;
+    DCG_GOOD = 3;
+    DCG_BOOST_WEAK = 4;
+    DCG_PESSIMIZE_STRONG = 5;
+    DCG_PESSIMIZE_WEAK = 6;
+}
+
+enum VideoOrientation {
+    VO_UNKNOWN = 1;
+    VO_HORIZONTAL = 2;
+    VO_VERTICAL = 3;
+}
+
+enum VideoType {
+  VT_UNKNOWN = 1;
+  VT_REGULAR = 2;  // Для длинных видео
+  VT_SHORT = 3; // Для шортс
+}
+
+message VideoImportDoc {
+
+  // General info
+  optional string name = 1; // название ролика
+  optional bool isDeleted = 2;
+  optional string urlVideo = 3; // URL странички просмотра ролика
+  optional string urlPreview = 4; // URL превьюшки ролика
+  optional bytes rawPreviewData = 5; // сама превьюшка
+  optional string description = 6; // (возможно длинное) описание ролика
+  repeated string category = 7;
+  repeated string tag = 8;
+  optional bool adult = 9; // контент для взрослых
+  optional int64 contentHash = 10; // хэш видеоконтента
+  optional int32 duration = 11; // продолжительность в секундах
+  optional int64 id = 12; // уникальный целочисленный идентификатор, jhash(url_video)
+  optional bool legal = 13; // легальный лицензионный контент {0,1}
+  optional int64 shottime = 14; // дата-время съемки, unix timestamp
+  optional int64 time = 15; // дата-время загрузки на хостинг, unix timestamp
+  optional bool hd = 16; // качество ролика HD (720p) и выше {0,1}
+  optional bool paid = 17; // ролик только для платного просмотра {0,1}
+  optional bool regreq = 18; // для просмотра ролика необходима регистрация на хостинге {0,1}
+  optional int32 fee = 19; // стоимость просмотра ролика
+  optional int32 feeCurrency = 20; // валюта в которой указана стоимость просмотра ролика, числовое значение по ISO 4217
+
+  // User info
+  optional int32 userId = 21; // идентификатор пользователя
+  optional string userUrl = 22; // URL странички автора ролика
+  optional string userNick = 23; // ник или имя автора
+  optional string userMail = 24; // email автора ролика
+
+
+  // Album info
+  optional string albumDescription = 25; // описание альбома к которому принадлежит ролик
+  optional int32 albumCommentCount = 26; // количество комментариев к альбому
+  optional int32 albumId = 27; // идентификатор альбома
+  optional string albumName = 28; // название альбома к которому принадлежит ролик
+  optional string albumUrl = 29; // URL альбома к которому принадлежит ролик
+  optional string originalAlbumTitle = 96;
+
+  // Stats info
+  optional int32 statVotes = 30; // количество голосов пользователей, по которым выставлен рейтинг (в случае с YouTube лайки+дизлайки)
+  optional int32 statLikes = 55; // количество лайков
+  optional int32 statDislikes = 56; // количество дизлайков
+  optional int32 statCommentsCount = 31; // количество комментариев к ролику
+  optional int32 statViews = 32; // количество просмотров по информации хостинга
+  optional int64 statRating = 33; // рейтинг по версии хостинга, нормированный к 0..2**32
+
+  optional string referenceId = 34; // I_have_no_idea_what_im_doing.jpg
+  optional int32 originalThumbWidth = 35; // ширина превьюшки до сжатия
+  optional int32 originalThumbHeight = 36; // высота превьюшки до сжатия
+  optional int64 importTime = 37; // таймстемп времени импорта ролика
+  optional int32 sourceId = 38; // айдишник хостинга
+  optional bool hasPlayer = 39; // возможность встраивания (работает для ютуба)
+  optional int32 episode = 40; // номер серии
+  optional string player = 41; // Ссылка на плеер
+  optional string videoType = 42; // Тип видеоплеера (flash или iframe)
+  optional int32 width = 43;   // Ширина видео
+  optional int32 height = 44;  // Высота видео
+  optional int32 season = 45; // номер сезона
+  optional int32 seriesId = 46; // идентификатор сериала (data/webvideo/tvseries_list.txt)
+  optional bool finishedSerial = 47; // закончился ли уже сериал
+
+  optional int64 byte_size = 48; // размер видеоконтента в байтах
+
+  optional string metadataSourceUrl = 49; // урл, который приходит на вход видеофетчеру (обычно этот урл содержит метаинформацию о видеоролике)
+
+  optional bool full_movie = 51; // видеоролик помечен как полная версия фильма
+
+  optional bool full_hd = 52; // качество ролика Full HD
+
+  optional bool allowInFastbase = 53; // видеоролик должен попасть в быстробазу, если проходит проверку по времени импорта
+
+  optional int64 contentId = 54; // id контента в рамках хостинга (актуален, например, для my.mail.ru)
+
+  optional VideoLiveStreamType liveStream = 57; // указывает, что видос является трансляцией (в этом случае возможна нулевая duration)
+
+  optional ExclusiveProviders exclusiveProvider = 58; // поставщик эксклюзивного контента
+
+  optional ProtobufSourceType protobufSourceTypeFlag = 59; // уточняет тип ноды если есть несколько вариантов с одним и тем же sourceId
+
+  optional bool allow_embed = 60; // признак того, что видео можно проигрывать на странице результатов поиска
+
+  optional string youtubeHash = 61;
+
+  optional string channelId = 62; // youtube channelId
+  optional int64 userId64 = 63; // идентификатор пользователя
+  optional LiveVideoState liveVideoState = 64; // состояние трансляции
+  optional string extPlatform = 65; // external platform player on hosting; field ovs:ext_platform from vk rss
+  repeated VideoQualityValue videoQualityOptions = 66; // варианты качества видео предлагаемые хостингом
+
+  optional int32 reposts_count = 67;
+  optional bool group_is_closed = 68;
+  optional bool group_is_verified = 69;
+  optional int32 group_members_count = 70;
+  optional bool group_trending = 71;
+  optional DzenCertainGrade dzen_certain_grade = 72;
+  optional VideoOrientation video_orientation = 73;
+  optional bool dzen_exists_in_reco_snapshot = 74 [default = false];
+  optional bool subscribers_only = 75 [default = false];
+  optional VideoType dzen_video_type = 76;
+  optional bool user_is_verified = 77 [default = false]; // Автор с галочкой?
+  optional int32 user_subscribers = 78; // Количество подписчиков автора
+  optional int32 adult_reports_count = 79; // количество жалоб на порнуху
+  optional bool is_probably_porn_by_vk_score = 80 [default = false]; // поле porn_score в json от VK > 0
+  optional string user_domain = 81; // домен для пользователя если есть
+  optional bool is_good_film = 82 [default = false]; // подсказка хостинга о качестве
+  optional bool is_good_cartoon = 83 [default = false]; // подсказка хостинга о качестве
+  optional bool is_good_serial = 84 [default = false]; // подсказка хостинга о качестве
+  optional bool is_update = 85; // сообщение являет обновлением например счетчиков
+  optional bool is_licensed_content_vk = 86; // отображение поля is_licensed_content в описания ВК видео
+  optional string content_hash_string = 87;
+  optional int64 similarity_cluster_id = 88; // кластер дубликатов на основе анализа содержимого
+  optional string contentIdString = 89; // источник отправляет content id как строку
+  optional int64 united_video_id = 90; // id в едином видео
+  optional bool is_promo_author = 91 [default = false]; // промо контент
+  repeated string videoQualityOptionsVK = 92; // качество видео роликов из набора low, 360, 480, 720, 1080, 1140, 2160
+  optional bool is_official_music_clip = 93 [default = false];
+  optional bool is_external = 94; // для ВК платформ внутри ВК -- false (live.vk.com)
+  optional string external_link = 95; // идентификатор видео для платформы
+
+  optional string audio_title = 97;
+  optional string audio_performer = 98;
+  repeated string hashtags = 99;
+};
+
+message IndexedVideo
+{
+  required VideoImportDoc video_import_doc = 1;
+  optional MovieMetadata movie_metadata = 2;
+  optional bool is_porn = 3;
+  optional int32 preview_mb_num = 4;
+};
+
+message FastVideoImportDoc {
+  required VideoImportDoc video_import_doc = 1;
+};
+
+message MovieMetadata
+{
+  enum MovieStatus
+  {
+    CURRENT_MOVIE = 1;
+    UPCOMING_MOVIE = 2;
+    PAST_MOVIE = 3;
+  }
+
+  required string title = 1;
+  optional string original_title = 2;
+  optional uint32 duration = 3;
+
+  // Status of movie at the moment when movie metadata was added
+  optional MovieStatus status = 4;
+
+  optional uint32 year = 5;
+  optional string country = 6;
+  optional string director = 7;
+  optional string producer = 8;
+  optional string actors = 9;
+  optional string genre = 10;
+  optional string description = 11;
+  optional float imdb_rating = 12;
+  optional int64 release_date = 13;        // epoch time
+  optional int64 premiere_ru = 14;         // int64 -> to avoid year 2038 problem
+  optional int64 afisha_id = 15;
+};
+
+message MoviesClassificationDoc
+{
+  required MovieMetadata metadata = 1;
+  repeated string url = 2;
+}
+
+message YouTubeRecommendations
+{
+  repeated string recommendations_ids = 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Below is data for video markup parsing in HTML pages.
+
+// Input HTML page for parsing.
+message VideoMarkupHtmlInput {
+  required string url = 1;
+  required bytes content = 2;
+  required Encoding enc = 3;
+};
+
+enum VideoMarkupType
+{
+  OPEN_GRAPH = 1;
+  SCHEMA_ORG = 2;
+  TWITTER_CARD = 3;          // See https://dev.twitter.com/cards/types/player
+  HTML5_VIDEO = 4;
+}
+
+// Description of video markup (if it exists) on HTML page.
+message VideoMarkupDescription
+{
+  required bool video_markup_detected = 1 [default = false];
+  optional VideoMarkupOpenGraph open_graph = 2;
+  repeated VideoMarkupSchemaOrg schema_org = 3;
+  optional VideoMarkupTwitterCard twitter_card = 4;
+  repeated VideoMarkupHtml5Video html5_video = 5;
+  required uint32 number_of_unparsed_open_graph_videos = 6 [default = 0];
+  required uint32 number_of_unparsed_schema_org_videos = 7 [default = 0];
+}
+
+// Open Graph markup content.
+message VideoMarkupOpenGraph
+{
+  required string title = 1;
+  required string page_url = 2;
+  required string preview = 3;
+  optional string video_player_url = 4;
+  optional string video_type = 5;
+  optional int32 width = 6;
+  optional int32 height = 7;
+  optional int32 duration = 8;
+  optional string description = 9;
+  optional bool adult = 10;
+  optional bool hd = 11;
+  optional bool full_hd = 12;
+  optional int32 season = 13;
+  optional int32 episode = 14;
+  optional bool allow_embed = 15;
+  optional string upload_date_iso8601 = 16;
+}
+
+// Schema.org markup content.
+message VideoMarkupSchemaOrg
+{
+  // Examine examples here:
+  // http://www.schema.org/VideoObject
+  enum DeclarationType
+  {
+    MICRODATA = 1;
+    RDFA = 2;
+    JSON_LD = 3;
+  }
+
+  required DeclarationType declaration_type = 1;
+  required string title = 2;
+  required string page_url = 3;
+  required string preview = 4;
+  optional string video_player_url = 5;
+  optional string video_type = 6;
+  optional int32 width = 7;
+  optional int32 height = 8;
+  optional string duration_iso8601 = 9;
+  optional string description = 10;
+  optional bool is_family_friendly = 11;
+  optional bool paid = 12;
+}
+
+message VideoMarkupTwitterCard
+{
+  required string card_type = 1;
+  required string title = 2;
+  required string page_url = 3;
+  required string preview = 4;
+  required string video_type = 5;             // always set to "text/html" (iframe) for Twitter Player Cards
+  optional string video_player_url = 6;
+  optional string stream_player_url = 7;      // if present then most likely it's stream. Then it's not used.
+  optional int32 width = 8;
+  optional int32 height = 9;
+  optional int32 duration = 10;               // parsed for Pornhub only
+  optional string description = 11;
+}
+
+// HTML 5 video markup content.
+message VideoMarkupHtml5Video
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Below is data for our search recommendations building
+
+message RecoBuildInfo
+{
+  optional string url_recommended = 1;
+  optional string recommended_for = 2;
+  optional IndexedVideo indexed_video = 3;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Below is data related with VK video recommendations
+
+message VkVideoView
+{
+  optional int32 user_id = 1;
+  optional string referrer_url = 2;
+  optional int64 start_time = 3;          // time inside video from which it has been watched
+  optional float viewed_part = 4;
+  optional bool our_recommendations = 5;
+  optional string video_url = 6;
+  optional VideoImportDoc video_metadata = 7;
+  optional int64 event_timestamp = 8;
+  optional string ref = 9;
+}
+
+message VideoView
+{
+  required string mrcu = 1;
+  required string video_url = 2;
+  optional VideoImportDoc video_metadata = 3;
+  optional int64 event_timestamp = 4;
+  optional string query = 5;
+}
+
+message VideoViewsList
+{
+  repeated VideoView views = 1;
+}
+
+message VideoViewForRecs
+{
+  required string video_url = 1;
+}
+
+message VkVideoSession
+{
+  optional int32 session_id = 1;
+  optional bool is_male_session = 2;
+  repeated VkVideoView views = 3;
+}
+
+message VideoJointWatchesData
+{
+  repeated VideoViewForRecs common = 1;
+  repeated VideoViewForRecs highly_recommended = 2;
+}
+
+message VkSessionOrVideoInfo
+{
+  optional VideoImportDoc video_metadata = 1;
+  optional bool is_indexed = 2;
+
+  optional int32 session_id = 3;
+  optional bool is_male_session = 4;
+  optional VkVideoView view = 5;
+}
+
+message VkVideoIds
+{
+  repeated string ids = 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Below is tvshows-related data
+message SeriesEpisode {
+  optional int32 series_id = 1;
+  optional int32 season = 2;
+  optional int32 episode = 3;
+
+  optional int32 duration = 4;
+  optional int32 sourceId = 5;
+  optional bytes video_table_key = 6;
+  optional bool trusted_source = 7;
+  optional string hosting = 8;
+}

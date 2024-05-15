@@ -1,0 +1,149 @@
+syntax = "proto2";
+
+package gogo.traits;
+
+message test_trait
+{
+    required int32 x = 1;
+    required int32 y = 2;
+}
+
+message test_aggregation
+{
+    required int32 sum_length = 1;
+}
+
+message domain_stat_trait
+{
+    repeated uint32 domains    = 1 [packed=true];
+    repeated uint32 docs       = 2 [packed=true];
+    optional uint32 total_docs = 3;
+}
+
+message shard_domain_pos
+{
+    optional uint32 min = 1;
+    optional uint32 max = 2;
+    optional float  avg = 3;
+    optional float  var = 4; // дисперсия
+}
+
+message shard_domain_stat
+{
+    required uint32 domain = 1;
+    optional uint32 docs = 2;
+    optional shard_domain_pos pos = 3;
+}
+
+message shard_domain_stat_trait
+{
+    repeated shard_domain_stat domains = 1;
+    optional uint32 total_docs = 2;
+}
+
+message shard_url_stat
+{
+    optional uint64 url = 1;
+    optional uint32 domain = 2;
+    optional uint32 pos = 3;
+    optional float sq_model_rank = 4;
+}
+
+message shard_url_stat_trait
+{
+    repeated shard_url_stat urls = 1;
+}
+
+message infocard_features
+{
+  repeated float features = 1 [packed=true];
+}
+
+message infocard_trait
+{
+  enum markup_source
+  {
+    QUERY = 1;
+    INDEX = 2;
+  }
+
+  repeated uint64 objects             = 1 [packed=true];
+  repeated float ranks                = 2 [packed=true];
+  repeated int32 positions            = 3 [packed=true];
+  repeated infocard_features features = 4;
+  repeated markup_source markups      = 5 [packed=true];
+}
+
+message companies_doc
+{
+  optional uint64 hash     = 1;
+  optional float  rank     = 2;
+  optional int32  position = 3;
+  repeated float  features = 4 [packed=true];
+}
+
+message companies_trait
+{
+  repeated companies_doc docs = 1;
+}
+
+message color_stat
+{
+  required int32 color_id          = 1;
+  required int32 color_popularity  = 2;
+}
+
+message category_stat
+{
+  required int64 category_id          = 1;
+  required int32 category_popularity  = 2;
+}
+
+message size_stat
+{
+  required int32 size_id          = 1;
+  required int32 size_type_id     = 2;
+  required int32 size_popularity  = 3;
+}
+
+message torg_china_trait
+{
+  optional int32 price_min                = 1;
+  optional int32 price_max                = 2;
+  repeated category_stat category_stat_l0 = 3;
+  repeated category_stat category_stat_l1 = 4;
+  repeated category_stat category_stat_l2 = 5;
+  repeated color_stat colors              = 6;
+  repeated size_stat sizes                = 7;
+  optional int32 pbonus_price_min         = 8;
+  optional int32 pbonus_price_max         = 9;
+  optional int32 price_usd_min            = 10;
+  optional int32 price_usd_max            = 11;
+  optional int32 price_usd_with_ship_min  = 12;
+  optional int32 price_usd_with_ship_max  = 13;
+  optional int32 price_usd_with_cod_ship_min  = 14;
+  optional int32 price_usd_with_cod_ship_max  = 15;
+}
+
+message vk_music_track_trait
+{
+  optional int32 official_titles_fully_matched = 1;
+}
+
+message total_searcher_docs_statistics
+{
+  optional int32 same_words_total_docs = 1;
+  optional int32 total_found_docs_count = 2;
+}
+
+message recipes_doc
+{
+  optional uint64 hash     = 1;
+  optional float  rank     = 2;
+  optional int32  position = 3;
+}
+
+message recipes_trait
+{
+  repeated recipes_doc docs = 1;
+}

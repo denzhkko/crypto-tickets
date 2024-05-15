@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package qembedder.pb;
+
+option java_outer_classname = "QEmbedder";
+
+message Embedding {
+    required int32 length = 1;
+    repeated float feature = 2;
+
+    message NamedEmbedding {
+        optional string name = 1;
+        repeated float component = 2;
+    }
+    repeated NamedEmbedding named_embedding = 3;
+    optional uint32 successed = 4;
+    optional uint32 cluster_size = 5;
+}

@@ -1,0 +1,186 @@
+syntax = "proto2";
+
+package ru.mail.go.sugg.indexer;
+option java_outer_classname = "SuggRecs";
+
+import "sputnik_logs.proto";
+
+message Clicks {
+    message Click {
+        optional int32  pos = 1;
+        optional uint64 timestamp = 2;
+    }
+    repeated Click click = 1;
+}
+
+message Query {
+    enum QType {
+        VARIANT = 0;
+        MISSPELL = 1;
+    }
+    required string query = 1;
+    required uint32 uniqs = 2;
+    required QType  type = 3;
+}
+
+message SpcFix {
+    required string type = 1;
+    required uint32 num = 2;
+}
+
+message RichObjStat {
+    required string type = 1;
+    required uint32 num = 2;
+}
+
+message SuggJobData {
+    optional string vertical = 1;           // вертикаль поиска
+    optional string queryNormalized = 2;    // нормализованный текст запроса
+    optional uint32 geo = 3;                // id гео-региона
+    optional string referer = 25;           // Referer: сохраняем для фильтрации при аггрегации по дням
+
+    optional uint64 timeStampMin = 4;
+    optional uint64 timeStampMax = 5;
+    optional uint64 timeStampSumm = 6;
+
+    optional uint32                                          uniqsUpper = 7;    // уников - грубо сверху, сумма по каждому дню
+    optional uint32                                          uniqsRobot = 21;   // уников - грубо сверху, из них роботов
+    optional ru.mail.go.webbase.SputnikRanker.UserRankValues uniqsLower = 8;    // уников - грубо снизу, за весь период
+
+    repeated Query queries = 9;             // запрос-тип-частота
+
+    optional double pornoProb = 26;         // вероятность, что запрос порно
+    optional uint32 numPornoProbHigh = 27;  // количество сессий с вероятностью порно выше порога
+    optional uint32 numPornoProbLow = 28;   // количество сессий с вероятностью порно ниже порога
+
+    // счётчики по сессиям
+    optional uint32 numSessions = 10;       // число всех сессий за день
+    optional uint32 numPorno = 11;          // число сессий с признаком "порно"
+    optional uint32 numRobot = 12;          // число сессий с признаком "робот"
+    optional uint32 numMusic = 13;          // число сессий с показом подмеса плеера    // TODO: DEL IT
+    optional uint32 numFromSugg = 14;       // число сессий, когда по этому запросу пришли из саджестов
+    optional uint32 numSerpClicks = 15;     // числе сессий с кликами в серп (1 сессия с любым кол-вом кликов == 1 клик за сессию)
+    optional uint32 numSpcBanned = 16;      // число сесий, где SpCh сказал, что запрос забанен (порно/маты/...)
+
+    optional uint64 summSerpCount = 17;             // кол-во результатов в серпе за последние serpCountLastDays
+    optional uint64 summSerpCountSessions = 18;     // кол-во сессий за последние serpCountLastDays
+
+    optional uint64 dateTime = 19;          // дата-время записи
+    optional double freshness = 20;         // свежесть запроса
+
+    repeated string      richObjs = 22;         // сет подмесов, показываемых по данному запросу
+    repeated RichObjStat richObjsStat = 23;     // статистика по подмесам
+
+    repeated SpcFix spcFixStat = 24;            // статистика по типам исправлений
+
+    // optional ru.mail.go.sugg.indexer.Clicks clicks = 16;    // клики; Пока сохраняем только 1 клик на сессию кол-во кликов в сессии
+}
+
+message FeatureEntry {
+    optional string name = 1;
+    optional double value = 2;
+}
+
+message SuggSiteResult {
+    optional string url = 1;
+    optional string title = 2;
+    optional string query = 3;
+    optional string favicon = 4;
+    optional bool is_nail = 5;
+}
+
+// Результаты демона саджестов
+message SuggQueryResult {
+    enum MisspellType {
+        NONE = 0;
+        GRAMMATIC = 1;
+        INVERTED = 2;
+        PUNTO = 3;
+    }
+
+    message AmigoMusicResult {
+        optional string artist = 1;
+        optional string album = 2;
+        optional string track = 3;
+    }
+
+    message MatchedPair {
+        required uint32 begin_pos = 1;
+        required uint32 end_pos = 2;
+    }
+
+    optional string text = 1;
+    optional MisspellType misspell_type = 2;
+    optional bool is_music = 3;
+    optional bool is_autocomp = 4;
+    optional bool is_news = 5;
+    optional string rich_category = 6;
+    optional string rich_data = 7;
+    optional AmigoMusicResult amigo_music = 8;
+
+    repeated FeatureEntry feature_list = 9;
+
+    optional string marked_text = 10;
+
+    optional uint32 freq = 11;
+    optional float weight = 12;
+    optional bool exact_match = 13;
+
+    optional uint32 geo_country_freq = 14;
+    optional uint32 geo_region_freq = 15;
+    optional float log_prob = 16;
+
+    optional SuggSiteResult site = 17;
+
+    optional uint32 rich_category_type = 18;
+
+    repeated MatchedPair matched_ranges = 19;
+}
+
+message SuggWnfEntry {
+    optional string tag = 3;
+    optional bool verdict = 1;
+    optional string comment = 2;
+}
+
+message SuggWnfResult {
+    optional string wnf_query = 1;
+    optional SuggWnfEntry wnf_result = 2;
+    repeated SuggWnfEntry wnf_entries = 3;
+}
+
+message SuggMobileAutocompResult {
+    required string paste_text = 1;
+    required string display_text = 2;
+}
+
+message SuggInlineAutocompResult {
+    required string completion_text = 1;
+}
+
+message SuggTotalFreq {
+    optional uint64 total = 1;
+    optional uint64 country = 2;
+    optional uint64 region = 3;
+}
+
+message SuggResultStat {
+    optional bool skip_exact_match = 1;
+    optional uint32 top_results = 3;
+    optional SuggTotalFreq total_freq = 4;
+}
+
+message SuggResults {
+    optional string query = 4;
+    optional uint32 rid = 7;
+    repeated SuggQueryResult queries = 1;
+    repeated SuggSiteResult sites = 2;
+    optional string error = 3;
+    optional SuggResultStat stat = 8;
+
+    optional SuggWnfResult wnf_result = 5;
+    repeated SuggMobileAutocompResult mobile_autocomps = 6;
+    repeated SuggInlineAutocompResult inline_autocomps = 9;
+
+    optional double end_ratio = 10;
+}

@@ -1,0 +1,154 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.parsing.img;
+
+option java_outer_classname = "ImageDefs";
+
+enum ImageFormat {
+  IF_JPEG = 0;
+  IF_PNG = 1;
+  IF_GIF = 2;
+  IF_UNKNOWN = 3;
+  IF_ICO = 4;
+  IF_BMP = 5;
+  IF_WEBP = 6;
+  IF_SVG = 7;
+}
+
+enum ImageClass {
+  IC_UNKNOWN = 0;
+  IC_PHOTO = 2;
+  IC_CLIPART = 3;
+  IC_LINEART = 4;
+}
+
+enum Interpolation {
+  ITP_NEAREST = 1;
+  ITP_LINEAR = 2;
+  ITP_CUBIC = 3;
+}
+
+enum BorderType {
+  REPLICATE = 1;
+  CONSTANT = 2;
+  REFLECT = 3;
+  WRAP = 4;
+  REFLECT_101 = 5;
+  TRANSPARENT = 6;
+  ISOLATED = 7;
+}
+
+message Exif {
+  optional double longitude = 1;
+  optional double lattitude = 2;
+  optional uint64 timestamp = 3;
+}
+
+// In CPP use Colors::default_instance().constant();
+// In Java use Colors.getDefaultInstance().getCLRBLACK()
+message Colors {
+  optional uint32 CLR_MULTI = 1 [default = 0x1]; // if the image has more than 2 main colors or hasn't a main colors
+  optional uint32 CLR_BW = 2 [default = 0x2]; // is the image black and white
+  optional uint32 CLR_RED = 3 [default = 0x4];
+  optional uint32 CLR_ORANGE = 4 [default = 0x8];
+  optional uint32 CLR_YELLOW = 5 [default = 0x10];
+  optional uint32 CLR_GREEN = 6 [default = 0x20];
+  optional uint32 CLR_BLUE = 7 [default = 0x40];
+  optional uint32 CLR_CYAN = 8 [default = 0x80];
+  optional uint32 CLR_PURPLE = 9 [default = 0x100];
+  optional uint32 CLR_BLACK = 10 [default = 0x200];
+  optional uint32 CLR_WHITE = 11 [default = 0x400];
+  optional uint32 CLR_SEPIA = 12 [default = 0x800];
+}
+
+message Rect {
+  required uint32 x = 1;
+  required uint32 y = 2;
+  required uint32 width = 3;
+  required uint32 height = 4;
+}
+
+message RectArray {
+  repeated Rect rect = 1;
+}
+
+message CvFeatures {
+  optional RectArray faces = 1;
+  optional double quality = 2;
+  optional double entropy = 3;
+  optional RectArray textboxes = 4;
+}
+
+message Thumb {
+  required bytes pic = 1;           // thumb itself
+  required uint32 width = 2;
+  required uint32 height = 3;
+  required ImageFormat format = 4;
+  optional string url = 6;
+  // TODO to remove
+  optional CvFeatures features = 7;
+  optional bool animated = 8;
+  optional uint32 originalWidth = 9;
+  optional uint32 originalHeight = 10;
+}
+
+message ThumbWithQueries {
+  optional Thumb thumb = 1;
+  repeated string queries = 2;
+}
+
+message VideoClip {
+
+  enum VideoCodec {
+	 VE_H264 = 0;
+	 VE_UNKNOWN = 255;
+  }
+
+  enum VideoContainer {
+	 VC_MP4 = 0;
+	 VC_UNKNOWN = 255;
+  }
+
+  required bytes clip = 1;          // video itself
+  required uint32 width = 2;
+  required uint32 height = 3;
+  required uint32 length = 4;      //length in milliseconds
+  required VideoCodec codec = 5;
+  required VideoContainer container = 6;
+  optional string url = 7;
+}
+
+message ClusterSeed {
+  repeated uint64 hash = 1;
+}
+
+message Cluster {
+  required uint64 id = 1;
+  repeated uint64 hash = 2;
+}
+
+message HashId {
+  required uint64 hash = 1;
+  required uint64 id = 2;
+}
+
+message IdOrRow {
+  optional uint64 id = 1;
+  optional bytes row = 2;
+}
+
+message RowCluster {
+  required uint64 id = 1;
+  repeated bytes row = 2;
+}
+
+message Duplicate {
+  required uint64 id = 1;
+  required string row = 2;
+  required Thumb thumb = 3;
+}
+
+message SerpSimilar {
+    required Thumb query = 1;
+    repeated Thumb serp = 2;
+}

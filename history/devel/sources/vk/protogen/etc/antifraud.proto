@@ -1,0 +1,163 @@
+syntax = "proto2";
+
+package ru.mail.go.anti_fraud;
+
+option java_outer_classname = "AntiFraud";
+
+message EmulatedFeatures
+{
+    message EmulatedFeature {
+        required uint32 key = 1;
+        optional uint32 val = 2;
+    }
+    required string id = 1;
+    required bool is_fraud = 2;
+    required string status = 3;
+    repeated EmulatedFeature features = 4;
+}
+
+message CheckRecord
+{
+    // header
+    required uint64 record_ts   =  1;
+    required string merchant_id =  2;
+    required string client_id   =  3;
+
+    // body - data
+    required string trans_id    =  4;
+    required uint32 currency    =  5;
+    optional uint32 deposit     =  6;
+    required uint64 ts          =  7;
+    required uint64 amount      =  8;
+    required string ip          =  9;
+    optional string ip_country  = 10;
+    optional string vid         = 11;
+    optional string order_id    = 12;
+    optional string ip_region   = 13;
+    optional string dmr_uid     = 14;
+
+    // body - control - card
+    required string card_id     = 15;
+    required string card_number = 16;
+    required string exp_date    = 17;
+    required string holder      = 18;
+    optional string country     = 19;
+    optional string bank_name   = 20;
+
+    // body - control - user
+    required string user_id     = 21;
+
+    // body - control - user - extra
+    optional string beneficiary_id = 22;
+}
+
+message UpdateRecord
+{
+    // header
+    required uint64 record_ts   =  1;
+    required string merchant_id =  2;
+    required string client_id   =  3;
+
+    // body - data
+    required string trans_id    =  4;
+    required uint32 status      =  5;
+    optional uint32 cvv         =  6;
+    optional uint32 i3ds        =  7;
+    optional uint32 is3ds       =  8;
+    optional string auth_code   =  9;
+    optional string acquirer    = 10;
+    optional string acquirer_code = 11;
+    optional uint32 eci         =  12;
+
+    // new fields
+    optional string txn_status  =  13;
+    optional string af_level    =  14;
+    optional string af_code     =  15;
+}
+
+//id;internal_id;mask;card_uid;auth_code;status;login;terminal;amount;timestamp;ip;nick;light_id;vid;dmr_uid;currency;af_bpc;af_mail;3ds
+// 0;          1;   2;       3;        4;     5;    6;       7;     8;        9;10;  11;      12; 13;     14;      15;    16;     17; 18
+message DumpRecord
+{
+    required string trans_id    = 1;
+    required string internal_id = 2;
+    required string card_number = 3;
+    required string card_id     = 4;
+    required string auth_code   = 5;
+    required string txn_status  = 6;
+    required string user_id     = 7;
+    required string client_id   = 8;
+    required uint64 amount      = 9;
+    required uint64 ts          = 10;
+    required string ip          = 11;
+    required string nick        = 12;
+    required string light_id    = 13;
+    required string vid         = 14;
+    required string dmr_uid     = 15;
+    required uint32 currency    = 16;
+    required string af_bpc      = 17;
+    required string af_mail     = 18;
+    required uint32 i3ds        = 19;
+
+    required string body        = 20;
+}
+
+message LogRecord
+{
+    required string qid = 1;
+    required uint64 log_ts = 2;
+
+    enum RecordType {
+        CHECK = 0;
+        UPDATE = 1;
+    }
+    required RecordType type = 3;
+
+    optional CheckRecord check_record   = 4;
+    optional UpdateRecord update_record = 5;
+
+    required string body = 6;
+}
+
+message Record
+{
+    required string trans_id = 1;
+
+    optional LogRecord log_record = 2;
+    optional DumpRecord dump_record = 3;
+}
+
+message Transaction
+{
+    required string trans_id    = 1;
+    required string card_number = 2;
+    required string card_id     = 3;
+    optional string auth_code   = 4;
+    required string txn_status  = 5;
+    required string user_id     = 6;
+    required string client_id   = 7;
+    required uint64 amount      = 8;
+    required uint64 ts          = 9;
+    required string ip          = 10;
+    optional string ip_country  = 11;
+    optional string card_country= 12;
+    optional string nick        = 13;
+    optional string light_id    = 14;
+    optional string vid         = 15;
+    optional string dmr_uid     = 16;
+    required uint32 currency    = 17;
+    optional string af_bpc      = 18;
+    optional string af_mail     = 19;
+    optional uint32 i3ds        = 20;
+    optional string bank_name   = 21;
+    optional uint32 status      = 22;
+    optional string beneficiary_id = 23;
+    optional string exp_date    = 24;
+    optional string holder      = 25;
+    optional string af_code     = 26;
+
+    optional string check_body  = 27;
+    optional string update_body = 28;
+    optional string dump_body   = 29;
+}
+

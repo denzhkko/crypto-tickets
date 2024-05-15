@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package cosmo.pb;
+
+import "cosmo_result.proto";
+
+option java_outer_classname = "StepanPixelMetaInfoProto";
+
+message StepanPixelMetaInfo
+{
+    optional Metrics metrics                    = 1;
+    optional DocumentInfo document_info         = 2;
+    optional InterleavingInfo interleaving_info = 3;
+}

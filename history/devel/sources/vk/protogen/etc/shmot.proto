@@ -1,0 +1,83 @@
+syntax = "proto2";
+
+// package shmot.pb;
+// option java_outer_classname = "Shmot";
+
+enum FigureType
+{
+    Pear = 0;
+    Apple = 1;
+    Column = 2;
+    InverseTriangle = 3;
+    Hourglass = 4;
+    Rectangle = 5;
+    PearMan = 6;
+    AppleMan = 7;
+    TrapezeMan = 8;
+    InverseTriangleMan = 9;
+    RectangleMan = 10;
+}
+
+enum CurrencyType
+{
+    RUB = 1;
+    KZT = 2;
+}
+
+message ShmotData
+{
+    message Feature
+    {
+        required string name = 1;
+        optional float value = 2;
+    }
+    
+    message SimilarItem
+    {
+        required int64 id = 1;
+        optional float similarity = 2;
+    }
+    
+    message MarketInfo
+    {
+        required string url = 1;
+        optional string pic_url = 2;
+        optional float price = 3;
+        repeated int32 available_sizes = 4;
+        optional string title = 5;
+        optional string description = 6;
+        optional string vendor = 7;
+        optional CurrencyType currency = 8;
+    }
+    
+    required int64 id = 1;
+    optional int32 category_id = 2;
+    optional string url = 3;
+    optional int64 ts = 4;
+    repeated Feature features = 5;
+    repeated SimilarItem similar_items = 6; //sorted by similarity
+    optional MarketInfo admitad_info = 7;
+    optional MarketInfo torg_info = 8;
+    optional string pic_url = 9; //deprecated, should use img_urls[0]
+    optional int64 firstmeet_ts = 10;
+    repeated string img_urls = 11;
+    optional string site = 12;
+    optional int64 site_hash = 13;
+    optional int32 geo_id = 14;
+    optional MarketInfo direct_market_info = 15;
+    optional string rb_url = 16;
+}
+
+message ItemRank
+{
+    required int64 id = 1;
+    optional float rank = 2;
+}
+    
+message CategoryItemsForFigure
+{
+    required FigureType figure_type = 1;
+    required int32 category_id = 2;
+    repeated ItemRank items = 3;
+}
+

@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+// Blobs for siteStats
+package ru.mail.go.webbase.stats;
+
+option java_outer_classname = "CommonStatsBlobs";
+
+message BlockPair {
+	required string name   = 1;
+	optional int64 counter = 2 [ default = 0 ];
+}
+
+message Block {
+	required string blockName   = 1;
+	repeated BlockPair counters = 2;
+}
+
+message SiteStats {
+	required int64 totalNum = 1;
+	repeated Block blocks   = 2;
+}
+

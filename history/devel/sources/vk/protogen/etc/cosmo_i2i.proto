@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package cosmo.pb;
+
+option java_outer_classname = "CosmoI2I";
+
+message ViewedData
+{
+  required int64 hashTo = 1;
+  required int64 count = 2;
+  required int64 lastTs = 3;
+}
+
+message CosmoI2i
+{
+  repeated ViewedData viewed_data = 1;
+}

@@ -1,0 +1,54 @@
+syntax = "proto2";
+
+package cosmo.pb;
+
+import "cosmo.proto";
+
+
+message PropertyVersion
+{
+    enum Provider
+    {
+        UNKNOWN = 0;
+        SOURCE = 1;
+        DOCUMENT = 2;
+    }
+
+    required Provider provider = 1;
+    required string name = 2;
+    required uint32 version = 3;
+}
+
+message BinLogEvent
+{
+    enum EventType
+    {
+        UNKNOWN_EVENT = 0;
+        // Start point of the log
+        // It is signal to invalidate previous log state
+        LOG_START = 1;
+        // Data events
+        WRITE_EVENT = 2;
+        UPDATE_EVENT = 3;
+        // Snaphot scopes
+        START_SNAPSHOT_EVENT = 4;
+        FINISH_SNAPSHOT_EVENT = 5;
+        // Data event
+        DELETE_EVENT = 6;
+    }
+
+    message EventData
+    {
+        optional SourceData source_data = 1;
+        optional DocumentData document_data = 2;
+        optional DocumentSourceLink document_source_link = 3;
+        optional PropertyVersion property_version = 4;
+    }
+
+    required int64 timestamp = 1;
+    required int64 epoch = 2;
+    required int32 shard = 3;
+    required EventType type = 4;
+    optional EventData data = 5;
+}
+

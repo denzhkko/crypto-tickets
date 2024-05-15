@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+package afisha.request;
+
+import "afisha_additive_storage.proto";
+
+enum QueryType {
+    UNDEFINED = 0;
+    CINEMA_AND_MOVIE = 1;
+    CINEMA_ONLY = 2;
+    MOVIE_ONLY = 3;
+    DISCOVERY = 4;
+    HEALTH_CHECK = 5;
+}
+
+message QueryInfo {
+    optional bool utf8 = 1 [default = true];
+    optional string qid = 2;
+    optional string ip = 3;
+    optional string query = 4;
+    optional string version = 5 [default = "1"];
+
+    optional bool health_check = 6 [default = false];
+    optional bool discovery = 7 [default = false];
+
+    optional uint32 selected_day = 8 [default = 0];
+    repeated uint64 cinema_ids = 9;
+    optional uint64 movie_id = 10;
+    optional uint32 movie_country_rb = 11;
+    optional uint32 movie_year = 12;
+
+    optional uint32 rb_code = 13;
+    optional uint32 rb_city = 14;
+
+    optional afisha.storage.GpsInfo user_location = 15;
+
+    optional uint32 cinemas_limit = 16;
+    optional uint32 movies_limit = 17;
+    optional uint32 days_limit = 18;
+    optional uint32 allowed_next_day_hours = 19;
+}
+

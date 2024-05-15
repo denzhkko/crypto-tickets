@@ -1,0 +1,65 @@
+syntax = "proto2";
+
+package ru.mail.go.snippet.featured;
+
+option java_outer_classname = "FeaturedSnippet";
+
+
+enum Source {
+    NONE = 0;
+    OTVET_MAIL_RU = 1;
+    BOLSHOY_VOPROS = 2;
+    FB = 3;
+    ZNANIJA = 4;
+    KAK_PROSTO = 5;
+    WIKI_RU = 6;
+    SYL = 7;
+    SOVET_CLUB = 8;
+    ELHOW = 9;
+    SOVETS = 10;
+    OK = 11;
+}
+
+message Img {
+    required string url = 1;
+}
+
+message QuestionInfo {
+    optional string category = 1;
+    optional string sub_category = 2;
+}
+
+message Question {
+    required string text = 1;
+    optional QuestionInfo info = 2;
+}
+
+message QuestionComment {
+    required string text = 1;
+}
+
+message AnswerInfo {
+    optional bool is_best = 1;
+    optional int32 likes_count = 2;
+    optional int32 comments_count = 3;
+    optional int32 author_rating = 4;
+}
+
+message Answer {
+    required string text = 1;
+    repeated Img img = 2;
+    optional AnswerInfo info = 3;
+}
+
+message QAItem {
+    required Source source = 1;
+    required Question question = 2;
+    repeated Answer answers = 3;
+    optional QuestionComment question_comment = 4;
+}
+
+message Document {
+    required string uri = 1;
+    repeated QAItem qa_items = 2;
+}
+

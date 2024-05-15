@@ -1,0 +1,21 @@
+syntax = "proto2";
+
+package ru.mail.go.toplogs.pb;
+
+message Toplog
+{
+    optional uint32 ts = 1;
+    optional string ip = 2;
+    optional string vid = 3;
+    optional int32 gender_age = 4;
+    optional string url = 5;
+    optional string ref = 6;
+    optional string email = 7;
+    optional string ok_id = 8;
+    optional string vk_id = 9;
+
+    optional string c_url = 10;
+    optional string c_ref = 11;
+    optional int64 url_doc_id = 12;
+    optional int64 ref_doc_id = 13;
+}

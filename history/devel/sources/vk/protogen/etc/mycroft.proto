@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package mycroft.v1;
+
+option cc_enable_arenas = true;
+
+message UserActivitySummary
+{
+    int64 user_id = 1;
+    int64 last_reaction_time = 2;
+    uint64 reaction_cnt = 3;
+    uint64 sites_for_user_total_cnt = 4;
+}

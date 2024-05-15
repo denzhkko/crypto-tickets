@@ -1,0 +1,116 @@
+syntax = "proto2";
+
+// crawler blobs
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "CrawlerBlobs";
+
+import "document_enums.proto";
+
+message CrawlDetails {
+    required int64 lastCrawlDate = 1; // timestamp of last page crawling time in SECONDS
+
+    enum stateTypes {
+      ST_NEW = 0;   // new document - fake default status
+      ST_FETCHED = 1;   // successfully downloaded page
+      ST_FAILURE = 2;   // page access failure HTTP 500, timeout, etc.
+      ST_REMOVED = 3;   // URL cannot have content in our base (4xx, robots.txt, etc.)
+      ST_REDIRECT = 4;  // URL redirected
+      ST_DISABLED = 5;  // URL is successfully downloaded, but not suits our index criterias
+    };
+
+    required stateTypes state = 2 [default = ST_NEW]; // document state
+    required uint32 stateDuration = 3 [default = 1]; // only and same state duration at this time
+    
+    optional bool isIndexed = 4 [default = false]; // is document suitable for our index by fetcher's opinion (language, content type, encoding)
+
+    enum indexerCommand {
+      IDX_NOTHING = 0;
+      IDX_ADD = 1;
+      IDX_REMOVE = 2;
+      IDX_REDIRECT = 3;
+    };
+    optional indexerCommand idxCommand = 5 [deprecated=true]; // legacy
+
+// if url is ST_FAILED or similar
+    enum errorTypes {
+        ERR_NONE = 0;
+        ERR_RESOLVE = 1; // DNS server responded 'domain not exist' (may sometimes happen with live domains - when external DNS server is overloaded)
+        ERR_CONNECTION = 2; // while downloading there was an network error (30 sec timeout, connection lost, host not responding)
+        ERR_EMPTY_HEAD = 3; // response did not contain anything that looked like HTTP HEAD
+        ERR_INVALID_PROTOCOL = 4; // not HTTP/1.*
+        ERR_SOCKET_BUF_SIZE = 5; // buffer overflow - must be an fetcher internal error or [s]possible attack (rly?)[/s] my paranoia
+        ERR_HEAD_SIZE = 6; // HEAD was more than 10K
+        ERR_BODY_SIZE = 7; // BODY was more than 10M
+        ERR_PARSING = 8; // document was not valid, or some error occured while parsing
+        ERR_DECOMPRESS = 9; // document was gzipped - and we failed to decompress it
+        ERR_UNCHUNK = 10; //  document was with Transfer-encoding: chunked - and we failed to unchunk it
+    }
+    optional errorTypes error = 6 [default = ERR_NONE]; // error details for ST_FAILURE
+
+// data from hashes equality
+    enum checkTypes {
+      CH_UNKNOWN = 0; // we haven't got enough information
+      CH_CHANGED = 1; // document has changed
+      CH_EQUAL = 2; // document stays the same
+      CH_NOT_MODIFIED = 3; // server responded 304
+    }
+    optional checkTypes checkState = 7 [default = CH_UNKNOWN]; // last equality check result
+    optional uint32 duration = 8 [default = 0]; // the same equality check result duration
+
+// if url is ST_DISABLED or similar
+    enum disableTypes {
+        D_UNKNOWN = 0;
+        D_NOINDEX = 1; // <meta robots='noindex'> - forbids for crawlers to index content
+        D_CANONICAL = 2; // <link rel="canonical" href= - webmaster meant that URL by 'href' is full copy of this URL and must be considered as main
+        D_BAD_LANGUAGE = 3; // not RU, EN, BY, KZ, UA language and no high priority signals
+        D_UNKNOWN_LANG_TYPE = 4; // non HTML document with not RU, EN, BY, KZ, UA language
+        D_N_HTML_INFO = 5; // not HTML, DOC, PDF, RTF [...] document
+        D_NOT_SITEMAP = 6; // url/sitemap.xml which is not sitemap really
+        D_BAD_MIME_TYPE = 7; // Content-Type in HTTP HEAD was not in our valid list (ex. application/octet-stream)
+        D_IS_GARBAGE = 8; // document have too much 'garbage' symbols - spaces, numbers, dots ( >80% )
+        D_INF_REDIRECT = 9; // infinite cycled redirects
+    }
+    optional disableTypes disableReason = 9 [default = D_UNKNOWN];
+
+// minset for duplicates
+    optional bytes hash = 10;
+
+// if url is ST_REMOVED or similar
+    enum removeTypes {
+        RM_UNKNOWN = 0;
+        RM_NOT_EXIST = 1; // document returned 4xx code (should be confirmed by statusCode field)
+        RM_ROBOTS = 2; // document was disabled by Robots Filter Job in HBase - robots.txt in HBase forbids this url to be loaded
+        RM_DUPLICATE = 3; // document was disabled by duplicates job - it looks too simular to some other document in base and have lower rank
+        RM_BLACKLIST = 4; // document was removed by our manual blacklist
+        RM_QUOTA = 5; // document was removed by scheduler - it is over quota for this site in our base/index
+        RM_POSSIBLE_CUSTOM_PAGE = 6; // not exist in base - this state is stub
+        RM_MERGE_DISABLED = 7; // in the beginning of downloading cycle this url was OK, but now is disabled by robots.txt
+        RM_MERGE_BANNED = 8; // in the beginning of downloading cycle this url was OK, but now is disabled by blacklist
+        RM_MERGE_DUPLICATE = 9; // in the beginning of downloading cycle this url was OK, but now is disabled as duplicate
+        RM_MERGE_MULTI = 10; // in the beginning of downloading cycle this url was OK, but now is disabled because of two or more of above
+        RM_ROBOTS_CLEAN_PARAM = 11; // document was disabled by robots filter -> clean param section
+        RM_BY_SERVICE_API = 12; // remove status get from web service api
+        RM_DEAD_HOST = 13; // document disabled by whois/nslookup
+        RM_DEAD_HOST_RESTORE = 14; // document was disabled by whois/nslookup (now need download)
+    }
+    optional removeTypes removeReason = 11 [default = RM_UNKNOWN];
+
+    optional string url = 12; // full url for the operation
+    optional int32 urlData = 13; // url data from batch generator
+    
+    optional RobotsState robotsState = 14; // robots check in fetcher result
+
+// incapsulating data from parsing
+    optional ContentType contentType = 15;
+    optional Encoding encoding = 16;
+    optional Language language = 17;
+    optional int32 statusCode = 18;
+    optional string httpHead = 19;
+
+    optional uint64 firstInStatus = 20; // timestamp in SECONDS when first time in a current row state became present
+    optional SourceMark sourceMark = 21;
+    optional uint32 contentSize = 22;
+    optional uint32 cleanContentSize = 23;
+    optional RenderType renderType = 24;
+    optional bool scriptRemoved = 25; // scripts removed from content
+}

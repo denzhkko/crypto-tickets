@@ -1,0 +1,76 @@
+syntax = "proto2";
+
+package com.indexisto.back.units.franz.domain;
+
+option java_outer_classname = "FranzDocProtos";
+
+message FranzDoc {
+
+    required string id = 1; // indexisto ID
+    repeated string stream_ids = 2;
+    required string page_uri = 3; // URI
+    required int32 page_status = 4; // HTTP code
+    required bytes page_source = 5; // raw content from net
+    required int64 parsed_ts = 6;
+
+    optional string page_canonical_uri = 7;
+
+    optional int64 published_ts = 8;
+
+    optional string title = 9;
+
+    optional string body = 10;                           // final body
+    optional string body_presented_json = 11;
+
+    repeated string tags = 12;
+
+    optional string description = 13;
+    optional string description_rss = 14;
+
+    optional string site_name = 15;
+
+    optional string image = 16;                     // oneof with image_gif
+    optional string image_gif = 17;                 // oneof with image
+    repeated string images = 18;                    // only for galleries
+    repeated string images_gif = 19;                // only for galleries
+    repeated string images_all = 20;                // all images URLs/IDs that were found in the document
+    optional int32 images_total = 21;               // images_all.length
+
+    optional string author_name = 22;
+    optional string author_url = 23;
+
+    optional string video_youtube = 24;
+    optional string video_vimeo = 25;
+
+    optional string category = 26;                      // page category/rubric on site
+    optional string sub_category = 27;                  // ~ one level deeper
+
+    optional string last_mask_name = 28;                   // parser system meta varible, which mask was the last for the document
+    optional float last_mask_level = 29;                  // ~
+    optional string body_parser = 30;
+
+    repeated FranzImageMeta image_metas = 31;
+}
+
+
+message FranzImage {
+
+    required FranzImageMeta meta = 1;
+    optional bytes data = 4;        // image data
+}
+
+
+message FranzImageMeta {
+
+    required string uri = 1;
+    required string stream_id = 2;
+    required int32 status = 3;      // http status code(-1 for errors occured before the status was fetched)
+
+    optional int32 size = 4;        // size in bytes
+    optional string format = 5;     // image format(jpg, png, etc..)
+    optional int32 width = 6;
+    optional int32 height = 7;
+    
+    optional string page_uri=8;     // #BigSearch specific
+    optional int32 imageIndex=9;    // #BigSearch specific
+}

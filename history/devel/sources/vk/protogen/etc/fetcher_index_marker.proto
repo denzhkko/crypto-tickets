@@ -1,0 +1,73 @@
+syntax = "proto2";
+
+package gogo.fetcher;
+
+option java_outer_classname = "FetcherIndexMarker";
+
+message AdditionalData {
+    required string key = 1;
+    required float value = 2;
+};
+
+
+message UrlMarker {
+    enum source_type {
+        source_other = 0;
+        aip = 1;
+        sq = 2;
+        al_g = 3;
+        al_y = 4;
+        cr_g = 5;
+        cr_y = 6;
+        sr_g_liru = 7;
+        sr_y_liru = 8;
+        norm_al_g = 9;
+        norm_al_y = 10;
+        al_mg = 11;
+	cr_mix = 12;
+    }
+
+     enum frequency_slice {
+            freq_low = 0;
+            freq_low_old = 1;
+            freq_low_new = 2;
+            freq_high = 3;
+	    freq_1 = 4;
+	    freq_2_10 = 5;
+	    freq_10_100 = 6;
+	    freq_100 = 7;
+     }
+
+     enum history_length_slice {
+            history_middle = 0;
+            history_short = 1;
+	    history_3_month = 2;
+     }
+
+     enum country_slice {
+        country_other = 0;
+        country_ru = 1;
+        country_ua = 2;
+        country_kz = 3;
+        country_by = 4;
+     }
+
+     enum language_slice {
+        lang_other = 0;
+        lang_ru = 1;
+        lang_ua = 2;
+        lang_kz = 3;
+     }
+
+    required string url = 1;     //reversed url
+    required source_type source = 2;
+
+    repeated language_slice language = 3;
+    repeated history_length_slice history = 4;
+    repeated country_slice country = 5;
+    repeated frequency_slice frequency = 6;
+
+    repeated AdditionalData data = 7;
+
+
+};

@@ -1,0 +1,263 @@
+syntax = "proto3";
+
+import "options.proto";
+
+package pb.srch.music;
+
+message CacheEntry {
+    string response = 1;
+    uint64 begin_time = 2;
+    uint64 expiration = 3;
+};
+
+message TitlesDocument {
+    reserved 5, 6, 7;
+
+    enum Type {
+        TypeNone = 0;
+        TypeArtist = 1;
+        TypeAlbum = 2;
+        TypeTrack = 3;
+    };
+
+    message UmaData
+    {
+        repeated uint64 artist_id = 1 [(gogo.xml).name = "ArtistId"];
+        uint64 track_id = 2 [(gogo.xml).name = "TrackId"];
+
+        string artist = 3 [(gogo.xml).name = "Artist"];
+        string album = 4 [(gogo.xml).name = "Album"];
+        string track = 5 [(gogo.xml).name = "Track"];
+
+        double prob_artist = 6 [(gogo.xml).name = "ProbArtist"];
+        double prob_track = 7 [(gogo.xml).name = "ProbTrack"];
+    };
+
+    uint64 url_hash = 1 [(gogo.xml).name = "Url"];
+    Type type = 8 [(gogo.xml).name = "Type"];
+    string artist = 2 [(gogo.xml).name = "Artist"];
+    string album = 4 [(gogo.xml).name = "Album"];
+    string track = 3 [(gogo.xml).name = "Track"];
+
+    UmaData uma = 9 [(gogo.xml).name = "Uma"];
+};
+
+message TitlesResponse {
+    repeated TitlesDocument docs = 1;
+};
+
+message PlaylistSearcherDocument {
+    string id = 1 [(gogo.xml).name = "docID"];
+    string collection_id = 2 [(gogo.xml).name = "CollectionID"];
+    string user_id = 3 [(gogo.xml).name = "UserID"];
+
+    string playlist = 4 [(gogo.xml).name = "Name"];
+    string tracks_proto = 5 [(gogo.xml).name = "Tracks"];
+    uint32 tracks_count = 8 [(gogo.xml).name = "TracksCount"];
+
+    uint64 listen = 6 [(gogo.xml).name = "Listen"];
+    uint64 refs = 7 [(gogo.xml).name = "Refs"];
+};
+
+message AlbumSearcherDocument {
+    string id = 1 [(gogo.xml).name = "docID"];
+    string collection_id = 2 [(gogo.xml).name = "CollectionID"];
+    string user_id = 3 [(gogo.xml).name = "UserID"];
+
+    string album = 4 [(gogo.xml).name = "Name"];
+    string artist = 5 [(gogo.xml).name = "Author"];
+    string tracks_proto = 6 [(gogo.xml).name = "Tracks"];
+    uint32 tracks_count = 9 [(gogo.xml).name = "TracksCount"];
+
+    uint64 listen = 7 [(gogo.xml).name = "Listen"];
+    uint64 refs = 8 [(gogo.xml).name = "Refs"];
+};
+
+message ArtistSearcherDocument {
+    string id = 1 [(gogo.xml).name = "docID"];
+    string artist_id = 2 [(gogo.xml).name = "ID"];
+
+    string artist = 3 [(gogo.xml).name = "Artist"];
+    string track_names = 4 [(gogo.xml).name = "Tracks"];
+    string tracks_proto = 5 [(gogo.xml).name = "ProtoTracks"];
+    uint32 tracks_count = 10 [(gogo.xml).name = "TracksCount"];
+
+    uint64 listen = 6 [(gogo.xml).name = "SumListen"];
+    uint64 listen_month = 7 [(gogo.xml).name = "SumListenMonth"];
+    uint64 max_listen = 8 [(gogo.xml).name = "MaxListen"];
+    uint64 max_listen_month = 9 [(gogo.xml).name = "MaxListenMonth"];
+};
+
+message TrackSearcherDocument {
+    string id = 1 [(gogo.xml).name = "docID"];
+    string track_id = 2 [(gogo.xml).name = "id"];
+    string user_id = 3 [(gogo.xml).name = "UserID"];
+    string file_id = 4 [(gogo.xml).name = "FileID"];
+    string uma_id = 12 [(gogo.xml).name = "UmaID"];
+
+    string track = 5 [(gogo.xml).name = "Name"];
+    string artist = 6 [(gogo.xml).name = "Author"];
+    string album = 7 [(gogo.xml).name = "Album"];
+
+    uint32 duration = 8 [(gogo.xml).name = "Duration"];
+
+    uint64 shares = 9 [(gogo.xml).name = "ShareCnt"];
+    uint64 listen = 10 [(gogo.xml).name = "Listen"];
+    uint64 listen_month = 11 [(gogo.xml).name = "ListenMonth"];
+};
+
+message VkTrackResponse {
+    message Result {
+        uint32 number = 1 [(gogo.json).name = "number"];
+
+        int64 audio_id = 2 [(gogo.json).name = "audio_id"];
+        int64 owner_id = 3 [(gogo.json).name = "owner_id"];
+
+        string artist = 4 [(gogo.json).name = "performer"];
+        string track = 5 [(gogo.json).name = "title"];
+        string subtitle = 6 [(gogo.json).name = "subtitle"];
+
+        bool is_official = 7 [(gogo.json).name = "official"];
+
+        uint64 listen = 8 [(gogo.json).name = "times_listened"];
+        uint64 listen_month = 9 [(gogo.json).name = "times_listened_last_month"];
+        uint64 listen_week = 10 [(gogo.json).name = "times_listened_last_week"];
+
+        double idf_rank = 11 [(gogo.json).name = "idf_rank"];
+        double sq_model_rank = 22 [(gogo.json).name = "sq_model_rank"];
+
+        uint32 max_artist_subsequence = 12 [(gogo.json).name = "max_cont_perf"];
+        uint32 max_track_subsequence = 13 [(gogo.json).name = "max_cont_title"];
+
+        uint32 num_artist_marked = 14 [(gogo.json).name = "perf_words_num_rf"];
+        uint32 num_track_marked = 15 [(gogo.json).name = "title_words_num_rf"];
+
+        uint32 num_artist_entries = 17 [(gogo.json).name = "entries_in_performer"];
+        uint32 num_track_entries = 18 [(gogo.json).name = "entries_in_title"];
+
+        uint32 artist_words_count = 19 [(gogo.json).name = "perf_words_num"];
+        uint32 track_words_count = 20 [(gogo.json).name = "title_words_num"];
+        uint32 query_words_count = 21 [(gogo.json).name = "words_in_query"];
+
+        repeated string alternative_ids = 16 [(gogo.json).name = "alternative_ids"];
+    };
+
+    message Serp {
+        repeated Result results = 1 [(gogo.json).name = "results"];
+        string backend_response = 7 [(gogo.json).name = "backend_response"];
+
+        string response_class = 6 [(gogo.json).name = "class"];
+        uint32 all_count = 2 [(gogo.json).name = "count"];
+        uint32 official_count = 3 [(gogo.json).name = "official_count"];
+        uint32 qddb_sessions_num_log2 = 4 [(gogo.json).name = "qddb_sessions_num_log2"];
+        string sm_reply_quality = 5 [(gogo.json).name = "sm_reply_quality"];
+    };
+
+    string qid = 1 [(gogo.json).name = "qid"];
+    Serp serp = 2 [(gogo.json).name = "serp"];
+    uint32 split = 3 [(gogo.json).name = "split"];
+};
+
+message VkAlbumResponse {
+    message Result {
+        uint32 number = 1 [(gogo.json).name = "number"];
+
+        int64 album_id = 2 [(gogo.json).name = "playlist_id"];
+        int64 owner_id = 3 [(gogo.json).name = "owner_id"];
+
+        string artist = 4 [(gogo.json).name = "performer"];
+        string album = 5 [(gogo.json).name = "title"];
+        string subtitle = 6 [(gogo.json).name = "subtitle"];
+
+        bool is_official = 7 [(gogo.json).name = "official"];
+
+        uint64 listen = 8 [(gogo.json).name = "times_listened"];
+        uint64 listen_month = 9 [(gogo.json).name = "times_listened_last_month"];
+        uint64 listen_week = 10 [(gogo.json).name = "times_listened_last_week"];
+
+        double idf_rank = 11 [(gogo.json).name = "idf_rank"];
+
+        uint32 max_artist_subsequence = 12 [(gogo.json).name = "max_cont_perf"];
+        uint32 max_album_subsequence = 13 [(gogo.json).name = "max_cont_title"];
+
+        uint32 num_artist_marked = 14 [(gogo.json).name = "perf_words_num_rf"];
+        uint32 num_album_marked = 15 [(gogo.json).name = "title_words_num_rf"];
+
+        uint32 num_artist_entries = 17 [(gogo.json).name = "entries_in_performer"];
+        uint32 num_album_entries = 18 [(gogo.json).name = "entries_in_title"];
+
+        uint32 artist_words_count = 19 [(gogo.json).name = "perf_words_num"];
+        uint32 album_words_count = 20 [(gogo.json).name = "title_words_num"];
+        uint32 query_words_count = 21 [(gogo.json).name = "words_in_query"];
+
+        repeated string alternative_ids = 16 [(gogo.json).name = "alternative_ids"];
+    };
+
+    message Serp {
+        repeated Result results = 1 [(gogo.json).name = "results"];
+
+        string response_class = 6 [(gogo.json).name = "class"];
+        uint32 all_count = 2 [(gogo.json).name = "count"];
+        uint32 official_count = 3 [(gogo.json).name = "official_count"];
+        uint32 qddb_sessions_num_log2 = 4 [(gogo.json).name = "qddb_sessions_num_log2"];
+        string sm_reply_quality = 5 [(gogo.json).name = "sm_reply_quality"];
+    };
+
+    string qid = 1 [(gogo.json).name = "qid"];
+    Serp serp = 2 [(gogo.json).name = "serp"];
+    uint32 split = 3 [(gogo.json).name = "split"];
+};
+
+message ManagerDocument {
+    enum Type {
+        TypeNone = 0;
+        TypeArtist = 1;
+        TypeAlbum = 2;
+        TypeTrack = 3;
+        TypePlaylist = 4;
+    };
+
+    enum Category {
+        CategoryNone = 0;
+        CategoryNailed = 1;
+        CategorySearcher = 2;
+        CategorySupposed = 3;
+        CategoryDict = 4;
+        CategoryLatest = 5;
+    };
+
+    enum LatestType {
+        LatestNone = 0;
+        LatestAlbum = 1;
+        LatestTrack = 2;
+    };
+
+    message Track {
+        string artist = 1;
+        string track = 2;
+        string duration = 3;
+        string user_id = 4;
+        string file_id = 5;
+    };
+
+    Type type = 1;
+    Category category = 16;
+
+    bool is_nailed = 2;
+    LatestType latest_type = 3;
+
+    string artist = 4;
+    string album = 5;
+    string track = 6;
+    string playlist = 7;
+
+    uint64 tracks_count = 8;
+    repeated Track tracks = 9;
+
+    uint64 listen = 10;
+    uint64 listen_month = 11;
+    uint64 max_listen = 12;
+    uint64 max_listen_month = 13;
+    uint64 shares = 14;
+    uint64 refs = 15;
+};

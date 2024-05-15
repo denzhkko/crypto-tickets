@@ -1,0 +1,35 @@
+syntax = "proto2";
+
+package cosmo.pb;
+
+import "cosmo_result.proto";
+
+message ExperimentInfo
+{
+    required uint32 experiment_id = 1;
+    optional bool showed_from_a = 2;
+}
+
+// IMHO there is no point to duplicate Document message
+// TODO: use cosmo.pb.Document instead
+message RankedDocument
+{
+    optional int64 source_id = 1;
+    optional int64 doc_id = 2;
+    optional float rank = 3;
+    optional int32 category_id = 5;
+    optional DocumentInfo document_info = 6;
+    optional InterleavingInfo interleaving_info = 7;
+    optional Document.Type type = 8;
+    optional int64 site_hash = 9;
+}
+
+message CosmoCache
+{
+    repeated RankedDocument documents = 1;
+    optional ExperimentInfo experiment_info = 2;
+    optional Metrics metrics = 3;
+    optional MixerInfo mixer_info = 4;
+    repeated Document native_documents = 5;
+}
+

@@ -1,0 +1,94 @@
+syntax = "proto2";
+
+package image_match_indexer.pb;
+import "image_blobs.proto";
+import "image_defs.proto";
+import "qembedder.proto";
+
+option java_outer_classname = "ImageMatchMetaData";
+option cc_enable_arenas = true;
+
+message DumpItem {
+    // TODO: удалить webpagesII_key, он лишний
+    optional bytes webpagesII_key = 1;
+    optional string full_url = 8;
+    // приблизительное количество кликов по CTR из WebPageTableII.LINKS_CF.QLINKS_IMG_CR
+    optional uint32 clicks_count = 2;
+    optional uint32 impressions_count = 3;
+    // свойства картинки из WebPageTableII.PARSED_CF.IMG_PROPS
+    optional ru.mail.go.webbase.blobs.ImageProps image_properties = 4;
+    optional ru.mail.go.webbase.parsing.img.Thumb image_thumbnail = 7;
+    // считаем embedding'и в первый раз и его нужно будет записать в HBase
+    optional bool put_image_embeddings_required = 10;
+    optional qembedder.pb.Embedding image_embeddings = 9;
+
+    // вероятность, что данная картинка содержит изображение порнографии,
+    // от 0 до 1
+    optional float porn_probability = 11;
+    // минимальный и максимальные вероятности из группы точных дубликатов
+    optional float min_porn_probability = 12;
+    optional float max_porn_probability = 13;
+    // считаем porn probability в первый раз и её нужно будет записать в HBase
+    optional bool put_porn_probability_required = 15;
+
+    message Duplicate {
+        optional string full_url = 1;
+        optional float porn_probability = 2;
+    }
+    // дубликаты по точному совпаднию хеша
+    repeated Duplicate duplicates = 14;
+
+    message PageReference {
+        required string full_url = 1;
+        optional string snippet = 2;
+    }
+    // документы использующие эту картинку
+    repeated PageReference ref = 16;
+    // reserved 5,6;
+}
+
+message PreviewInfo {
+   required string preview_key = 1;     //ключ в превьюшечнике
+   required string preview_db_num = 2; //номер превьюшечника
+   optional fixed32 preview_height = 3;
+   optional fixed32 preview_width = 4;
+}
+
+message EmbedderOut {
+  required bytes data = 1; //тело эмбеддинга
+  required string url = 2; //url
+}
+
+//вводные данные для annoy_indexer
+message Embedding 
+{
+    required bytes data = 1; //тело эмбеддинга, сериализованный массив float, little endian
+    required string url = 2; //u
+    optional sfixed64 hash = 3;
+    optional PreviewInfo preview_info = 4;
+    optional float porn_probability = 5;
+}
+
+//выходные данные annoy_indexer, используются в searcher
+message EmbedData
+{
+    required sfixed64 image_id = 1; // уникальный id картинки
+    optional sfixed64 hash = 2;
+    optional float porn_probability = 6;
+
+    message OriginalInfo
+    {
+        required string url = 1;
+    }
+
+    message AnnoyIndexMeta
+    {
+        required uint32 annoy_idx_id = 1; // номер микробазы
+        required uint32 annoy_img_id = 2; // номер вектора в микробазе
+    }
+
+    optional OriginalInfo original_info = 3;
+    optional AnnoyIndexMeta annoy_index_meta = 4;
+    optional PreviewInfo preview_info = 5;
+}
+

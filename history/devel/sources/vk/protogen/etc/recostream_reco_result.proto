@@ -1,0 +1,154 @@
+syntax = "proto2";
+
+package recostream.pb;
+
+import "recostream_pixel_info.proto";
+import "cosmo_result.proto";
+
+
+message DocumentImage
+{
+    required int32 width = 1;
+    required int32 height = 2;
+    required string url = 3;
+    required string key = 4;
+    required string mb_name = 5;
+    optional string img_url = 6;
+    repeated string tags = 7;
+}
+
+message DocumentPixels
+{
+    repeated string show_pixels = 1;
+    repeated string click_pixels = 2;
+}
+
+message SourceInfo
+{
+    optional string title = 1;
+    optional string favicon_url = 2;
+    optional string favicon_base64 = 3;
+    optional bool subscribed = 4;
+    optional string short_title = 5;
+    optional string type = 6;
+}
+
+message PulseVideos {
+    required PulseVideo main_video = 1;
+    // repeated PulseVideo videos = 2; сделано на будущее если будет несколько видео в посте
+}
+
+message PulseVideo {
+    required string video_url = 1;
+    optional int32 duration = 2;
+}
+
+message Document
+{
+    required int64 doc_id = 1;
+    required int64 source_id = 2;
+    required string snippet = 3;
+    required string title = 4;
+    required string url = 5;
+    repeated DocumentImage images = 6;
+    required int64 site_hash = 7;
+    optional cosmo.pb.Document.Type type = 8;
+    optional SourceInfo source_info = 9;
+    optional bool is_fulltext = 10;
+    optional string amp_url = 11;
+    optional string slug = 12;
+    optional PulseVideos videos = 13;
+    optional string redirect_url = 14;
+    optional string external_url = 15;
+    optional uint32 advert_doc_id = 16;
+    optional string mapping_date = 17;
+    optional string erid = 18;
+
+}
+
+message Advert
+{
+    required int32 banner_id = 1;
+    required string title = 2;
+    required string snippet = 3;
+    required string url = 4;
+    optional string disclaimer = 5;
+    optional string age_restrictions = 6;
+    repeated DocumentImage images = 7;
+    optional DocumentPixels pixels = 8;
+    optional string about_company = 9;
+    optional string advert_template_id = 10;
+    optional string raw_json_answer = 11;
+    optional string domain_name = 12;
+    optional bool is_native = 13;
+    optional int32 size = 14;
+    optional string inn = 15;
+}
+
+message RecoResultItem
+{
+    oneof value
+    {
+        Document document = 101;
+        Advert advert = 102;
+    }
+
+    optional int64 hash = 1;
+    optional DocumentMetaInfo meta_info = 2;
+
+    repeated string serve_notice_url = 30;
+}
+
+message ProviderDebugInfo
+{
+    oneof value
+    {
+        cosmo.pb.DebugInfo cosmo_info = 101;
+    }
+
+    optional string name = 1;
+    repeated cosmo.pb.Error errors = 2;
+}
+
+message DebugInfo
+{
+    repeated ProviderDebugInfo providers = 1;
+}
+
+message RankedSources
+{
+    repeated cosmo.pb.Source sources = 1;
+}
+
+message RankedCategories
+{
+    repeated cosmo.pb.Category categories = 1;
+}
+
+message RecoResult
+{
+    optional ResultMetaInfo meta_info = 2;
+    repeated RecoResultItem items = 3;
+    optional DebugInfo debug_info = 4;
+    optional RankedSources ranked_sources = 5;
+    optional RankedCategories ranked_categories = 6;
+}
+
+message PackedRecoResult
+{
+    required string stream_id = 1;
+    required string hash = 2;
+    required int64 timestamp = 3;
+    required RecoResult reco_result = 4;
+}
+
+message SavedPromoInfo
+{
+    repeated string readup_pixels = 1;
+    repeated string redirect_pixels = 2;
+
+    optional string pulse_utm_labels = 10;
+    optional int64 id_ac = 11;
+    optional string rub_price = 12;
+    optional string user_geo = 13;
+}

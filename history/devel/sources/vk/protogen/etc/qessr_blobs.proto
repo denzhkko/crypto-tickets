@@ -1,0 +1,90 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "QessrBlobs";
+
+enum FetcherReason {
+    F_UNKNOWN = 0;
+    F_NONE = 1;
+    F_FETCHED = 2;
+    F_REDIRECT = 3;
+
+    F_ERR_NONE = 10;
+    F_ERR_RESOLVE = 11;
+    F_ERR_CONNECTION = 12;
+    F_ERR_EMPTY_HEAD = 13;
+    F_ERR_INVALID_PROTOCOL = 14;
+    F_ERR_SOCKET_BUF_SIZE = 15;
+    F_ERR_HEAD_SIZE = 16;
+    F_ERR_BODY_SIZE = 17;
+    F_ERR_PARSING = 18;
+    F_ERR_DECOMPRESS = 19;
+    F_ERR_UNCHUNK = 20;
+
+    F_D_UNKNOWN = 30;
+    F_D_NOINDEX = 31;
+    F_D_CANONICAL = 32;
+    F_D_BAD_LANGUAGE = 33;
+    F_D_UNKNOWN_LANG_TYPE = 34;
+    F_D_N_HTML_INFO = 35;
+    F_D_NOT_SITEMAP = 36;
+    F_D_BAD_MIME_TYPE = 37;
+    F_D_IS_GARBAGE = 38;
+    F_D_INF_REDIRECT = 39;
+
+    F_RM_NOT_EXIST = 50;
+    F_RM_ROBOTS = 51;
+    F_RM_DUPLICATE = 52;
+    F_RM_BLACKLIST = 53;
+    F_RM_QUOTA = 54;
+    F_RM_POSSIBLE_CUSTOM_PAGE = 55;
+    F_RM_MERGE_DISABLED = 56;
+    F_RM_MERGE_BANNED = 57;
+    F_RM_MERGE_DUPLICATE = 58;
+    F_RM_MERGE_MULTI = 59;
+    F_RM_ROBOTS_CLEAN_PARAM = 60;
+    F_RM_BY_SERVICE_API = 61;
+}
+
+enum SchedulerPriority {
+    P_NOTHING = 0;
+    P_NEEDED = 1;
+    P_VERY_LOW = 2;
+    P_LOW = 3;
+    P_NORMAL = 4;
+    P_HIGH = 5;
+    P_VERY_HIGH = 6;
+}
+
+
+message SchfetchingHistoryRecord {
+    optional FetcherReason reason = 1;
+    optional SchedulerPriority priority = 2;
+    optional int64 subPriority = 3;
+    optional bool hasSignals = 4;
+    optional int32 age = 5;
+    optional bool hasContent = 6;
+    optional bool alreadyFetched = 7;
+    optional int32 alyAge = 8;
+    optional int32 algAge = 9;
+    optional int32 ageImgLink = 10;
+    optional int32 ageImgSource = 11;
+    optional int32 firstAlyAge = 12;
+    optional int32 firstAlgAge = 13;
+    optional bool inImgBigIndex = 14;
+}
+
+//message ImageSchfetchingHistoryRecord {
+//    optional FetcherReason reason = 1;
+//    optional SchedulerPriority webPriority = 2;
+//    optional SchedulerPriority imgPriority = 3;
+//    optional SchedulerPriority imgRedownloadPriority = 4;
+//    optional SchedulerPriority imgDiscoveryPriority = 5;
+//    optional bool alreadyFetched = 7;
+//    optional int64 subPriority = 3;
+//    optional bool hasSignals = 4;
+//    optional int32 age = 5;
+//    optional bool hasContent = 6;
+//    optional int32 alyAge = 8;
+//    optional int32 algAge = 9;
+//}

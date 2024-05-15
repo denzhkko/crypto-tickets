@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.clickrank;
+
+import "urllog_record.proto";
+option java_outer_classname = "SessionsContainerClass";
+
+message SessionsContainer {
+   required string userId = 1;
+   repeated Session sessions = 2;
+   optional uint64 nextSessionsTs = 3;
+}
+
+message Session {
+   repeated string urls = 1;
+   repeated int32 clicks = 2;
+   repeated uint64 timestampOfClicks = 3;
+   optional int32 startFrom = 4;
+   optional string userId = 5;
+   required uint64 timestamp = 6;
+   optional string ip = 7;
+   optional string query = 8;
+   optional ru.mail.go.webbase.ranking.ParamList sessionInfo = 9;
+   optional ru.mail.go.webbase.ranking.ParamList uniformSessionParameters = 10;
+}
+

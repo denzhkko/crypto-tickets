@@ -1,0 +1,54 @@
+syntax = "proto2";
+
+package converterd.pb;
+
+message DeclensionInfo
+{
+    required string first = 1;
+    required string second = 2;
+    required string third = 3;
+    required string fourth = 4;
+}
+
+message CurrencySourceInfo {
+    required string id = 1;
+    required string name = 2;
+    required string link = 3;
+    optional string region_id = 4;
+}
+
+message CurrencyInfo {
+    required string id = 1;
+    required DeclensionInfo declensions = 2;
+}
+
+message CurrencyConvertionInfo {
+    required string from_id = 1;
+    required string to_id = 2;
+    required string a_coeff_numerator = 3;
+    required string a_coeff_denominator = 4;
+    required uint64 time = 5;
+    optional string source_id = 6;
+    optional string link = 7;
+    required bool is_live = 8;   
+}
+
+message MeasureTypeInfo {
+    required string id = 1;
+    required string name = 2;
+    required string base_id = 3;
+}
+
+message MeasureInfo {
+    required string id = 1;
+    required DeclensionInfo declensions = 2;
+    required bool is_optional = 3;
+}
+
+message MeasureConvertionInfo {
+    required string from_id = 1;
+    required string to_id = 2;
+    required string a_coeff = 3;
+    required string b_coeff = 4;
+}
+

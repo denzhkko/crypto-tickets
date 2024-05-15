@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+import "document_enums.proto";
+
+option java_outer_classname = "BatchingUrl";
+
+message UrlData {
+    message Scheduler {
+        required int32 id = 1;
+        required int32 priority = 2;
+        required int32 timestamp = 3;
+        optional bool postscheduled = 4;
+    }
+
+    required string url = 1;
+    required bool isUrl = 2;
+
+    repeated Scheduler schedulers = 3;
+
+    optional int32 crawlDelay = 4;
+    optional int32 threadsNum = 5;
+    optional sfixed32 ip = 6;
+    optional int32 urlsCount = 7;
+
+    optional double avgResponse = 8;
+    optional int32 additionalFlags = 9 [default = 0]; // e.g. flag_stub
+
+    optional int64 lastModified = 10;
+    optional string eTag = 11;
+
+    optional ForumType forumType = 12;
+
+    optional bytes hash = 13;
+
+    optional string referer = 14;
+
+    optional string routeKey = 15;
+    optional int64 markersMap = 16 [default = 0];
+    optional bool isHttpsSite = 17;
+}

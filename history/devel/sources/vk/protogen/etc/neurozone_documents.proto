@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package neurozone.pb;
+
+message Document {
+    optional string url = 1;
+    optional string backend = 2;
+}
+
+message DocumentsInfo {
+    repeated Document documents = 1;
+}

@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.translator;
+
+option java_outer_classname = "QueryTranslations";
+
+message Translation
+{
+    required string query = 1;
+    optional double rank = 2;
+}
+
+message Translations
+{
+    repeated Translation translations = 1;
+}
+

@@ -1,0 +1,39 @@
+syntax = "proto2";
+
+package neurovector.pb;
+
+message StringsValue {
+    repeated string strs = 1;
+}
+
+message TensorValue {
+    enum Type {
+        FLOAT_32 = 0;
+        FLOAT_64 = 1;
+        INT_8 = 2;
+        INT_16 = 3;
+        INT_32 = 4;
+        INT_64 = 5;
+        UINT_8 = 6;
+        UINT_16 = 7;
+        UINT_32 = 8;
+        UINT_64 = 9;
+        BOOL = 10;
+        FLOAT_16 = 11;
+    }
+
+    optional Type type = 1;
+    repeated int32 shape = 2;
+    optional bytes data = 3;
+}
+
+message Value {
+    oneof options {
+        StringsValue strings_value = 1;
+        TensorValue tensor_value = 2;
+    }
+}
+
+message Values {
+    repeated Value values = 1;
+}

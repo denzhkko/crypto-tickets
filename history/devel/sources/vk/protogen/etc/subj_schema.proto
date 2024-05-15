@@ -1,0 +1,214 @@
+syntax = "proto2";
+
+// subj_schema: parsed 'schema.org' attributes
+//              http://schema.org/Movie
+//              http://schema.org/Person
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "SubjSchema";
+
+// Images Thumbs
+import "image_defs.proto";
+
+// The most generic type of item:
+message Thing 
+{
+  // component of: Rating, Person, CreativeWork
+  optional string url = 1;          // URL
+  optional string description = 2;  // Text
+}
+
+// The rating of the video:
+message Rating
+{
+  // component of: AggregateRating
+  required string ratingValue = 1;    // Text
+  optional string bestRating = 2;     // Number or Text
+  optional string worstRating = 3;    // Number or Text
+}
+
+// The average rating based on multiple ratings or reviews:
+message AggregateRating
+{
+  // Message:
+  optional Rating rating = 1;         // [Message]
+
+  required uint32 ratingCount = 2;    // Number
+  optional uint32 reviewCount = 3;    // Number
+}
+
+message UrlArray
+{
+  repeated string urls = 1;
+}
+
+message StringArray
+{
+  repeated string values = 1;
+}
+
+message ThumbArray
+{
+  repeated ru.mail.go.webbase.parsing.img.Thumb thumbs = 1;
+}
+
+// The most generic kind of creative work, 
+// including books, movies etc:
+message CreativeWork 
+{
+  // Message:
+  optional Thing thing = 1;                    // [Message]
+
+  // Schema.org:
+  optional string headline = 2;                // Text
+  optional string alternativeHeadline = 3;     // Text
+  optional string datePublished = 4;           // Date
+  optional string year = 5;                    // Date
+  optional Rating rating = 6;
+  optional StringArray genres = 7;             // Texts
+
+  optional UrlArray thumbnailUrls = 8;         // URLs
+}
+
+// The most generic kind of creative work, including books, movies etc:
+message Person 
+{
+  // Message:
+  optional Thing thing = 1;                   // [Message]
+
+  // Schema.org:
+  optional string altName = 2;                // Text
+  required string givenName = 3;              // Text
+  optional string familyName = 4;             // Text
+  optional string additionalName = 5;         // Text
+  optional string gender = 6;                 // Text
+  optional string birthDate = 7;              // Date
+  optional string deathDate = 8;              // Dates
+  optional UrlArray thumbnailUrls = 9;        // URLs
+
+  // Additional (not in Schema.org):
+  optional UrlArray imagesUrls = 20;          // URLs
+}
+
+message PersonArray
+{
+  repeated Person persons = 1;
+}
+
+// A movie:
+message Movie
+{
+  // Message:
+  optional CreativeWork work = 1;              // [Message]
+
+  // Schema.org:
+  optional string      duration = 2;           // Duration
+  optional StringArray countries = 3;          // Texts
+  optional StringArray actors = 4;             // Keys
+  optional StringArray directors = 5;          // Keys
+  optional StringArray persons = 6;            // Keys
+  optional StringArray screenwriters = 7;      // Keys
+
+  // Additional (not in Schema.org):
+  optional UrlArray imagesUrls = 20;           // URLs
+  optional UrlArray stillsUrls = 21;           // URLs
+  optional UrlArray trailerUrls = 22;          // URLs
+  optional UrlArray officialUrls = 23;         // URLs
+}
+
+message MovieArray
+{
+  repeated Movie movies = 1;
+}
+
+// An episode of a TV series or season:
+message TVEpisode
+{
+  // Message:
+  optional CreativeWork work = 1;          // [Message]
+
+  // Schema.org:
+  optional string startDate = 2;           // Date
+  optional uint32 episodeNumber = 3;       // Number
+  optional uint32 partOfSeason = 4;        // Number
+  optional uint32 partOfTVSeries = 5;      // Number
+
+  // Additional (not in Schema.org):
+  optional UrlArray imagesUrls = 20;       // URLs
+  optional UrlArray stillsUrls = 21;       // URLs
+  optional UrlArray trailerUrls = 22;      // URLs
+}
+
+message TVEpisodeArray
+{
+  repeated TVEpisode episodes = 1;
+}
+
+// A TV season:
+message TVSeason
+{
+  // Message:
+  optional CreativeWork work = 1;         // [Message]
+
+  // Schema.org:
+  required uint32 seasonNumber = 2;       // Number
+  optional string startDate = 3;          // Date
+  optional string endDate = 4;            // Date
+  optional uint32 partOfTVSeries = 5;     // Number
+  optional uint32 numberOfEpisodes = 6;   // Number
+
+//optional TVEpisodeArray episodes = 7;   // Episodes (or Keys)?
+}
+
+message TVSeasonArray
+{
+  repeated TVSeason seasons = 1;
+}
+
+// A television series:
+message TVSeries
+{
+  // Message:
+  optional CreativeWork work = 1;             // [Message]
+
+  // Schema.org:
+  optional string startDate = 2;              // Date
+  optional string endDate = 3;                // Date
+  optional uint32 numberOfEpisodes = 4;       // Number
+
+  optional StringArray actors = 5;            // Keys
+  optional StringArray directors = 6;         // Keys
+  optional StringArray persons = 7;           // Keys
+  optional StringArray screenwriters = 8;     // Keys
+
+//optional TVSeasonArray seasons = 9;         // Seasons (or Keys)?
+
+  // Additional (not in Schema.org):
+  optional UrlArray imagesUrls = 20;          // URLs
+  optional UrlArray stillsUrls = 21;          // URLs
+  optional UrlArray trailerUrls = 22;         // URLs
+  optional UrlArray officialUrls = 23;        // URLs
+}
+
+// Parsing result:
+message ParsedSubject
+{
+  enum Type
+  {
+    Thing     = 2;
+    Person    = 3;
+    Movie     = 4;
+    TVEpisode = 5;
+    TVSeason  = 6;
+    Telecast  = 7;
+  }
+
+  required Type type = 1;
+  optional Thing thing = 2;
+  optional Person person = 3;
+  optional Movie movie = 4;
+  optional TVEpisode tvepisode = 5;
+  optional TVSeason tvseason = 6;
+  optional TVSeries telecast = 7;
+}

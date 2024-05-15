@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package qquestion.pb;
+
+message QquestionPrediction {
+    message Prediction {
+        message Score {
+            message Threshold {
+                optional string name = 1;
+                optional bool is_exceeded = 2;
+            }
+
+            optional string name = 1;
+            optional float value = 2;
+            repeated Threshold threshold_list = 3;
+        }
+
+        optional string model_name = 1;
+        repeated Score score_list = 2;
+    }
+
+    repeated Prediction prediction_list = 1;
+    optional string error = 2;
+}

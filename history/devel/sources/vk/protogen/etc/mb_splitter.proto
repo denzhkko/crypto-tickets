@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "MBSplitterBlobs";
+
+message UrlData {
+	required string domain2 = 1;
+	optional string domainN = 2;
+        
+        enum BASE {
+            BIG_WEB = 1;
+            FOREIGN_WEB = 2;
+        };
+        
+        optional BASE base_type = 3;
+	required int32 domain_hash = 4; // microbase for site
+}

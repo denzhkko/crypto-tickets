@@ -1,0 +1,51 @@
+syntax = "proto3";
+package pb.suggests.response;
+
+import "options.proto";
+
+message ResponseItem {
+
+    message Navig {
+        message ItemNavigFeatures {
+            uint32 count = 1 [(gogo.json).name = "count"];
+            uint32 uniq = 2 [(gogo.json).name = "uniq"];
+            uint32 uniq_1d = 3 [(gogo.json).name = "uniq_1d"];
+        };
+
+        string id = 1 [(gogo.json).name = "id"];
+        ItemNavigFeatures features = 2 [(gogo.json).name = "features"];
+    }
+
+    message Features {
+        uint32 count = 1 [(gogo.json).name = "count"];
+        uint32 uniq = 2 [(gogo.json).name = "uniq"];
+        uint32 uniq_1d = 3 [(gogo.json).name = "uniq_1d"];
+    }
+
+    message MatchedPair {
+        uint32 begin_pos = 1 [(gogo.json).name = "l", (gogo.json).force_print = true];
+        uint32 end_pos = 2 [(gogo.json).name = "r", (gogo.json).force_print = true];
+    }
+
+    string text = 1 [(gogo.json).name = "text"];
+    string text_marked = 2 [(gogo.json).name = "textMarked"];
+    Features features = 3 [(gogo.json).name = "features"];
+    repeated Navig navigs = 4 [(gogo.json).name = "navigs"];
+    repeated MatchedPair matched_ranges = 5 [(gogo.json).name = "matched_ranges"];
+}
+
+message ResponseNavig {
+    string id = 1 [(gogo.json).name = "id"];
+    double prob = 2 [(gogo.json).name = "prob"];
+}
+
+message Response {
+    message Terms {
+        string query = 1 [(gogo.json).name = "query"];
+    }
+
+    string qid = 1 [(gogo.json).name = "qid"];
+    Terms terms = 2 [(gogo.json).name = "terms"];
+    repeated ResponseItem items = 3 [(gogo.json).name = "items"];
+    repeated ResponseNavig navigs = 4 [(gogo.json).name = "navigs"];
+};

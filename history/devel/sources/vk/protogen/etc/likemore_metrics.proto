@@ -1,0 +1,205 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.likemore;
+
+option java_outer_classname = "LikemoreMetricsProto";
+
+message MetricsMetaTask
+{
+    repeated MetricTask metrics = 1;
+}
+
+message MetricTask
+{
+    optional PointMetricTask        point_metric_task       = 1;
+    optional TopMetricTask          top_metric_task         = 2;
+    optional UrlListMetricTask      url_list_metric_task    = 3;
+
+    optional EventListMetricTask    event_list_metric_task   = 4;
+    optional RetentionMetricTask    retention_metric_task    = 5;
+    optional SearchListMetricTask   search_list_metric_task  = 6;
+    optional ActiveUsersMetricTask  active_users_metric_task = 7;
+}
+
+message EventListMetricTask
+{
+    required uint32 id          = 1;
+    required string campaign_id = 2;
+    required uint64 start_time  = 3;              // unix timestamp (seconds)
+    required uint64 stop_time   = 4;              // unix timestamp (seconds)
+    optional string filter_rx   = 5;
+    optional bool isOngoing     = 6;              //for internal use in likemore_metrics
+    optional string platform    = 7;              // values : pubot, widget, or unset(alias for widget)
+}
+
+message RetentionMetricTask
+{
+    required uint32 id                = 1;
+    required string campaign_id       = 2;
+    required uint64 base_start_time   = 3;              // unix timestamp (seconds)
+    required uint64 base_stop_time    = 4;              // unix timestamp (seconds)
+    required uint64 target_start_time = 5;              // unix timestamp (seconds)
+    required uint64 target_stop_time  = 6;              // unix timestamp (seconds)
+    optional string filter_rx         = 7;
+    optional bool isOngoing           = 8;              //for internal use in likemore_metrics
+    optional string platform          = 9;              // values : pubot, widget, or unset(alias for widget)
+}
+
+message SearchListMetricTask
+{
+    required uint32 id          = 1;
+    required string campaign_id = 2;
+    required uint64 start_time  = 3;              // unix timestamp (seconds)
+    required uint64 stop_time   = 4;              // unix timestamp (seconds)
+    optional string filter_rx   = 5;
+    optional bool isOngoing     = 6;              //for internal use in likemore_metrics
+    optional string platform    = 7;              // values : pubot, widget, or unset(alias for widget)
+}
+
+message ActiveUsersMetricTask
+{
+    required uint32 id          = 1;
+    required string campaign_id = 2;
+    required uint64 start_time  = 3;              // unix timestamp (seconds)
+    required uint64 stop_time   = 4;              // unix timestamp (seconds)
+    optional string filter_rx   = 5;
+    optional bool isOngoing     = 6;              //for internal use in likemore_metrics
+    optional string platform    = 7;              // values : pubot, widget, or unset(alias for widget)
+}
+
+message PointMetricTask
+{
+    required uint32 id          = 1;
+    required string type        = 2;
+    required string campaign_id = 3;
+    required uint64 start_time  = 4;              // unix timestamp (seconds)
+    required uint64 stop_time   = 5;              // unix timestamp (seconds)
+    optional string filter_rx   = 6;
+    optional bool isOngoing     = 7;              //for internal use in likemore_metrics
+    optional string platform    = 8;              // values : pubot, widget, or unset(alias for widget)
+}
+
+message TopMetricTask
+{
+    required uint32 id          = 1;
+    required string type        = 2;
+    required string campaign_id = 3;
+    required uint64 start_time  = 4;              // unix timestamp (seconds)
+    required uint64 stop_time   = 5;              // unix timestamp (seconds)
+    optional string filter_rx   = 6;
+    optional uint32 top_count   = 7;
+    optional bool isOngoing     = 8;              //for internal use in likemore_metrics
+    optional string platform    = 9;              // values : pubot, widget, or unset(alias for widget)
+}
+
+message UrlListMetricTask
+{
+    required uint32 id          = 1;
+    required string type        = 2;
+    required string campaign_id = 3;
+    required uint64 start_time  = 4;              // unix timestamp (seconds)
+    required uint64 stop_time   = 5;              // unix timestamp (seconds)
+    optional string filter_rx   = 6;
+    optional bool isOngoing     = 7;              //for internal use in likemore_metrics
+    optional string platform    = 8;              // values : pubot, widget, or unset(alias for widget)
+}
+
+message MetricsMetaResult
+{
+    repeated MetricResult results = 1;
+}
+
+message MetricResult
+{
+    optional PointMetricResult   point_metric_result    = 1;
+    optional TopMetricResult     top_metric_result      = 2;
+    optional UrlListMetricResult url_list_metric_result = 3;
+
+    optional EventListMetricResult   event_list_metric_result   = 4;
+    optional RetentionMetricResult   retention_metric_result    = 5;
+    optional SearchListMetricResult  search_list_metric_result  = 6;
+    optional ActiveUsersMetricResult active_users_metric_result = 7;
+}
+
+message EventListMetricResult
+{
+    message Event
+    {
+        required string name  = 1;
+        required float  value = 2;
+    }
+    required uint32 id      = 1;
+    repeated Event events   = 2;
+    optional bool isOngoing = 3;
+}
+
+message RetentionMetricResult
+{
+    required uint32 id      = 1;
+    required float value    = 2;
+    optional bool isOngoing = 3;
+}
+
+message SearchListMetricResult
+{
+    message Search
+    {
+        required string query = 1;
+        required float  count = 2;
+    }
+    required uint32 id       = 1;
+    repeated Search searches = 2;
+    optional bool isOngoing  = 3;
+}
+
+message ActiveUsersMetricResult
+{
+    message ActiveUsersBySocDem
+    {
+        required uint32 gender = 1;
+        required uint32 ageBucket = 2;
+        required float value = 3;
+    }
+
+    required uint32 id                         = 1;
+    required float value                       = 2;
+    optional bool isOngoing                    = 3;
+    repeated ActiveUsersBySocDem socDemValues  = 4;
+}
+
+message PointMetricResult
+{
+    required uint32 id      = 1;
+    required float value    = 2;
+    optional bool isOngoing = 3;
+}
+
+message TopMetricResult
+{
+    message UrlResult
+    {
+        required string url    = 1;
+        required uint32 shows  = 2;
+        required uint32 clicks = 3;
+    }
+
+    required uint32 id       = 1;
+    repeated UrlResult value = 2;
+    optional bool isOngoing  = 3;
+}
+
+message UrlListMetricResult
+{
+    message UrlResult
+    {
+        required string url      = 1;
+        required uint32 shows    = 2;
+        required uint32 clicks   = 3;
+        required float  ctr      = 4;
+        optional uint32 requests = 5;
+    }
+
+    required uint32 id       = 1;
+    repeated UrlResult value = 2;
+    optional bool isOngoing  = 3;
+}

@@ -1,0 +1,69 @@
+syntax = "proto2";
+
+package gogo.chell_specker;
+
+message VersionInfo {
+  optional string revision = 1;
+  optional string path = 2;
+  optional string release_tag = 3;
+  optional string patch_info = 4;
+
+  optional string db_tag = 5;
+  // optional string qddb_tag = 6; # Don't use me. I'm the evil!!!!
+}
+
+message SpcInterleavingInfo {
+  required uint32 exp_id = 1;
+  required string interleaving_type = 2;
+}
+
+message ConfidencePack {
+  required double word = 1;
+  required double split = 2;
+  required double join = 3;
+  required double layout = 4;
+}
+
+message FixConfidencePack {
+  required ConfidencePack low_fix = 1;
+  required ConfidencePack high_fix = 2;
+  required ConfidencePack high_auto = 3;
+}
+
+message SpcWnfInfo {
+  optional string wnf_tag = 1;
+  optional string wnf_report = 2;
+}
+
+message SpcReply {
+  required bool autoreplace = 1; 
+  required string fixed_query = 2;
+  optional string orig_highlight = 3;
+  optional string fixed_highlight = 4;
+  optional double fix_confidence = 5;
+  optional double auto_confidence = 6;
+  optional SpcInterleavingInfo interleaving_info = 7;
+  optional string fix_tags = 8;
+  optional string porno_fixed_query = 9;
+  optional FixConfidencePack fix_confidence_pack = 10;
+  optional string transliter_fixed_query = 11;
+
+  optional VersionInfo version_info = 13;
+
+  optional int32 iteration_count = 14; // related to fix_tags
+  optional SpcWnfInfo wnf_info = 15;
+}
+
+message SpcCommentItem {
+  required string key = 1;
+  required string value = 2; 
+}  
+message SpcComment {
+  repeated SpcCommentItem data = 1;
+}
+
+message SpcResponse {
+  required SpcReply reply = 1;
+  optional SpcComment comment = 2;
+}
+

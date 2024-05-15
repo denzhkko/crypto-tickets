@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "SpamMIDataMatrix";
+
+message Matrix 
+{
+    message MatrixRow
+    {
+      required string term = 1; //Term
+      repeated int64 index = 2; //Index
+      repeated float weight = 3; //Weights
+    }
+    repeated MatrixRow row = 1; //Matrix rows
+    required int64 cluster_id = 2; // Cluster indetyfier
+}

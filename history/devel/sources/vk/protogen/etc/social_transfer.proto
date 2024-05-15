@@ -1,0 +1,34 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "SocialTransfer";
+
+enum Table {
+  VIDEO = 1;
+}
+
+enum RecordType {
+  DATA = 1;
+  URLS = 2;
+}
+
+message ColumnInfo {
+  required bytes family = 1;
+  required bytes qualifier = 2;
+}
+
+message DataItem {
+  optional ColumnInfo column = 1;
+  optional bytes data = 2;
+}
+
+message SocialTransferMes {
+  //common
+  required RecordType type = 1;
+
+  //data type
+  repeated DataItem data = 2;
+
+  //urls type
+  repeated string url = 3;
+}

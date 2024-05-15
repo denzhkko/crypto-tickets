@@ -1,0 +1,95 @@
+syntax = "proto2";
+
+package gogo.qhist;
+
+// Информация от классификаторов запроса
+message QueryClassifiersData {
+    optional float infocard_prob   = 1;
+    optional float health_prob     = 2;
+    optional float torg_prob       = 3;
+    optional float film_prob       = 4;
+    optional float porn_doc_prob   = 6;
+    optional float recipe_doc_prob = 7;
+    optional float music_doc_prob  = 8;
+}
+
+// Информация о подмесах в выдаче по запросу
+message MixinInfo {
+    enum SerpSide {
+        LEFT = 1;
+        RIGHT = 2;
+    }
+    optional string name = 1;
+    optional SerpSide side = 2;
+    optional uint32 position = 3;
+}
+
+// Информация о факте инфокарт, показанном по запросу
+message InfocardFactInfo {
+    optional string name = 1;
+}
+
+// Информация об инфокарте, показанной по запросу
+message InfocardInfo {
+    optional uint64 object = 1;
+    optional InfocardFactInfo fact = 3;
+}
+
+// Информация об объектах в запросе
+message QueryObjectInfo {
+    optional string type = 1;
+    optional string text = 2;
+}
+
+// Информация от подмесов
+message MixinsData {
+    optional WeatherData weather_data = 1;
+    optional TimeData time_data = 2;
+    optional SunriseData sunrise_data = 3;
+}
+
+// Информация от источника weather подмес погоды
+message WeatherData {
+    optional uint64 city = 1;
+    optional int32 day = 2;
+    optional string date = 3;
+}
+
+// Информация от источника weather подмес времени
+message TimeData {
+    optional uint64 city = 1;
+}
+
+// Информация от источника weather подмес восходов,
+// закатов, продолжительности для и ночи
+message SunriseData {
+    enum SunriseType {
+        SUNRISE = 1;
+        SUNSET = 2;
+        DAY_LENGTH = 3;
+        NIGHT_LENGTH = 4;
+    }
+    optional SunriseType type = 1;
+    optional uint64 city = 2;
+    optional int32 day = 3;
+    optional string date = 4;
+}
+
+// Запрос из истории пользователя
+message UserHistoryQuery {
+    optional string text = 1;
+    optional uint64 timestamp = 2;
+    optional string bin_name = 3;
+    optional QueryClassifiersData classifiers = 4;
+    repeated MixinInfo mixins = 5;
+    repeated InfocardInfo infocards = 6;
+    repeated QueryObjectInfo query_objects = 7;
+    optional MixinsData mixins_data = 8;
+}
+
+// История запросов пользователя
+message UserHistory {
+    repeated UserHistoryQuery queries = 1;
+    optional string error = 2;
+    optional uint32 enabled = 3;
+}

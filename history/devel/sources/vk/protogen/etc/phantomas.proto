@@ -1,0 +1,21 @@
+syntax = "proto2";
+
+package ru.mail.go.phantomas.data;
+
+option java_outer_classname = "PhantomasData";
+option optimize_for = SPEED; // default
+
+
+enum PhantomasResponseStatus {
+    OK = 0;
+    FAIL = 1;
+}
+
+message PhantomasResponse {
+    required PhantomasResponseStatus status = 1;
+    required string data = 2; // html or error message if status != OK
+    optional string redirect_url = 3;
+    optional int32 http_status_code = 4;
+    optional string qid = 5;
+}
+

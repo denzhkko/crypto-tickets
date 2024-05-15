@@ -1,0 +1,157 @@
+syntax = "proto2";
+
+package pandao_imgsearcher.pb;
+
+option java_outer_classname = "PandaoImgSearcherMetaData";
+option cc_enable_arenas = true;
+
+message ProductData
+{
+    required sfixed64 product_id = 1; // уникальный id продукта
+    
+    message OriginalInfo
+    {
+        required string url = 1; // url продукта
+        required string source = 2; // source продукта, например aliexpress.com
+        optional string title = 3; // original title (eng)
+    }
+    
+    message AnnoyIndexMeta
+    {
+        optional uint32 annoy_idx_id = 1; // id annoy индекса для которого заиндексировали картинки этого продукта
+        optional uint32 annoy_prod_id = 2; // id в векторе для annoy-индекса c id = annoy_idx_id
+    }
+    
+    message CommentsData
+    {
+        message Comment
+        {
+            optional string text = 1;
+            optional float rating = 2;
+            optional string user_name = 3;
+            optional uint32 time = 4;
+        }
+
+        repeated Comment comments = 1;
+    }
+    
+    enum Currency
+    {
+        RUB = 0;
+        USD = 1;
+        EUR = 2;
+    }
+
+    enum TimeUnit
+    {
+        HOUR = 0;
+        DAY = 1;
+        MONTH = 2;
+    }
+
+    message PriceData
+    {
+        required Currency currency = 1;
+        required float low_price = 2; 
+        optional float high_price = 3;
+    }
+    
+    message ProductStat
+    {
+        required uint32 version = 1;
+
+        optional PriceData old_price = 2;
+        optional PriceData price = 3;
+        optional float orders_cnt = 4;
+        optional float total_rating = 5;
+        optional float reviews_cnt = 6;
+        repeated ShippingData shipping_data = 7;
+        optional bool deleted = 8;
+    }
+   
+    message DurationData
+    {
+        required TimeUnit time_unit = 1;
+        required float low_time = 2;
+        optional float high_time = 3;
+    }
+
+    message ShippingData
+    {
+        required DurationData duration = 1;
+        optional PriceData price = 2;
+        optional string company = 3;
+    }
+
+    optional OriginalInfo original_info = 2;
+    optional AnnoyIndexMeta annoy_index_meta = 3;    
+    optional CommentsData comments_data = 4;
+    repeated ProductStat product_stat = 5;
+}
+
+message EmbeddList 
+{
+    message Embedding 
+    {
+        required string url = 1;
+        required bytes data = 2;
+    }
+    repeated Embedding embed_list = 1;        
+}
+
+message EmbedData
+{
+    required sfixed64 image_id = 1; // уникальный id картинки
+  
+    message OriginalInfo
+    {
+        required string url = 1;
+    }
+
+    message AnnoyIndexMeta
+    {
+        required uint32 annoy_idx_id = 1; // id annoy индекса для которого заиндексировали картинки этого продукта
+        required uint32 annoy_img_id = 2; // id в annoy-индексе c id = annoy_idx_id
+    }
+
+    optional OriginalInfo original_info = 2;
+    optional AnnoyIndexMeta annoy_index_meta = 3;
+}
+
+message ImageData
+{
+    required sfixed64 product_id = 1; // id продукта, которому принадлежит картинка 
+    required sfixed64 image_id = 2; // уникальный id картинки
+    
+    message OriginalInfo
+    {
+        required string url = 1; // url продукта
+    }
+    
+    message AnnoyIndexMeta
+    {
+        required uint32 annoy_idx_id = 1; // id annoy индекса для которого заиндексировали картинки этого продукта
+        required uint32 annoy_img_id = 2; // id в annoy-индексе c id = annoy_idx_id
+        required uint32 annoy_prod_id = 3; // id продукта == ProductData.AnnoyIndexMeta.annoy_prod_id
+    }
+    
+    optional OriginalInfo original_info = 3;
+    optional AnnoyIndexMeta annoy_index_meta = 4;
+}
+
+message ProductImages
+{
+    required string product_url = 1;
+    optional string host = 2;
+
+    message ProductImage
+    {
+        required string url = 1;
+        required bytes data = 2;
+    }
+
+    repeated ProductImage product_images = 3;
+
+    optional sfixed64 hash = 4; // hash from product url
+}
+

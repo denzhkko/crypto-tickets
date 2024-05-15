@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.querydbstat;
+
+import "unique_user_values.proto";
+
+option java_outer_classname = "QueryDbStatDataProto";
+
+message QueryDbStatData {
+    optional uint64 numberOfQuerySearches = 1;
+    optional uint64 numberOfClicks = 2;
+    optional uint64 numberOfClickedSessions = 3;
+    optional uint64 numberOfUniqueUsers = 4;
+    optional ru.mail.go.webbase.utils.UniqueUserValues uniqueUsers = 5;
+}

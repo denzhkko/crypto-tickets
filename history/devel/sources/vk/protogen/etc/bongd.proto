@@ -1,0 +1,64 @@
+syntax = "proto2";
+
+package bongd;
+
+message SnippetStruct
+{
+    message ImageStruct
+    {
+        required string orig_url = 1;
+        required string srch_key = 2;
+        required uint32 width = 3;
+        required uint32 height = 4;
+        required string format = 5;
+        optional uint32 orig_size = 6;
+        optional uint32 orig_width = 7;
+        optional uint32 orig_height = 8;
+    }
+
+    message CustomFieldStruct
+    {
+        required string name = 1;
+        optional string value = 2;
+    }
+
+    message MetaDataStruct
+    {
+        required string name = 1;
+        optional string value = 2;
+    }
+
+    required string url = 1;
+    optional string title = 2;
+    optional string snippet = 3;
+    required uint32 fetch_ts = 4;
+    repeated ImageStruct images = 5;
+    optional string creation_qid = 6;
+    optional string creation_error = 7;
+    optional ImageStruct favicon = 8;
+    optional string content_type = 9;
+    optional bool is_handmade = 10;
+    optional string redirect_url = 11;
+    optional bool has_layer = 12;
+    optional bytes layer_html = 13;
+    repeated ImageStruct layer_images = 14;
+    optional bool is_vydra = 15;
+    repeated CustomFieldStruct custom_fields = 16;
+    repeated MetaDataStruct meta_data = 17;
+    optional bool is_dynamic = 18;
+    optional int32 layer_words_count = 19;
+    optional ImageStruct vk_image = 20;
+    optional bool from_amp = 21;
+
+    optional string layer_header = 22;
+    optional string layer_footer = 23;
+
+    repeated ImageStruct vk_image_array = 24;
+
+    optional int32 creation_error_code = 25;
+
+    optional int32 http_code = 26;
+
+    optional int32 duration = 27;
+}
+

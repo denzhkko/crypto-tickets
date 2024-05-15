@@ -1,0 +1,31 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase;
+
+option java_outer_classname = "RankResult";
+
+message BBContainer
+{
+    required ComputedValues headerValues = 1;
+    repeated BBResult ranks = 2;
+}
+
+message BBResult
+{
+    required ComputedValues headerValues = 1;
+    repeated ComputedValues urlValues = 2;
+    optional string navigationUrl = 3;
+}
+
+message ComputedValues
+{
+    required string name = 1;
+    message Record
+    {
+        // подробнее о ключах https://confluence.mail.ru/pages/viewpage.action?pageId=9537461
+        required string key = 1;
+        required float value = 2;
+    }
+    repeated Record entryResult = 2;
+    optional bool site_entry = 3 [default = false];
+}

@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+import "backends_quality.proto";
+
+package haystack.pb;
+
+
+message HaystackResult
+{
+    message Document
+    {
+        required int64 doc_id = 1;
+        required int32 microbase_id = 2;
+        required float distance = 3;
+        repeated float features = 4;
+        optional string extra_data = 5;
+    }
+
+    message Error
+    {
+        optional string message = 1;
+    }
+
+    message Stats
+    {
+        message MicrobaseID
+        {
+            required int32 id = 1;
+            required int32 version = 2;
+        }
+
+        repeated MicrobaseID missed_microbases = 1;
+        repeated MicrobaseID failed_microbases = 2;
+        repeated MicrobaseID found_microbases = 3;
+    }
+
+    repeated Document documents = 1;
+    optional Error error = 2;
+    optional Stats stats = 3;
+    optional backends_quality.pb.BackendsQuality backends_quality = 4;
+}
+

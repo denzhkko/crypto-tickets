@@ -1,0 +1,37 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "FetcherHBase";
+
+message NotModifiedData {
+    optional int64 lastModified = 1; // java TS / 1000
+    optional string eTag = 2;
+}
+
+/*message FilteredUrl {
+    required string url         = 1;
+    optional bool web           = 2;
+    optional bool redirect      = 3;
+    optional bool sitemap_links = 4;
+    optional bool sitemap       = 5;
+    optional bool high_priority = 6;
+    optional bool stub          = 7;
+    optional bool img           = 8;
+    optional bool img_src       = 9;
+    optional bool people        = 10;
+    optional bool kws           = 11;
+    optional bool liru          = 12;
+    optional bool sputnik       = 13;
+    optional bool al            = 14;
+    optional bool qlinks        = 15;
+    optional bool immortal      = 16;
+    optional bool navig         = 17;
+    optional bool firstmeet     = 18;
+    optional bool gmr           = 19;
+    optional bool news          = 20;
+    optional bool ifb           = 21;
+    optional bool rss_links     = 22;
+    optional bool img_al_page   = 23;
+    optional bool blobfish      = 24;
+}*/

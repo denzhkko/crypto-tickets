@@ -1,0 +1,54 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "FetcherLoadLogs";
+
+message Logs {
+    enum LogState {
+	not_parsed = 0;
+	skipped = 1;
+	st20x = 2;
+	st30x = 3;
+	st40x = 4;
+	st50x = 5;
+	failed = 6;
+	disallowed = 7;
+    };
+
+    required LogState state = 1 [default = not_parsed];
+    required string url = 2;
+    required int64 timestamp = 3;
+    optional int64 bodySize = 4;
+    optional string logMessage = 5;
+    optional int64 timespent = 6;
+    optional bytes ip = 7;
+    optional string server = 8;
+}
+
+message TSList {
+    repeated int64 ts = 1;
+    required int32 amount = 2;
+}
+
+message LogStats {
+    required int64 total = 1;
+    optional Logs.LogState rootState = 2;
+    optional Logs.LogState brRootState = 3;
+
+    message GroupState {
+        required int64 value = 1;
+        required Logs.LogState state = 2;
+    }
+
+    repeated GroupState groups = 4;
+    repeated GroupState brGroups = 5;
+
+    message LogSample {
+        required string url = 1;
+        required Logs.LogState state = 2;
+    }
+
+    repeated LogSample samples = 6;
+}
+

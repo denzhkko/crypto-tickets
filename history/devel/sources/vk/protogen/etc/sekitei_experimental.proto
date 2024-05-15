@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+// Blobs for stone garden (sekitei)
+package ru.mail.go.webbase.sekitei;
+
+option java_outer_classname = "SekiteiExpBlobs";
+
+message Sekitei_e {
+	required string host_name           = 1;
+	required int64 total_url_num        = 2;
+	optional int64 bad_urls             = 3;
+	optional int64 normal_urls          = 4;
+	optional int64 good_urls            = 5;
+	repeated Segment_e segments         = 6;
+	repeated SelectedFeature_e features = 7;
+	repeated OptBlock segmentsOrder     = 8;
+}
+
+message Segment_e {
+	required int32 segment_num   = 1; // number [1-N]; 0 is trash
+	optional string segment_name = 2;
+	optional int32 part          = 3; // number of urls in this segment
+	optional double wp           = 4;
+	optional double bayes_n      = 5;
+	optional double bayes_g      = 6;
+	optional int32 bad_urls      = 7;
+	optional int32 normal_urls   = 8;
+	optional int32 good_urls     = 9;
+	optional string description  = 10; // full description
+	repeated string samples      = 11; // urls from this segment
+}
+
+message SelectedFeature_e {
+	required int32 idx   = 1;
+	required int32 quote = 2;
+	required string key  = 3;
+}
+
+message OptBlock {
+	required int32 current_num = 1;
+	repeated int32 child_list  = 2;
+}

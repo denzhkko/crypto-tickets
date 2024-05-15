@@ -1,0 +1,241 @@
+syntax = "proto2";
+
+package ru.mail.go.oscar;
+
+option java_outer_classname = "UserActivity";
+
+message UserDetails {
+    optional uint64 userId = 1;
+    optional sint64 birthday = 2;
+    optional uint32 gender = 3; // yep, uint32 for gender (1 male, 2 female)
+    optional string firstName = 4;
+    optional string lastName = 5;
+    optional string city = 6;
+    optional uint64 cityId = 7;
+    optional uint64 country = 8;
+    optional string location = 9;
+}
+
+message Present {
+    enum STATUS {
+        NoDecision = 0;
+        Moderation = 1;
+        Accepted = 2;
+    }
+
+    optional uint64 id = 1;
+    optional STATUS status = 2;
+    optional bool free = 3;
+    optional uint32 portalType = 4;
+    optional bool isBirthday = 5;
+    optional bool birthday = 6;
+    optional uint64 countryId = 7;
+    optional uint64 regionId = 8;
+
+    optional string message = 9;
+}
+
+message PresentFunnelStat {
+    enum SOURCE {
+        RED_LINK = 0;
+        FEED_PORTLET_RED_LINK = 1;
+        NOTIFICATION = 2;
+        NAV_MENU = 3;
+        PRESENT_ICON = 4;
+        USER_TOOLTIP = 5;
+        NOTIFICATION_THANKYOU = 6;
+        FRIEND_MENU = 7;
+        APPLICATION = 8;
+        USER_MENU = 9;
+        FEED = 10;
+        SALE_PORTLET = 11;
+        HOLIDAY_PORTLET = 12;
+        USER_PRESENTS = 13;
+        FRIEND_BIRTHDAY_NOTIFICATION = 14;
+        USER_SHORTCUT = 15;
+        BIRTHDAY = 16;
+        HOLIDAY = 17;
+        PROMO = 18;
+        GIFT_FRONT_HOLIDAYS_PORTLET = 19;
+        OTHER = 20;
+        FRIEND_PRESENTS = 21;
+        GIFT_CONSTRUCTOR = 22;
+        HOLIDAY_PORTLET_COLLAPSED = 23;
+        HOLIDAY_FEED_PORTLET = 24;
+        FRIEND_TOOLTIP = 25;
+        MESSAGES = 26;
+        BIRTHDAY_PROMO = 27;
+        PAYMENT_FEATURED = 28;
+        FRIEND_WISH_PORTLET = 29;
+        FEED_PORTLET = 30;
+        USERS_ONLINE = 31;
+        WISHLIST = 32;
+        GIFT_CONSTRUCTOR_ANDROID = 33;
+        FEED_PORTLET_FRIEND_BIRTHDAY = 34;
+        RETURN = 35;
+        NAMEDAY = 36;
+        GROUP_PROMO = 37;
+        PULT = 38;
+        FEATURED_PRESENTS = 39;
+     }
+
+    enum ACTION {
+        SHOWCASE = 0;
+        SHOWCASE_SELECT_FRIEND = 1;
+        SHOWCASE_FRIEND_SELECTED = 2;
+
+        PAYMENT_PRE_SHOW = 10;
+        PAYMENT_SHOW = 11;
+        PAYMENT_OK = 12;
+        PAYMENT_ERROR = 13;
+        PAYMENT_NOT_SENDABLE = 14;
+
+        PAYMENT_SELECT_SMS = 21;
+        PAYMENT_SELECT_CARDS = 22;
+        PAYMENT_SELECT_TERMINALS = 23;
+        PAYMENT_SELECT_EMONEY = 24;
+        PAYMENT_SELECT_SMS_UNAVAILABLE = 25;
+
+        PAYMENT_DELAYED = 30;
+        PAYMENT_DELAYED_OK = 31;
+        PAYMENT_DELAYED_FAILED = 32;
+
+        PAYMENT_CREDIT = 40;
+        PAYMENT_CREDIT_OK = 41;
+
+        PAYMENT_REJECTED = 50;
+        PAYMENT_OK_WISHLIST = 51;
+        PAYMENT_CONFIRM_OK_TRANSFER_SUCCESS = 52;
+        PAYMENT_CONFIRM_OK_TRANSFER = 53;
+        PAYMENT_CONFIRM_OK_TRANSFER_ERROR = 54;
+
+        PAYMENT_EXISTS = 60;
+        PAYMENT_SHOW_NEGATIVE = 61;
+
+        HOLIDAY_GIFTS_RECOMMENDATIONS = 70;
+
+    }
+
+    enum VISIBILITY {
+        AllPublic = 0;
+        Private = 1;
+        Anonymous = 2;
+    }
+
+    enum DEVICE {
+        web_gecko = 0;
+        web_webkit = 1;
+        web_ie = 2;
+        web = 3;
+
+        web_mobile = 10;
+        web_tablet_webkit_mobile = 11;
+        web_webkit_mobile = 12;
+        web_ie_mobile = 13;
+
+        mob_android = 20;
+        mob_tablet = 21;
+        mob_opera = 22;
+        mob_win = 23;
+        mob_ios = 24;
+        mob_desktop = 25;
+        mob_unknown = 26;
+
+        app_android = 30;
+        app_winPhone = 31;
+        app_iOS = 32;
+    }
+
+    optional uint64 presentId = 1;
+    optional uint64 senderUserId = 2;
+    optional uint64 receiverUserId = 3;
+    optional uint64 okPrice = 4;
+    optional uint64 okBalance = 5;
+    optional uint64 funnelId = 6;
+    optional uint64 holidayId = 7;
+    optional string presentSectionCode = 8; // one char really
+    optional bool allInclusive = 9;
+    optional SOURCE source = 10;
+    optional ACTION action = 11;
+    optional DEVICE device = 12;
+
+    optional VISIBILITY visibility = 13;
+}
+
+message Transaction {
+    enum TRANSACTION_TYPE {
+        USER_TO_APP = 0;
+        APP_TO_USER = 1;
+        COMPANY_TO_APP = 2;
+    }
+    required uint64 amount = 1;
+    required string currency = 2;
+    required TRANSACTION_TYPE txType = 3;
+}
+
+message Event {
+    enum TYPE {
+        GROUP_FORUM_MESSAGE_CREATE = 0;
+        USER_INTERNAL_LIKE = 1;
+
+        MEDIA_TOPIC_CREATED = 2;
+        ALT_GROUP_MEDIATOPIC_CREATE = 3;
+        ALT_GROUP_MEDIATOPIC_UPDATE = 4;
+        ALT_GROUP_MEDIATOPIC_TAGS_UPDATED = 5;
+        MEDIA_TOPIC_TAGS_UPDATED = 6;
+
+        GROUP_FORUM_HEADER_UPDATE = 7;
+        MEDIA_TOPIC_UPDATED = 8;
+
+        ERROR = 9;
+        MOVIE_UPDATE = 10;
+        MOVIE_PROCESSED = 11;
+        GROUP_MOVIE_CREATE = 12;
+        GROUP_ALBUM_CREATE = 13;
+        GROUP_ALBUM_UPDATE = 14;
+        GROUP_PHOTO_UPDATE = 15;
+        GROUP_PHOTO_CREATE = 16;
+
+        ALT_GROUP_MEDIATOPIC_TEMP_UNAVAILABLE = 17;
+        GROUP_PHOTO_TEMP_UNAVAILABLE = 18;
+        MOVIE_TEMP_UNAVAILABLE = 19;
+
+        ALT_GROUP_MEDIATOPIC_DELETE = 20;
+        ALT_GROUP_HEADER_DELETE = 21;
+        GROUP_PHOTO_DELETE = 22;
+
+        USER_PRESENT_FUNNEL = 50;
+        USER_PRESENT_SEND = 51;
+        USER_PREMIUM_PRESENT_CREATE = 52;
+        USER_PRESENT_CREATE = 53;
+        USER_LIVE_PRESENT_CREATE = 54;
+        SENT_PRESENTS_TO_SPECIAL_FRIENDS = 55;
+
+        USER_APP_LAUNCH = 60;
+        USER_APP_REMOVE = 61;
+        APP_INVITE = 62;
+        APP_SUGGEST = 63;
+        APP_SUBSCRIBE_FEED = 64;
+        APP_UNSUBSCRIBE_FEED = 65;
+        USER_APP_NOTIFICATION_UNSUBSCRIBE = 66;
+        USER_APP_NOTIFICATION_DECLINE = 67;
+        USER_APP_ACCESS = 68;
+        USER_APP_PAYMENT = 69;
+    }
+    required uint64 timestamp = 1;
+    required uint64 userId = 2;
+    required TYPE type = 3;
+
+    optional string location = 5;
+
+    optional UserDetails userDetails = 10;
+
+    optional PresentFunnelStat presentFunnelStat = 20;
+    optional Present present = 21;
+
+    optional Transaction transaction = 29;
+
+    optional uint64 appId = 30;
+    optional uint64 eventAppId = 31;
+    repeated uint64 users = 32;
+}

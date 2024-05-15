@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+package youla.search_geo_info.pb;
+
+option java_outer_classname = "YoulaSearchGeoInfo";
+
+message SearchGeoInfo {
+  optional int32 region_id = 1;
+
+  message Category {
+    optional int32 category_id = 1;
+    repeated LifeTimeGroup life_time_groups = 2;
+
+
+    message LifeTimeGroup {
+      optional string name = 1;
+      optional float frequency = 2;
+      optional int64 cnt = 3;
+    }
+
+  }
+
+  repeated Category categories = 2;
+
+}
+

@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "VerticalTransfer";
+
+enum Table {
+  VIDEO = 1;
+  PERSON = 2;
+}
+
+enum RecordType {
+  DATA = 1;
+  URL = 2;
+}
+
+message ColumnInfo {
+  required bytes family = 1;
+  required bytes qualifier = 2;
+}
+
+message DataItem {
+  optional ColumnInfo column = 1;
+  optional bytes data = 2;
+}
+
+message TransferMessage {
+  //common
+  required RecordType type = 1;
+  optional string url = 2;
+
+  //url type
+  optional Table table = 3;
+  optional bytes row = 4;
+  optional bool priority = 5;
+
+  //data type
+  repeated DataItem data = 6;
+} 

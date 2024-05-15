@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+
+message Doc {
+  optional uint64  doc_id  = 1; // deprecated/not used
+  optional uint64  gid     = 2; // deprecated/not used
+  optional uint64  hash    = 3;
+}
+
+message RecoStorageOutput {
+  required uint64 uid     = 1;
+  required uint64 cid     = 2;
+  required uint32 version = 3;
+  repeated Doc    docs    = 4;
+}

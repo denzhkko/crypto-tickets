@@ -1,0 +1,53 @@
+syntax = "proto2";
+
+package common.pb;
+
+message ZoneRemapping {
+    repeated uint32 zid_pack_array = 1;
+    repeated uint32 zid_unpack_array = 2;
+}
+
+message CommonStorage {
+    required uint32 catalog_bits = 1;
+    required string prefix = 2;
+    optional uint32 version_id = 3;
+    optional fixed32 pt_model_hash = 4;
+    optional fixed32 neuro_model_hash = 5;
+    optional bool pq_vector_enabled = 6 [default = false];
+}
+
+message IndexStorage {
+    required uint32     catalog_bits = 1;
+    required uint32     version_id = 2;
+    // WARN: defined in 4-byte words!
+    optional uint64     rare_split_bound = 3;
+}
+
+message AnnStorage {
+    required string     fname = 1; // sadly, but different projects using different names for their indexes, so we need to store actual name given by creator
+    required uint32     dim = 2;
+    required uint32     depth = 3;
+}
+
+message DBInfo
+{
+    required fixed32 header = 1; // must be magic number 0xFFDB14F0
+    optional fixed32 num_docs = 2; // for frequent access
+    optional fixed32 last_doc_id = 3;  // for frequent access
+    optional uint32 storage_cat_bits = 4;
+    optional uint32 data_cat_bits  = 5;
+    optional uint32 last_ext_link_id = 6;
+    optional uint64 last_opt_data_size = 7;
+    optional uint64 last_opt_storage_size = 8;
+    optional uint32 last_opt_docs = 9;
+    optional uint32 last_opt_last_doc_id = 10;
+    optional fixed32 indexing_time = 11; // huge entropy value
+    optional fixed32 index_stamp = 16; // Stamp of indexing start
+    optional fixed32 fetch_stamp = 17; // Max value of docfetch_tm
+    optional ZoneRemapping zone_remapping = 12;
+    optional CommonStorage entries_storage = 13;
+    optional CommonStorage document_storage = 14;
+    optional CommonStorage document_extra_storage = 15;
+    optional IndexStorage index_storage = 18;
+    optional AnnStorage ann_storage = 19;
+}

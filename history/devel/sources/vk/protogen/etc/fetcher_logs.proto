@@ -1,0 +1,154 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "FetcherLogs";
+
+message Logs {
+    enum LogEvent {
+        // UPLOADING
+        SKIPPED_BY_BLACKLIST = 0;
+        SKIPPED_BY_ROBOTS = 1;
+        SKIPPED_BY_IC = 2;
+
+        // BATCHING SECTION
+        IS_HTTPS = 10;
+        LIMITED_AS_NEW = 11;
+        LIMITED_AS_PRIVATE = 12;
+        DOMAIN_3_LIMIT = 13;
+        DOMAIN_3_SANDBOX = 14;
+        DOMAIN_3_NEW = 15;
+        IP_LIMIT = 16;
+        IP_NEW = 17;
+        BATCH_LIMIT = 18;
+        BATCH_NEW = 19;
+
+        BIG_WEB_SCHEDULER_LIMIT = 20;
+        DISCOVERY_SCHEDULER_LIMIT = 21;
+        SANDBOX_SCHEDULER_LIMIT = 22;
+        FOREIGN_WEB_SCHEDULER_LIMIT = 23;
+        MULTIMEDIA_SCHEDULER_LIMIT = 24;
+        ROBOTS_SCHEDULER_LIMIT = 25;
+        IMAGE_SCHEDULER_LIMIT = 26;
+        IMAGE_REDOWNLOAD_SCHEDULER_LIMIT = 27;
+        MANUAL_REDOWNLOAD_SCHEDULER_LIMIT = 28;
+        REDIRECTS_SCHEDULER_LIMIT = 29;
+
+        // FETCHING
+        // TODO
+        // move this to 100+ section
+
+        // DELETING
+        BLACKLISTED = 30;
+        CLEAR_AS_BAD_URL = 31;
+        DELETE_SITE_URLS = 32;
+        DISABLED_BY_ROBOTS = 33;
+        DISABLED_BY_ROBOTS_TWICE = 34;
+        BAD_SITE_BY_SANDBOX = 35;
+        MARKED_AS_DUPLICATE = 36;
+        CUT_BY_IC = 37;
+        OLD_FOR_INDEX = 38;
+        DISABLED_BY_ROBOTS_HOST = 39;
+        DELETED_AS_OLD = 50;
+
+        // CONTENT MERGE ACTIONS
+        DOWNLOADED_BUT_MUST_BE_REMOVED = 40;
+        DOWNLOADED_BUT_MUST_NOT_BE_INDEXED = 41;
+        DOWNLOADED_AS_NOT_FOUND = 42;
+        SAME_VERSION_SKIP_MERGING = 43;
+        DOWNLOADED_AS_DISABLED_BY_ROBOTS = 44;
+        OLD_VERSION_BETTER = 45;
+        WRONG_URL_IN_NEW_STATUS = 46;
+
+        SAVE_REDIRECT_CHAIN_FROM_FETCHER = 49; // don't know where to put it - let it be merge action
+
+        // FIELD UPDATE ACTIONS
+        UPDATE_FULL_URL = 51;
+        UPDATE_CURRENT_STATUS = 52;
+        UPDATE_NEW_STATUS = 53;
+        UPDATE_FLAG_IN_INDEX = 54;
+        UPDATE_FLAG_DISABLED = 55;
+
+        // CONTENT DUMP ACTIONS
+        CONTENT_DUMPED = 61;
+        CONTENT_DUMP_SKIPPED = 62;
+
+        // SCHEDULING / INDEX MARKING ACTIONS
+        SCHEDULED_BY_BIG_WEB = 71;
+        SCHEDULED_BY_FOREIGN_WEB = 72;
+        SHOULD_BE_INDEXED_BY_BIG_WEB = 73;
+        SHOULD_BE_INDEXED_BY_FOREIGN_WEB = 74;
+        
+        REJECTED_BY_BIG_WEB = 75;
+        REJECTED_BY_FOREIGN_WEB = 76;
+        REJECTED_BY_BIG_WEB_INDEX = 77;
+        REJECTED_BY_FOREIGN_WEB_INDEX = 78;
+        
+        SKIPPED_BY_BIG_WEB = 79;
+        SKIPPED_BY_FOREIGN_WEB = 80;
+        SKIPPED_BY_BIG_WEB_INDEX = 81;
+        SKIPPED_BY_FOREIGN_WEB_INDEX = 82;
+        
+        // SITES ACTIONS
+        CHECKED_BY_SANDBOX = 100;
+        ROBOTS_REQUIRED    = 101;
+
+        OTHER = 99;
+
+        URGENT_SCHEDULER_LIMIT = 102;
+        URGENT_IMAGE_SCHEDULER_LIMIT = 103;
+    };
+
+    required LogEvent logEvent = 1;
+    optional string jobID = 2;
+
+    optional float priority = 3;
+    optional float minPriority = 4;
+    optional int32 quota = 5;
+
+    optional string message = 6;
+    optional string addMessage = 7;
+
+    optional int64 numMessage = 8;
+
+    optional string textPriority = 9;
+    optional string textMinPriority = 10;
+}
+
+//LOGS_CF.LOGS
+//Разделено на 4 Log Type:
+//# UPLOAD - этап загрузки урла в базу
+//## SKIPPED_BY_BLACKLIST - пропущен из-за динамического банлиста (статика отсекает слишком много полного хлама)
+//## SKIPPED_BY_ROBOTS - пропущен по причине запрета в ROBOTS.TXT (в message указано с какого домена проверка - www или нет)
+//## SKIPPED_BY_IC - пропущен по квоте на сайт (заполнены поля priority, minPriority, quota)
+//# BATCHING - этап упаковки урлов в батчи на загрузку
+//## IS_HTTPS - пропущен потому что схема https://
+//## LIMITED_AS_NEW - пропущен из-за ограничения на загрузку новых урлов
+//## LIMITED_AS_PRIVATE - пропущен из-за ограничения на загрузку sputnik-only урлов
+//## DOMAIN_3_LIMIT - пропущен по лимиту на домен-3 (priority, minPriority, quota)
+//## DOMAIN_3_SANDBOX - пропущен по лимиту на домен-3 (если домен-3 в песочнице; priority, minPriority)
+//## DOMAIN_3_NEW - пропущен по лимиту на домен-3 для новых урлов (priority, minPriority, quota * коэффициент для новых урлов)
+//## DOMAIN_2_LIMIT - пропущен по лимиту на домен-2 (priority, minPriority, quota)
+//## BATCH_LIMIT - пропущен по лимиту на батч (priority, minPriority, quota)
+//# FETCHING - этап загрузки
+//## TODO - нужно переделывать уже существующую задачу
+//# DELETING - этап очистки базы
+//## BLACKLISTED - удалён по статическому чёрному списку
+//## CLEAR_AS_BAD_URL - удалён по нормализации (не факт, что логи будут оставаться)
+//## DELETE_SITE_URLS - удалён вручную
+//## DISABLED_BY_ROBOTS - заблокирован по robots.txt (message содержит домен - www или нет)
+//## DISABLED_BY_ROBOTS_HOST - заблокирован, как страница с зеркала
+//## DISABLED_BY_ROBOTS_TWICE - дважды заблокирован по robots.txt (означает удаление из базы; message содержит домен - www или нет)
+//## BAD_SITE_BY_SANDBOX - сайт распознан как иностранный
+//## MARKED_AS_DUPLICATE - помечен как дубликат (message содержит основной дубликат)
+//## CUT_BY_IC - удалён по квоте (priority, minPriority, quota для данного домена)
+//## OLD_FOR_INDEX - удален из индекса из-за слишком давней последней индексации
+//## DELETED_AS_OLD - удалён из базы как забытый интернетом
+//# MERGER
+//## DOWNLOADED_BUT_MUST_BE_REMOVED - скачан, но должен быть удалён (например, пока мы его загружали, удалили его по блеклисту)
+//## DOWNLOADED_BUT_MUST_NOT_BE_INDEXED - скачан, но на индексаторы отправлять не надо (например, картиночная html)
+//## DOWNLOADED_AS_NOT_FOUND - скачан с кодом 40* - страница не найдена
+//# FIELD UPDATE ACTION
+//## UPDATE_FULL_URL - обновлено поле WebPageTable.CRAWL_CF.FULL_URL
+//## UPDATE_CURRENT_STATUS - обновлено поле WebPageTable.CRAWL_CF.CURRENT_STATUS
+//## UPDATE_NEW_STATUS - обновлено поле WebPageTable.CRAWL_CF.NEW_STATUS

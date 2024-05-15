@@ -1,0 +1,20 @@
+syntax = "proto2";
+
+package gogo.rm;
+
+message ReplicaMessage {
+  required double rate = 1;
+}
+
+message BackendMessage {
+  repeated ReplicaMessage replica_message = 1;
+}
+
+message ClusterMessage {
+  repeated BackendMessage backend_message = 1;
+}
+
+message RateMessage {
+  required ClusterMessage cluster = 1;
+}
+

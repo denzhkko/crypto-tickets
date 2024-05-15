@@ -1,0 +1,17 @@
+
+syntax = "proto2";
+
+package youla.layered_array.pb;
+
+message ProductToKey {
+    required uint32 docid = 1;
+    required uint32 product_id_low = 2;
+    required int64 key = 3;
+    optional uint64 product_id_high = 4 [default = 0];
+}
+
+message ProductsToKeys
+{
+    repeated ProductToKey data = 1;
+}
+

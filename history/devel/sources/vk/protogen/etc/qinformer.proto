@@ -1,0 +1,177 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.serp;
+
+option java_outer_classname = "QInformer";
+
+message QInfo
+{
+    message Statistic
+    {
+        message Al
+        {
+            optional uint32 sessions = 1;
+            optional bool   navig = 4;
+        }
+
+        message Cr
+        {
+            optional uint32 sessions = 1;
+            optional bool   navig = 2;
+        }
+
+        message Sr
+        {
+            optional uint32 sessions = 1;
+            optional uint32 urls = 2;
+            optional uint32 users = 3;
+            optional bool   navig = 4;
+        }
+
+        message Br
+        {
+            optional uint32 sessions = 1;
+            optional float  navig_quality = 2;
+            optional bool   navig = 3;
+        }
+
+        message Nal
+        {
+            optional uint32 sessions = 1;
+        }
+
+        message UrlInfo
+        {
+            optional string url = 1;
+            optional uint32 hash = 2;
+            optional int32  site = 3;
+            optional float  rank = 4;
+            optional float  crMix = 5;
+            optional float  crM = 6;
+            optional uint64 hash64 = 7;
+            optional uint64 normalized_hash = 8;
+        }
+
+        message Nvg
+        {
+            optional float prob = 1;
+            repeated UrlInfo urls = 2;
+        }
+
+        message VrtInfo
+        {
+            optional string name = 1;
+            optional float  rank = 2;
+        }
+
+        message Vrt
+        {
+            repeated VrtInfo vrts = 1;
+        }
+
+        message AlImg
+        {
+            optional uint32 sessions = 1;
+        }
+
+        message CrImg
+        {
+            optional uint32 sessions = 1;
+            optional uint32 clicks = 2;
+        }
+
+        message CrVdo
+        {
+            optional uint32 sessions = 1;
+            optional uint32 clicks = 2;
+        }
+
+
+        message ESSRexp
+        {
+            optional uint32 sessions = 1;
+        }
+
+        message Freq
+        {
+            optional uint32 queries = 1;
+            optional uint32 users = 2;
+        }
+
+        message CrMixin
+        {
+            required string name = 1;
+            optional float rank = 2;
+            optional float attractiveness = 3;
+            optional float satisfaction = 4;
+            optional uint32 views = 5;
+            optional uint32 clicks = 6;
+            optional uint32 satisfied = 7;
+            optional uint32 users = 8;
+        }
+
+        message Intent
+        {
+            required string name = 1;
+            optional float prob = 2;
+            optional uint32 clicks = 3;
+            optional uint32 views = 4;
+        }
+
+        required uint32 geo = 1;
+
+        optional Al al_y = 2;
+        optional Al al_g = 3;
+        optional Al al_mg = 4;
+
+        optional Cr cr_m = 5;
+        optional Cr cr_mg = 6;
+        optional Cr cr_y = 7;
+        optional Cr cr_g = 8;
+        optional Cr cr_mix = 9;
+
+        optional Sr sr_g_spk = 10;
+        optional Sr sr_g_liru = 11;
+        optional Sr sr_g_kws = 12;
+
+        optional Sr sr_y_spk = 13;
+        optional Sr sr_y_liru = 14;
+        optional Sr sr_y_kws = 15;
+
+        optional Br br_y = 16;
+        optional Br br_g = 17;
+        optional Br br_m = 18;
+
+        optional Nal nal_y = 19;
+        optional Nal nal_g = 20;
+        optional Nal nal_mg = 21;
+
+        optional Nvg nvg_mdl = 22;
+        optional Vrt vrt_mdl = 23;
+
+        optional CrImg cr_img = 24;
+        optional AlImg al_img_y = 25;
+        optional AlImg al_img_g = 26;
+        optional AlImg al_img_gmx = 27;
+
+        optional ESSRexp essr_exp_y = 28;
+        optional ESSRexp essr_exp_g = 29;
+
+        optional Freq freq_m_3y = 30;
+
+        repeated CrMixin cr_m_mixins = 31;
+
+        repeated Intent int_m = 32;
+
+        optional CrVdo cr_vdo = 33;
+
+        optional Cr cr_m_mob = 34;
+        repeated CrMixin cr_m_mob_mixins = 35;
+        repeated Intent int_m_mob = 36;
+    }
+
+    optional string query_text = 1;
+    repeated Statistic stat = 2;
+
+    optional bool is_geo = 3;
+}

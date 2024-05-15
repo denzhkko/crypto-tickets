@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+package gogo;
+
+message XmlOptions {
+    string name = 1;
+    string list = 2;
+}
+
+message QueryOptions {
+    string name = 1;
+}
+
+message JsonOptions {
+    string name = 1;
+    bool force_print = 2;
+}
+
+extend google.protobuf.FieldOptions {
+    XmlOptions xml = 50000;
+    QueryOptions query = 50001;
+    JsonOptions json = 50002;
+}

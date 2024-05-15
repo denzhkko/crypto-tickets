@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "TaggerBlobs";
+
+enum ContentType {
+    Image = 1;
+    Video = 2;
+}
+
+message TaggerParsedContent {
+    optional string       page_url           = 1;
+    optional string       content_url        = 2;
+    optional ContentType  contentType        = 3;
+    optional string       image_preview_url  = 4;
+    optional string       title              = 5;
+    optional string       description        = 6;
+    optional float        page_url_rank      = 7;
+    optional uint32 image_height             = 8;
+    optional uint32 image_width              = 9;
+    optional uint64 hash                     = 10;    
+}
+

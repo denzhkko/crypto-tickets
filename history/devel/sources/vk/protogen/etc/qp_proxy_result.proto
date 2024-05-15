@@ -1,0 +1,54 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "QPProxyResult";
+
+// Results from QPProxy.
+
+message QPResult {
+	enum Lang
+	{
+		RU = 1;
+		EN = 2;
+		KZ = 3;
+		UA = 4;
+		BY = 5;
+	}
+	message LangValue
+	{
+		required Lang  language    = 1;
+		required float probability = 2;
+	}
+
+	message LangResult {
+		repeated LangValue languages = 1;
+	}
+
+    optional sint32 geoRegion      = 1;
+    optional sint32 navigRegion    = 2;
+    optional LangResult langResult = 3;
+    optional sint32 geoNameRegion  = 7;
+
+    optional bool isGeo            = 4;
+    optional bool isNavig          = 5;
+    optional bool isAnswer         = 6;
+    optional bool isGeoName        = 8;
+
+}
+
+message HarvesterResult {
+
+    message OldStats {
+        required bool wasExproted      = 1;
+        required bool wasGeo           = 2;
+        required bool wasNavig         = 3;
+    }
+
+    required QPResult qpProxyData  = 1;
+
+    optional OldStats oldStatsData = 2;
+
+    optional bool isYandexGeo      = 3;
+    optional bool isNavig          = 4;
+    optional bool wasExported      = 5;
+}

@@ -1,0 +1,20 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "SiteStatsBlobs";
+
+import "doc_parser.proto";
+
+message SiteStats {
+    optional bool imported = 1;
+    optional bool blacklisted = 2 [ default = false ];
+    optional bool special = 3 [ default = false ];
+    optional bool in_sandbox = 4 [ default = false ];
+    optional float porn_rank = 5;
+    optional int32 NBRSQ = 6;
+    optional int32 NBRMO = 7;
+    optional SiteLanguageArray site_language = 8;
+    optional int32 language_penalty = 9;
+    optional int32 result_rank = 10;
+    repeated string sitemap = 11;
+}

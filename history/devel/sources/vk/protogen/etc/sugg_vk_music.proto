@@ -1,0 +1,105 @@
+syntax = "proto3";
+package pb.suggests;
+
+import "options.proto";
+
+enum NavigVkMusicType {
+    Unknown = 0;
+    Artist = 1;
+    Track = 2;
+    Album = 3;
+    Playlist = 4;
+};
+
+message NavigVkMusic {
+    uint64 nid = 1;
+    NavigVkMusicType type = 2;
+    string id = 3;
+};
+
+message IndexNavigVkMusic {
+    string navig_id = 1 [(gogo.json).name = "navig_id"];
+    uint32 frequency = 2 [(gogo.json).name = "freq"];
+
+    NavigVkMusicType vk_type = 3 [(gogo.json).name = "vk_type"];
+    string vk_id = 4 [(gogo.json).name = "vk_id"];
+};
+
+message IndexQuery {
+    message Variant {
+        string text = 1 [(gogo.json).name = "text"];
+        uint32 frequency = 2 [(gogo.json).name = "freq"];
+        uint32 flags = 3 [(gogo.json).name = "flags"];
+    };
+
+    message Navig {
+        string id = 1 [(gogo.json).name = "id"];
+        uint32 frequency = 2 [(gogo.json).name = "freq"];
+    };
+    message UserCluster {
+        uint32 cluster_id = 1 [(gogo.json).name = "cl_id"];
+        double frequency = 2 [(gogo.json).name = "freq"];
+    };
+
+    string text = 1 [(gogo.json).name = "text"];
+    uint32 frequency = 2 [(gogo.json).name = "freq"];
+    repeated Variant variants = 3 [(gogo.json).name = "variants"];
+    repeated Navig navigs = 4 [(gogo.json).name = "navigs"];
+    repeated UserCluster user_clusters = 5 [(gogo.json).name = "user_clusters"];
+};
+
+message ResponseQuery {
+
+    message MatchedPair {
+        uint32 begin_pos = 1 [(gogo.json).name = "l", (gogo.json).force_print = true];
+        uint32 end_pos = 2 [(gogo.json).name = "r", (gogo.json).force_print = true];
+    }
+    string text = 1 [(gogo.json).name = "text",
+                     (gogo.xml).name = "Text"];
+    string text_marked = 2 [(gogo.json).name = "textMarked",
+                            (gogo.xml).name = "TextMarked"];
+    repeated MatchedPair matched_ranges = 3 [(gogo.json).name = "matchedRanges"];
+};
+
+message ResponseNavigVkMusic {
+    NavigVkMusicType type = 1 [(gogo.json).name = "type",
+                               (gogo.xml).name = "Type"];
+    string id = 2 [(gogo.json).name = "id",
+                   (gogo.xml).name = "Id"];
+};
+
+message ResponseVkMusic {
+    repeated ResponseQuery queries = 1 [(gogo.json).name = "items",
+                                        (gogo.xml).name = "Query",
+                                        (gogo.xml).list = "Queries"];
+    repeated ResponseNavigVkMusic navigs = 2 [(gogo.json).name = "navigs",
+                                              (gogo.xml).name = "Navig",
+                                              (gogo.xml).list = "Navigs"];
+    repeated ResponseQuery history = 3 [(gogo.json).name = "history",
+                                        (gogo.xml).name = "Query",
+                                        (gogo.xml).list = "History"];
+
+    message Terms {
+        string query = 1 [(gogo.json).name = "query"];
+    }
+
+    string qid = 4 [(gogo.json).name = "qid"];
+    Terms terms = 5 [(gogo.json).name = "terms"];
+};
+
+
+message ClusterInfoVkMusic {
+    message Centroid {
+        repeated float values = 1 [(gogo.json).name = "values"];
+    }
+    uint32 cluster_id = 1 [(gogo.json).name = "clusterIdx"];
+    Centroid centroid = 2 [(gogo.json).name = "clusterCenter"];
+};
+
+message ClusterInfosVkMusic {
+    repeated ClusterInfoVkMusic clusters = 1;
+};
+
+message QueryEmbeddingVkMusic {
+     repeated float components = 1;
+};

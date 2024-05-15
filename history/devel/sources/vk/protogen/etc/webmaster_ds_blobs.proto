@@ -1,0 +1,74 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "WebmasterDSBlobs";
+import "webmaster_blobs.proto";
+import "image_defs.proto";
+
+message WebPage {
+    required string         url                 = 1;
+    required int64          hashedUrl           = 2;
+    required FetcherData    fetcher_data        = 3;
+    required RankingData    ranking_data        = 4;
+    required LinksData      links_data          = 5;
+    optional int32          pik                 = 6;
+}
+
+message Queries {
+    required string         url                 = 1;
+    required int64          hashedUrl           = 2;
+    required QueryData      query_data          = 3;
+    optional QueryData      extended_query_data = 4;
+}
+
+message DailyQueries {
+    required string         url                = 1;
+    required int64          hashedUrl          = 2;
+    repeated DailyQueryData daily_query_data   = 3;
+}
+
+message SiteInfo {
+    optional SiteData                               site_data       = 1;
+    optional bool                                   flag_banned     = 2;
+    optional int32                                  urls_count      = 3;
+    optional int32                                  normalized_pik  = 4;
+    optional int32                                  pik             = 5;
+    optional float                                  true_pik        = 6;
+    optional Robots                                 robots_data     = 7;
+    optional ru.mail.go.webbase.parsing.img.Thumb   favicon         = 8;
+    optional string                                 favicon_url     = 9;
+}
+
+message FullUrlData {
+    required WebPage        web_page        = 1;
+    optional SiteInfo       site_info       = 2;
+    optional Queries        queries         = 3;
+    optional DailyQueries   daily_queries   = 4;
+}
+
+
+//message WebpageInfo {
+//    optional FetcherData    fetcher             = 1;
+//    optional FetcherData    fast_fetcher        = 2;
+//    optional RankingData    ranks               = 3;
+//    optional LinksData      links               = 4;
+//}
+//
+//message QueriesInfo {
+//    optional QueryData      queries             = 1;
+//    optional QueryData      extended_queries    = 2;
+//}
+//
+//message DailyQueriesInfo {
+//    optional DailyQueryData queries             = 1; 
+//}
+//
+//message Export {
+//    required string             url                 = 1;
+//    required int64              hashedUrl           = 2;
+//    optional SiteInfo           site_info           = 3;
+//    optional WebpageInfo        webpage_info        = 4;
+//    optional QueriesInfo        queries_info        = 5;
+//    optional DailyQueriesInfo   daily_queries_info  = 6;
+//}
+

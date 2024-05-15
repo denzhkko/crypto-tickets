@@ -1,0 +1,88 @@
+syntax = "proto2";
+
+import "search_result.proto";
+import "backends_quality.proto";
+
+message BackendId
+{
+    required sint32 backend = 1;
+    required uint32 replica = 2;
+}
+
+message click_rank
+{
+    required double rank         = 1;
+    required double attractive   = 2;
+    required double satisfaction = 3;
+    required double sessions     = 4;
+}
+
+message serp_quality_features
+{
+    required float pair_passages_rank = 1;
+    required float text_rank = 2;
+    optional float sq_model_rank = 3;
+}
+
+message stage0
+{
+    required uint32 docid                       = 1;
+    required double weight                      = 2;
+    required uint32 crc1                        = 3;
+    required uint32 crc2                        = 4;
+    required uint32 crc3                        = 5;
+    required string snip_hl                     = 6;
+    required string rank_trace_feat             = 7;
+    optional uint64 special_crc                 = 8;
+    optional uint32 required_position           = 9;
+    required bool is_navig                      = 10;
+    required bool parsed_content                = 11;
+    required gogo.sr.domain_group_type domain_group = 12;
+    required bool is_mergable                   = 13;
+    required click_rank cr                      = 14;
+    required serp_quality_features sfq          = 15;
+    optional uint64 crc5                        = 16;
+    required string doc_trace                   = 17;
+    optional bool could_be_a_group_leader       = 18;
+    optional fixed32 full_domain_hash           = 19;
+    optional uint32 features_hash               = 20;
+    optional bool req_pos_mergable              = 21;
+}
+
+message resultHdr
+{
+    required uint32 error                        = 1;
+    required string error_mesage                 = 2;
+    required uint32 ndocs_groups                 = 3;
+    required uint32 ndocs_total                  = 4;
+    required uint64 m3                           = 5;
+    required uint64 m4                           = 6;
+    required uint64 m5                           = 7;
+    required uint32 last_index                   = 8;
+    required uint32 max_docs_count               = 9;
+    required string sm_through                   = 10;
+    required string searcher_version             = 11;
+    required string microbases                   = 12;
+    required uint32 version_hash                 = 13;
+    required uint32 experiment_id                = 14;
+    required string experiment_interleaving_type = 15;
+    required string experiment_essr_source_type  = 16;
+    required bytes trait_holder_and_webstat      = 17;
+    optional bool domain_group_ooo               = 18;
+    optional backends_quality.pb.BackendsQuality
+                                backends_quality = 19;
+}
+
+message DocInfo
+{
+    required BackendId backend_id = 1;
+    required resultHdr hdr        = 2;
+    repeated stage0 docs          = 3;
+}
+
+message Stage0Info
+{
+  repeated DocInfo docs              = 1;
+  optional uint32 backends_list_hash = 2;
+  optional uint32 sm_revision_hash   = 3;
+}

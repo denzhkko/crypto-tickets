@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.serp;
+
+option java_outer_classname = "QSpellchecker";
+import "sputnik_logs.proto"; // SessionSpc.Type
+
+message QDDBSpc
+{
+	message Spellcheck
+	{
+		required ru.mail.go.webbase.SputnikRanker.SessionSpc.Type type = 1;
+		optional string proposed_query = 2;
+		optional float rank = 3;
+	}
+	
+	message Statistic
+	{
+		required uint32 geo = 1;
+		optional uint32 sessions = 2;
+
+		optional Spellcheck spc_y = 3;
+		optional Spellcheck spc_g = 4;
+		optional Spellcheck spc_m = 5;
+	}
+
+	message QueryInfo
+	{
+		enum Type
+		{
+			None = 0;
+			Url = 1;
+			Word = 2;
+		}
+		required Type type = 1;
+		optional uint32 user_rank = 2;
+	}
+
+	optional string query_text = 1;
+	repeated Statistic stat = 2;
+	optional QueryInfo query_info = 4;
+}

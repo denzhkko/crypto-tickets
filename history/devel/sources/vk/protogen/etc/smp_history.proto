@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+// Blobs in which sitemap history is stored
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "SmpHistBlobs";
+
+import "fetch_list.proto";
+import "extracted_url.proto";
+
+// Links from the page. They are raw links extracted from the page.
+message SmpHistory {
+    required int64  ts       = 1;
+
+// in storage
+    repeated string urls_st      = 2;
+// in parsed
+    repeated ExtractedUrl urls_p = 3;
+    
+// from parent - need in diff but not in storage
+    optional string routeKey = 4;
+    optional SplitFlags splitFlags = 5;
+    repeated FetchUrl.Fastbases targetBases = 6;
+}

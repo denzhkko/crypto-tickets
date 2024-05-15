@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+import "document_enums.proto";
+
+package ru.mail.go.webbase.lingvo.dump;
+option java_outer_classname = "FilteredHtmlDump";
+
+message DumpField {
+    required string key = 1;
+    required string val = 2;
+}
+
+message DocUrl {
+    required string url = 1;
+    repeated string labels = 2;
+    repeated DumpField dump_fields = 3;
+}
+
+message DocContent {
+    required string url = 1;
+    required uint64 download_time = 2;   // UNIX time in seconds
+    required bytes content = 3;
+    required ru.mail.go.webbase.blobs.Encoding encoding = 4;
+    required ru.mail.go.webbase.blobs.Language language = 5;
+    repeated string labels = 6;
+    repeated DumpField dump_fields = 7;
+}
+

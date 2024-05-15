@@ -1,0 +1,21 @@
+syntax = "proto2";
+
+
+package frame.proto;
+
+message VersionInfo
+{
+    required string component       = 1;
+    required string build           = 2;
+    optional string version         = 3 [ default = "" ];
+}
+
+message Header
+{
+    required uint32 payload_length  = 1; // payload size (octets)
+    required uint32 seq             = 2; // sequence num (unique per-connection request id)
+    optional double elapsed_time    = 3; // worker's elapsed time
+    optional uint32 keepalive_timeout = 4;
+    optional int32 compression_codec = 5; // response compression codec
+    optional VersionInfo version_info = 16;
+}

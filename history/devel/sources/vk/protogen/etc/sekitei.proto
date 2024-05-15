@@ -1,0 +1,177 @@
+syntax = "proto2";
+
+// Blobs for stone garden (sekitei)
+package ru.mail.go.webbase.sekitei;
+import "doc_parser.proto";
+option java_outer_classname = "SekiteiBlobs";
+
+
+
+message Sekitei {
+	required int64 total_url_num = 1;
+	repeated Segment segments = 2;
+	repeated SelectedFeature features = 3;
+}
+
+message Sekitei_m {
+	required int64 total_url_num = 1;
+	repeated Segment_m segments = 2;
+	required int64 used_urls = 3;
+}
+
+message Sekitei_r {
+	repeated Segment_r segments = 1;
+}
+
+message Sekitei_l {
+	repeated Segment_l segments = 1;
+	repeated SelectedFeature features = 2;
+}
+
+message Sekitei_s {
+	repeated Segment_s segments = 1;
+}
+
+//ranked sekitei for image scheduler
+message Sekitei_i {
+	repeated Segment_i segments = 1;
+	optional int32 totalMarkersCount = 2;
+}
+
+message Segment {
+	required int32 segment_num = 1; // number [1-N]; 0 is trash
+	required int32 part = 2; // number of urls in this segment
+	required string description = 3; // full description
+	repeated string samples = 4; // urls from this segment
+	optional bool specialSegment = 5 [ default = false ];
+	optional double wp = 6 [ default = 0.0 ]; //witch power
+}
+
+message Segment_m {
+	required int32 segment_num = 1; // number [1-N]; 0 is trash
+	required int32 part = 2; // number of urls in this segment
+	required string description = 3; // full description
+	optional double wp = 4 [ default = 0.0 ]; //witch power
+	repeated StatusInfo statuses = 5;
+}
+
+message Segment_r {
+	required int32 segment_num = 1; // number [1-N]; 0 is trash
+	optional double qlinks = 2 [ default = 0.0 ];
+	optional int32 qlinks_count = 3 [ default = 0 ];
+	optional double discovery = 4 [ default = 0.0 ];
+	optional int32 discovery_count = 5 [ default = 0 ];
+	optional FilterStats stats = 6;
+	optional bool specialSegment = 7 [ default = false ];
+
+	enum d_lang {
+		lang_empty = 0;
+		lang_unknown = 1;
+		lang_ru = 2;
+		lang_uk = 3;
+		lang_kz = 4;
+		lang_bg = 5;
+		lang_be = 6;
+		lang_en = 7;
+	}
+
+	optional d_lang language = 8 [ default = lang_unknown ];
+	optional int64 custra_count = 9 [ default = 0 ];
+	optional int64 custrahave_count = 10 [ default = 0 ];
+	optional ru.mail.go.webbase.blobs.SiteLanguageArray languageArray = 11;
+	optional int64 spamUrls = 12;
+	optional int64 pornUrls = 13;
+	optional int64 crawledUrls = 14;
+	optional int64 failureUrls = 15;
+	optional int64 deadUrls = 16;
+	optional int64 deadUrlsMinTs = 17;
+	optional ImageDiscoverySegmentInfo imageDiscoverySegmentInfo = 18;
+
+	/* DESCRIPTION: Info for image discovery scheduler */
+	message ImageDiscoverySegmentInfo {
+		optional int32 usualImagesCount = 1 [ default = 0 ];
+		optional int32 markerImagesCount = 2 [ default = 0 ];
+		optional int32 quota = 3 [ default = 0 ];
+		optional int32 trashQuota = 4 [default = 0];
+	}
+}
+
+message Segment_l {
+	required int32 segment_num = 1; // number [1-N]; 0 is trash
+	repeated string samples = 2; // urls from this segment
+}
+
+message Segment_s {
+	required int32 segment_num = 1; // number [1-N]; 0 is trash
+	optional int64 max_quota = 2 [ default = 0 ];
+	optional int64 fair_quota = 3 [ default = 0 ];
+	optional int64 real_quota = 4 [ default = 0 ];
+	optional int64 urls = 5 [ default = 0 ];
+	optional int64 urls_rejected = 6 [ default = 0 ];
+	optional int64 urls_skipped = 7 [ default = 0 ];
+	optional int64 trash_urls = 8 [ default = 0 ];
+	optional int64 current_batched = 9 [ default = 0 ];
+	optional int64 backup_urls = 10 [ default = 0 ];
+	optional int64 deleted_urls = 11 [ default = 0 ];
+	optional ImageDiscoverySegmentStat imageDiscoveryStat = 12;
+
+	/* DESCRIPTION: Stat for image discovery scheduler */
+	message ImageDiscoverySegmentStat {
+		optional int32 totalQuota = 1 [ default = 0 ];
+		optional int32 markerQuota = 2 [ default = 0 ];
+		optional int32 usualQuota = 3 [ default = 0 ];
+		optional int32 quotaUsed = 4 [ default = 0 ];
+		optional int32 needed = 5 [ default = 0 ];
+		optional int32 skipped = 6 [ default = 0 ];
+		optional int32 trashQuota = 7 [default = 0];
+		optional int32 trashQuotaUsed = 8 [default = 0];
+	}
+	
+	optional string description = 13;
+        optional int32 extra_stones_bonus = 14;
+        optional int32 extra_stones_bonus_used = 15;
+	optional bool splitted_scheduling = 16;
+
+    optional int64 super_urls = 18;
+    optional int64 qlinks_urls = 19;
+    optional int64 uruq_urls = 20;
+    optional int64 liru_urls = 21;
+    optional int64 top_urls = 22;
+    optional int64 vk_away_urls = 23;
+    optional int64 vk_shares_urls = 24;
+    optional int64 weak_qlinks_urls = 25;
+}
+
+message Segment_i {
+	required int32 segment_num = 1;		// number [1-N]; 0 is trash
+	optional double markersCountRatio = 2;	// ratio |segmentMarkers| / |totalMarkers|
+}
+
+message SelectedFeature {
+	required int32 idx = 1;
+	required int32 quote = 2;
+	required string key = 3;
+}
+
+message StatusInfo {
+	enum stateTypes {
+		ST_NEW = 0;   // new document
+		ST_FETCHED = 1;   // downloaded page
+		ST_FAILURE = 2;   // page access failure HTTP 500, timeout, etc.
+		ST_REMOVED = 3;   // HTTP 404,410,301 - removed page
+		ST_REDIRECT = 4;  // URL redirected
+		ST_DISABLED = 5;  // URL disabled by 'noindex' flag
+		ST_OVER3WEEKS = 6; // state hasn't been changed for last 3 weeks
+		QLINKS = 7;
+		RANKS = 8;
+	};
+
+	required stateTypes state = 1;
+	required int32 num = 2;
+}
+
+message FilterStats {
+	optional int32 passed = 1; // not closed
+	optional int32 robots_disabled = 2;
+	optional int32 blacklist_disabled = 3;
+}

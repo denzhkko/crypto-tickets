@@ -1,0 +1,212 @@
+syntax = "proto2";
+
+// Blobs for clickranker
+package ru.mail.go.webbase.blobs;
+import "parsed_blobs.proto";
+
+option java_outer_classname = "ClickrankBlobs";
+
+enum Sex {
+	M = 1;
+	F = 2;
+}
+
+enum VkPlatform {
+	WEB = 1; // "web2"
+	IPHONE = 2;
+	ANDROID = 3;
+	MVK = 4;
+	SMART_TV = 5;
+	IPAD_V2 = 6;
+	VK_VIDEO_ANDROID = 7;
+	VK_VIDEO_IOS = 8;
+}
+
+enum DzenSearchTab {
+	VIDEO_SEARCH = 1;
+	ARTICLES_SEARCH = 2;
+	MULTI_SEARCH = 3;
+}
+
+enum Vrt {
+	IMG = 1;
+	VDO = 2;
+	VDO_MYMAIL = 3;
+	MUS_MYMAIL = 4;
+}
+
+enum Searcher {
+	MAIL = 1;
+	MAILG = 2;
+	YNDX = 3;
+	GOOG = 4;
+	GOOG_IMGMIX = 5;
+	YNDX_KVAKIN = 6;
+	GOOG_KVAKIN = 7;
+	INT_VS_GOOG = 8;
+	INT_VS_YNDX = 9;
+}
+
+enum Device {
+	LBUT = 1;
+	KBD = 2;
+}
+
+enum Evtype {
+	ON_UNKNOWN = 1; // pixel
+	ON_SEARCH = 2; // vrt, qid
+	ON_CLICK_THUMB = 3; // pos, device
+	ON_CLICK_SITE = 4; // pos
+	ON_CLICK_ORIG = 5; // pos
+	ON_CLICK_HIDE = 6; // pos
+	ON_ERR_LOAD = 7; // pos
+	ON_CLOAKED = 8; // pos
+	ON_CLICK_MORE = 9;
+	ON_VIEW_IMG = 10; // pos
+	ON_SHORT_VIEW = 11; // video player closed shortly after opening
+	ON_ULTRA_SHORT_VIEW = 12; // video player closed super shortly after opening
+	ON_VIEW_VDO = 13;
+	ON_FIRST_SHORT_VIEW = 14;
+	ON_FIRST_ULTRA_SHORT_VIEW = 15;
+	ON_FIRST_VIEW_VDO = 16;
+	ON_FOLLOW_LINK_TO_VIDEO_NOT_ON_FIRST_PAGE = 17;
+	ON_CLICK_MUSIC = 18;
+	ON_VIDEO_10S = 19; // video played at least 10 seconds
+	ON_VIDEO_60S = 20; // video played at least 60 seconds
+	ON_CLICK_MOB_THUMB = 21; //as click thumb, but mobile
+	ON_SAW = 22;
+	ON_CLICK_APP = 23;
+	ON_DOWNLOADED_APP = 24;
+}
+
+enum ClickArea {
+	ON_MATRIX = 1;
+	ON_RIBBON = 2;
+}
+
+message ClickRecord {
+	required string qid = 1;
+	optional string mrcu = 2;
+	required string searchUrl = 3;
+	required uint64 time = 4;
+	required Evtype evtype = 5;
+	optional string resultUrl = 6;
+	optional Device device = 7;
+	optional string pixel = 8;
+	optional ClickArea area = 9;
+	optional string pageUrl = 10;
+	optional uint32 duration = 11;
+}
+
+message UrlsRecord {
+	optional string qid = 1;
+	repeated string url = 2;
+	optional uint64 time = 3;
+	optional string message_type = 4;
+}
+
+message BartertownRecord {
+	required string qid = 1;
+	optional string mrcu = 2;
+	required string searchUrl = 3;
+	required uint64 time = 4;
+	optional Vrt vrt = 5;
+	optional Searcher searcher = 6;
+	optional uint32 sf = 7;
+	optional string query = 8;
+	optional Sex sex = 9;
+	optional uint32 age = 10;
+	optional uint32 region = 11;
+	optional uint32 expid = 12;
+	optional string curQid = 13;
+	optional uint64 vkUserId = 14;
+	optional string extra = 15;
+	optional uint32 split = 16;
+	optional bool mobile = 17;
+}
+
+message VarRecord {
+	optional ClickRecord crec = 1;
+	optional UrlsRecord urec = 2;
+	optional BartertownRecord brec = 3;
+}
+
+message PartialSession {
+	required BartertownRecord brec = 1;
+	optional UrlsRecord urec = 2;
+	repeated ClickRecord crec = 3;
+}
+
+
+message Event {
+	required uint64 time = 1; // unix time in milliseconds
+	required Evtype evtype = 2;
+	optional uint32 pos = 3; // starts from zero
+	optional Device device = 4;
+	optional string pixel = 5;
+	optional ClickArea area = 6;
+	optional uint32 duration = 7;
+	optional string extra = 8;
+}
+
+message SerpItem {
+	required string url = 1;
+	repeated string dups = 2; //duplicates of original url. Only for yandex
+	repeated string pageUrls = 3; //only for yandex
+	optional string title = 4; //title from enemy serp, if exist
+	optional string snippet = 5; //snippet from enemy serp, if exist
+	optional uint32 searchPos = 6; //item position in search. Only for rustore
+}
+
+message Session {
+	optional Vrt vrt = 1;
+	optional string query = 2;      // query in UTF-8 [if query present]
+	optional Searcher searcher = 3; // [if query present]
+	optional string searchUrl = 4;  // url-unescaped url in UTF-8, fragment removed
+	optional string mrcu = 5;       // [for native sessions only]
+	required uint64 time = 6;       // unix time in milliseconds
+	repeated Event event = 7;
+	repeated string url = 8;        // DEPRICATED list of serp urls [if query present]
+	optional Sex sex = 9;           // [if detectable]
+	optional uint32 age = 10;       // [if detectable]
+	optional uint32 region = 11;    // [if detectable]
+	optional string uid = 12;
+	repeated SerpItem items = 13;        // list of serp items
+	optional uint32 weight = 14;
+	optional uint32 expid = 15;
+	optional uint64 vkUserId = 16;
+	optional string urlsRecordMessageType = 17;
+	optional string extra = 18;
+	optional uint32 split = 19;
+	optional bool mobile = 20;
+	optional bool vkIsSafeSearch = 21;
+	optional VkPlatform vkPlatform = 22;
+	optional uint32 vkUserCountryId = 23;
+	optional string vkQueryId = 24;
+	optional string dzenSearchId = 25;         // unique query session identifier
+	optional string dzenStrongestId = 26;      // unique user identifier
+	optional DzenSearchTab dzenSearchTab = 27; // search tab like video and clips or all
+	optional string rustoreQueryId = 28;       // unique query session identifier
+	repeated uint64 dzenExperimentIds = 29;    // ab experiments identifiers
+}
+
+message EBinderKey {
+	required string url = 1;
+	required string key = 2;
+	required string text = 3;
+	required int64 timestamp = 4;
+	required ru.mail.go.webbase.blobs.ExtraTextArray.ExtraText.Type type = 5;
+}
+
+message MarkerKey
+{
+	enum Type
+	{
+		IMAGE = 1;
+		PAGE  = 2;
+	}
+
+	required string url = 1;
+	required Searcher source = 2;
+	required Type type = 3;
+}

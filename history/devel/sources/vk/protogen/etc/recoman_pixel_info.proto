@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+package recoman.pb;
+
+option java_outer_classname = "PixelMetaInfoProto";
+
+message OpenRTBMetaInfo
+{
+    optional int32 position = 1;
+    optional float price    = 2;
+}
+
+message PixelMetaInfo
+{
+    repeated int64 docs                      = 1;
+    repeated int64 sources                   = 2;
+    optional int32 gender                    = 3;
+    optional int32 age                       = 4;
+    repeated uint32 user_clusters            = 5;
+    repeated int32 advert_positions          = 6;
+    optional int32 geo                       = 7;
+    repeated OpenRTBMetaInfo openrtb_adverts = 8;
+}

@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.yandex_news;
+option java_outer_classname = "YandexNewsDocument";
+
+enum RequestType {
+    add = 0;
+    remove = 1;
+}
+
+message YandexNewsDocumentPutRequest {
+    required string url = 1;
+    required RequestType type = 2;
+
+    // момент (в миллисекундах) получения сообщения документа (по сути - его версия)
+    required int64 rcv_time = 3;
+
+    optional string document_json = 4;
+    optional int32 pub_ts = 5;
+
+    // момент (в миллисекундах) формирования данных в полях *_info
+    optional int64 info_time = 6;
+
+    optional string group_info_json = 7;
+    optional string agency_info_json = 8;
+}

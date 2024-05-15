@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+
+package common.pb;
+
+message GeoRecord
+{
+    required uint32 geo_id          = 1;
+    required bytes site_data        = 2;
+}
+
+message error {
+    required sint32 error_code    = 1;
+    optional string error_message = 2;
+}
+
+message QddbSiteInfo
+{
+    required int32 qddb_version     = 1;
+    required int32 hash_type        = 2;
+    repeated GeoRecord geo_records  = 3;
+    optional error     err          = 4;
+}

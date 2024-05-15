@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+
+option java_package = "ru.mail.go.webbase.youla_scorer";
+option java_outer_classname = "YoulaScorerProto";
+
+message YoulaScoreEntry {
+    required string product_id = 1;
+    optional int32  score1     = 2;
+    optional int32  score2     = 3;
+    optional int32  score3     = 4;
+    optional int32  score4     = 5;
+    optional int32  owner_conversion = 6;
+}
+
+message YoulaScoreList {
+    repeated YoulaScoreEntry entries = 1;
+}
+
+message YoulaAeScoreEntry {
+    optional int32 score = 1;
+}
+
+message YoulaAeOnwerConversionEntry {
+    optional int32 owner_conversion = 1;
+}

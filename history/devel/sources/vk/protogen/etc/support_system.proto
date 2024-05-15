@@ -1,0 +1,187 @@
+syntax = "proto2";
+
+import "google/protobuf/descriptor.proto";
+
+package ru.mail.go.webbase;
+
+option java_outer_classname = "SupportSystem";
+
+
+extend google.protobuf.FieldOptions {
+    optional string display_name = 50002;
+    optional bool multiple_choice = 50003 [default = false];
+    optional int32 display_type = 50004 [default = 2];
+}
+
+extend google.protobuf.EnumValueOptions {
+  optional string option_name = 50005;
+}
+
+enum displayTypes {
+      CHECK_BOX = 1;
+      RADIO = 2;
+      LINE_EDIT = 3;
+      SELECT = 4;
+};
+
+message EmptyQuestions {}
+message EmptyReport {}
+
+
+//#################### Snippet  ############################
+
+message StubQuestions
+{
+    optional string url = 1 [(display_name) = "Укажите URL-адрес документа"];
+
+    enum languages {
+      RU    = 1 [(option_name) = "ru"];
+      UA    = 2 [(option_name) = "ua"];
+      KZ    = 3 [(option_name) = "kz"];
+      BY    = 4 [(option_name) = "by"];
+      EN    = 5 [(option_name) = "en"];
+      OTHER = 6 [(option_name) = "other"];
+    }
+    optional languages languageQuery = 2 [(display_name) = "На каком языке сформулирован запрос", (display_type) = 4];
+
+    optional bool canBeOpened = 3 [(display_name) = "Открывается ли документ?"];
+   
+    enum snippetProblemTypes {
+      BAD_CHARSET       = 1 [(option_name) = "Неправильная кодировка"];
+      BAD_TITLE         = 2 [(option_name) = "Плохой тайтл (напр. URL вместо тайтла, мусор, короткий, длинный и т.п.)"];
+      FOUND_BY_LINK     = 3 [(option_name) = "Найдено по ссылке"];
+      HIGHLIGHT_PROBLEM = 4 [(option_name) = "Ошибка в подсветке (напр. подсвечивается не то слово или нужное слово не подсвечивается)"];
+      STICKING_WORDS    = 5 [(option_name) = "Слипаются слова"];
+      SNIPPET_NOT_MATCH = 6 [(option_name) = "Текст сниппета не соответствует запросу (или сниппет пустой)"];
+      OTHER_PROBLEM     = 7 [(option_name) = "Другое"];
+    }
+
+    optional snippetProblemTypes snippetProblem = 4 [(display_name) = "Укажите тип проблемы"];
+}
+
+message StubReport
+{
+
+    optional bool isStub = 1;
+    optional bool isRootStub = 2;
+    optional bool isDisabled = 3;
+    optional bool isRedirect = 4;
+    optional string currentState = 5;
+    optional string redirectTarget = 6;
+    optional string language = 7;  
+
+    optional string error = 100; 
+}
+
+//#########################################################
+
+//################ Document in serp ####################### 
+
+message NavigQuestions
+{
+    optional string url = 1 [(display_name) = "Укажите URL-адрес документа"];
+
+    enum desiredPositions {
+      IN_SERP = 1 [(option_name) = "Присутствовать в выдаче (в настоящий момент отсутствует)"];
+      HIGHER = 2 [(option_name) = "Располагаться выше"];
+      NOT_IN_SERP = 3 [(option_name) = "Отсутствовать"];
+    }
+    
+    optional desiredPositions desirePosition = 3 [(display_name) = "Документ должен", (display_type) = 4];
+    
+    optional bool navig = 4 [(display_name) = "Является ли документ навигационным?"];
+
+    enum languages {
+      RU = 1 [(option_name) = "ru"];
+      UA = 2 [(option_name) = "ua"];
+      KZ = 3 [(option_name) = "kz"];
+      BY = 4 [(option_name) = "by"];
+      EN = 5 [(option_name) = "en"];
+      OTHER = 6 [(option_name) = "other"];
+    } 
+
+    optional languages languageQuery = 5 [(display_name) = "На каком языке сформулирован запрос", (display_type) = 4];
+    optional languages languageDoc = 6 [(display_name) = "Основной язык документа", (display_type) = 4];
+
+}
+
+message NavigReport
+{
+    optional SingleWnfReport wnf_report = 1;
+    optional double queryImportance = 2;
+    
+    optional string priorityBigWeb = 3;
+    optional string priorityForeignWeb = 4;
+
+    optional bool shouldBeIndexedBigWeb = 5;
+    optional bool shouldBeIndexedForeignWeb = 6;    
+
+    
+
+    optional string error = 100;
+}
+
+//###########################################################
+
+//################ SCHEDULER SUBSYSTEM ######################
+
+
+//###########################################################
+
+message TestQuestions
+{
+    optional bool test = 1 [(display_name) = "test question"];
+    optional StubQuestions stubQuestions = 2;
+    optional NavigQuestions navigQuestions = 3;
+}
+
+message TestReport
+{
+    optional string result = 1;
+    optional NavigReport navigReport = 2;
+    optional StubReport stubReport = 3;
+
+}
+
+//###########################################################
+
+
+//############### Utils #####################################
+
+message ClusterInfo
+{
+    optional string searcher = 1;
+    optional string web = 2;
+    optional string db = 3;
+    optional string docid = 4;
+    optional string global_docid = 5;
+    optional string qtree = 6;
+    optional string navig_url = 7;
+    optional string cache_rb_code = 8;
+    optional string state = 9;
+    optional string navig_qurl = 14;
+    optional string ban_404 = 15;
+    optional string doubtful = 16;
+
+    enum StateTypes {
+      OK = 1;
+      NOT_AT_DRAFT = 2;
+      LOSE_DRAFT = 3;
+      BANNED_TEXT = 4;
+      LOSE_LEADERSHIP = 5;
+    }
+}
+
+message SingleWnfReport
+{
+    optional string query = 1;
+    optional string url = 2;
+    optional ClusterInfo ru_cluster = 3;
+    optional ClusterInfo foreign_cluster = 4;
+    optional ClusterInfo fast_bases = 5;
+    optional string inverted_index = 6;
+    optional string features = 7; 
+    optional string direct_index = 8;
+    optional string draft_leaders = 9;
+
+}

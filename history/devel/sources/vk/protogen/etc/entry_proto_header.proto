@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+package memcached;
+
+message EntryProtoHeader {
+  required string internal_key = 1;
+}

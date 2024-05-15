@@ -1,0 +1,44 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "InfholderBlobs";
+
+import "sekitei.proto";
+import "doc_parser.proto";
+
+message TransferDoc {
+	enum transferType {
+                host = 1;
+                page = 2;
+        }
+
+	required transferType type                       = 1;
+	optional ru.mail.go.webbase.blobs.OriginalDoc sdd = 2;
+	optional string base                             = 3;
+	optional ru.mail.go.webbase.sekitei.Sekitei_m sm = 4;
+}
+
+message NavigLink {
+	required string url = 1;
+}
+
+message CleanDoc {
+	required string url                         = 1;
+	optional ru.mail.go.webbase.blobs.RegionBlob data       = 2;
+	optional ru.mail.go.webbase.blobs.RegionBlob clean_data = 3;
+	repeated NavigLink navig_urls               = 4;
+	optional int32 num                          = 5;
+}
+
+message infholderBlob {
+	repeated CleanDoc docs = 1;
+
+	enum InfholderState {
+		ok = 1;
+		cut_all = 2;
+		error = 3;
+	}
+
+	optional InfholderState state = 2;
+	repeated ProfileInfo profiles = 3;
+}

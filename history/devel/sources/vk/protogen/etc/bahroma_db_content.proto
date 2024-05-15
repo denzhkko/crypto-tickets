@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+import "document_enums.proto";
+
+package ru.mail.go.webbase.lingvo.snippets.rich.bahroma;
+option java_outer_classname = "BahromaDbContent";
+
+message SourceDocumentUrls {
+    required string doc_url = 1;
+}
+
+message SourceDocumentContent {
+    required string url = 1;
+    required uint64 download_time = 2;   // UNIX time in seconds
+    required bytes content = 3;
+    required ru.mail.go.webbase.blobs.Encoding content_enc = 4;
+    repeated int32 bah_db_id = 5 [packed=true];
+}
+

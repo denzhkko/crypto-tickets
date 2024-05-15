@@ -1,0 +1,140 @@
+syntax = "proto2";
+
+package cosmo.pb;
+
+
+message UserData
+{
+    optional int64 user_id = 1;
+
+    ///
+    /// Original user info
+    ///
+    message OriginalInfo
+    {
+        optional string id = 1;
+    }
+
+    ///
+    /// Some debug information about  Ok
+    ///
+    message OkInfo
+    {
+        required int64 user_id = 1;
+    }
+
+    ///
+    /// Long term feature's
+    /// the features set is updated rarely
+    ///
+    message SocDemFea
+    {
+        /// unknown - 0, male - 1, female - 2
+        optional int32 gender = 1 [default = 0];
+        optional int32 age = 2;
+        // optional uint32 version = 3;
+    }
+
+    ///
+    /// Recommendation for deti
+    ///
+    message DetiRecos
+    {
+        repeated int64 slim = 1;
+        repeated int64 wrmf = 2;
+        repeated int64 als_tuned = 3;
+        repeated int64 als_large = 4;
+        repeated int64 svd = 5;
+        repeated int64 svd_stupid = 6;
+        repeated int64 als_by_liker = 7;
+        repeated int64 als_by_homer = 8;
+    }
+
+    ///
+    /// Als for data for user
+    ///
+    message AlsFea
+    {
+        repeated float als = 1;
+    }
+
+    ///
+    /// Als item biases data for user
+    ///
+    message AlsItemsBiases
+    {
+        repeated float fea = 1;
+    }
+
+    ///
+    /// News sources for user
+    ///
+    message NewsSources
+    {
+        repeated float weight = 1;
+        repeated int64 id = 2;
+    }
+
+    ///
+    /// Stats, whatever that means
+    ///
+    message Stats
+    {
+        message SourceStats
+        {
+            required int64 source_id = 1;
+            optional int64 category_id = 2;
+            optional int32 views = 3;
+            optional int32 opens = 4;
+            optional int32 likes = 5;
+            optional int32 dislikes = 6;
+            optional int32 shares = 7;
+        }
+
+        repeated SourceStats sources_stats = 1;
+        optional uint32 version = 2;
+    }
+
+    message SourcesWebStats
+    {
+        message SourceVisit
+        {
+            required int64 source_id = 1;
+            required int32 visits = 2;
+        }
+
+        repeated SourceVisit SourceVisits = 1;
+        optional uint32 version = 2;
+    }
+
+    message UserLinks
+    {
+        optional string vid = 1;
+        optional string mail = 2;
+        optional string ok = 3;
+        optional string vk = 4;
+    }
+
+    optional SocDemFea socdem_fea = 2;
+    optional AlsFea als_fea = 3;
+    optional OkInfo ok_info = 4;
+    optional DetiRecos deti_reco = 5;
+    optional AlsItemsBiases als_items_fea = 6;
+    optional NewsSources news_sources = 7;
+    optional Stats stats = 8;
+    optional OriginalInfo original_info = 9;
+    optional AlsFea als_fea_2 = 10;
+    optional SourcesWebStats sources_web_stats = 11;
+    optional Stats sources_reco_stats = 12;
+    optional UserLinks user_links = 13;
+    // optional SocDemFea ok_socdem_fea = 14;
+    // optional SocDemFea vk_socdem_fea = 15;
+}
+
+// Struct to send user data from sphered to cosmod.
+// We use meta message instead of UserData to have flexability in the future.
+message GroupedUserData
+{
+    optional UserData data = 1;
+}
+

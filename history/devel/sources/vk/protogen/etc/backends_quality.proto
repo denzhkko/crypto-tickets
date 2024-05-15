@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+// We need some Java nonsense here, because search_result.proto contains
+// BackendsQuality inside itself. And search_result.proto is used by Java code.
+option java_outer_classname = "BackendsQualityProto";
+option java_package = "ru.mail.go.webbase.backends_quality";
+
+package backends_quality.pb;
+
+message FailedBackend {
+    optional string host = 1;
+    optional string description = 2;
+};
+
+message BackendsQuality {
+    optional uint64 successful_backends_count = 1;
+    repeated FailedBackend failed_backends = 2;
+};

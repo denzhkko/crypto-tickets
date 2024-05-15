@@ -1,0 +1,61 @@
+syntax = "proto2";
+
+option java_package = "ru.mail.go.webbase.articles";
+option java_outer_classname = "ArticlesProto";
+
+message ArticleAttachment {
+  optional string type = 1;                              // Тип аттача: PHOTO, VIDEO, MUSIC, POLL.
+  repeated string value = 2;                             // Список текстов в аттачах.
+}
+
+enum ArticleType {
+  NONE = 0;
+  DZEN = 1;
+  OK = 2;
+  VK = 3;
+}
+
+// Пишется в таблицу HBase articles
+message ArticlesImportDoc {
+  // Данные, которые достаются из полного дампа статей Дзена
+  optional string id = 1;                                 // главный id статьи, он же ключ в таблице. Это определенный хэш, который получается из mongoId
+  optional string mongoId = 2;                            // Mongo ObjectId статьи
+  optional string url = 3;                                // основной URL статьи, пример: https://dzen.ru/a/Y7jo5Hi9vgE1C0f0
+  optional string longUrl = 4;                            // URL статьи более длинного формата, пример: https://dzen.ru/media/id/63b7e62d8a0b0e3acd359a61/kto-takoi-stilist-i-dlia-chego-on-nujen-63b8e8e478bdbe01350b47f4
+  optional string mainImageUrl = 5;                       // URL главного preview статьи
+  optional string title = 6;                              // название статьи
+  optional string content = 7;                            // текст статьи
+  optional string publisherId = 8;                        // id автора/канала
+  optional string publisherName = 9;                      // название канала
+  optional string publisherDesc = 10;                     // описание канала
+  optional uint32 publisherSubscribers = 11;              // кол-во подписчиков у канала
+  optional uint64 publicationTime = 12;                   // таймстамп публикации статьи (в секундах)
+  optional uint64 viewsCnt = 13;                          // кол-во просмотров
+  optional uint32 likesCnt = 14;                          // кол-во лайков
+  optional uint32 dislikesCnt = 15;                       // кол-во дизлайков
+  optional uint32 commentsCnt = 16;                       // кол-во комментариев
+  optional string certainGrade = 17;                      // оценка модерации у статьи или фильтр, показывать ли статью только подписчикам
+  optional string itemType = 18;                          // тип: статья (native) или пост (brief)
+  optional bool existInRecoSnapshot = 19;
+  optional uint32 shares = 21;                            // сколько раз поделились статьей
+  optional bool verified = 22;                            // автор - верифицированный пользователь?
+
+  // Данные, которые дополнительно записываются джобой импорта полного дампа (LoadArticlesDumpToHBaseJob)
+  optional uint64 eventTimestamp = 20;                    // таймштамп, когда получен пост.
+
+  // Проставляются на этапе индексации джобой IndexJob
+  optional uint32 crClicks = 23;
+  optional uint32 crImps = 24;
+
+  // Поля одноклассников (ok)
+  // https://confluence.vk.team/pages/viewpage.action?pageId=1126409532
+  optional uint64 contentHash = 25;                        // hash поста, чтобы убрать дубликаты
+  optional double publisherQuality = 26;                   // Качество группы от 0 до 1
+  repeated ArticleAttachment attaches = 27;                // Виды прикрепленных блоков
+  optional ArticleType type = 28;                          // Тип сообщения
+  optional bool isDeleted = 29;                            // Удален ли пост
+  repeated string attachTypes = 30;                        // Типы аттачей
+  repeated string hashTags = 31;                           // Хеш-теги, полученные из content
+  optional string itemId = 32;                             // id статьи/поста, у vk сюда будет записываться имеено item_id из кафки, а у ok и dzen поле id.
+}
+

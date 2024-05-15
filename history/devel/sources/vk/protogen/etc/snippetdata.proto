@@ -1,0 +1,86 @@
+syntax = "proto2";
+
+package ru.mail.go.snippetdata.parser;
+
+option java_outer_classname = "PartnerSnippetData";
+
+// ВНИМАНИЕ! это все оставлено для обратной совместимости. В реальности эти данные уже никем не используются
+
+// набор сообщений, которые позволяют описать данные с относительно произвольной структурой
+message ValueSimple {
+  enum Type {
+    INTEGER = 0;
+    STRING = 1;
+  }
+
+  required Type type = 1;
+  optional int64 value_integer = 2;
+  optional string value_string = 3;
+}
+	
+message ValueComposite {
+  repeated ParamSimple param = 1;
+  repeated ParamComposite composite = 2;
+  repeated ParamVector vector = 3;
+}
+
+message ValueVector {
+  repeated ValueComposite item = 1;
+}
+
+message ParamSimple {
+  required string name = 1;
+  required ValueSimple value = 2;
+}
+
+message ParamComposite {
+  required string name = 1;
+  required ValueComposite value = 2;
+}
+
+message ParamVector {
+  required string name = 1;
+  required ValueVector value = 2;
+}
+
+// конец сообщений для описания данных произвольной структуры
+
+// Ссылка на какую-то часть сайта
+message SiteLink
+{
+	required string url = 1;
+	required string title = 2;
+}
+
+// Набор ссылок на сайт
+message SiteLinks
+{
+    repeated SiteLink site_link = 1;
+}
+
+// Данные для снипетта общие для всех результатов
+message SnippetDataMain {
+	required string title = 1;
+	required string description = 2;
+	optional string keywords = 3;
+	optional string img = 4;
+	optional SiteLinks site_links = 5;
+}
+
+message SnippetData {
+    // категория к которой относится результат (товары, софт, вакансии и т.п.)
+    required string category = 1; 
+    // основные данные для сниппета
+    required SnippetDataMain main = 2;
+    // Расширенные данные для сниппета. В общем случае - данные произвольной структуры. 
+    // Структура может не явно определяться значением поля category
+    optional ValueComposite extra = 3;
+}
+
+// это сообщение используется для заливки данных в hbase
+message ExtendedUrlInfo {
+    required string url = 1;
+    required SnippetData snippet_data = 2;
+    // момент создания записи
+    optional int64 timestamp_ms = 3;        
+}

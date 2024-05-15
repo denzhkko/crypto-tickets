@@ -1,0 +1,43 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.clickrank;
+
+option java_outer_classname = "LogParserData";
+import "urllog_record.proto";
+import "sputnik_logs.proto";
+
+enum RecordType
+{
+    URL = 1;
+    BARTERTOWN = 2;
+    ACCESS = 3;
+    SERP = 4;
+    EXPERIMENTD = 5;
+}
+
+message RecordWrapper
+{
+    required RecordType type = 1;
+    optional ru.mail.go.webbase.ranking.UrlLogRecord url = 2;
+    optional ru.mail.go.webbase.ranking.BartertownLogRecord bartertown = 3;
+    optional ru.mail.go.webbase.ranking.AccessLogRecord access = 4;
+    optional ru.mail.go.webbase.ranking.SerpLogRecord serp = 5;
+    optional ru.mail.go.webbase.ranking.SerpLogRecord experimentd = 6;
+}
+message Session
+{
+    repeated string url = 1;
+    repeated int32 click = 2;
+    optional string userId = 3;
+    repeated string quick_links = 4;
+    optional uint64 timestamp = 5;
+    repeated uint64 click_time = 6;
+    optional ru.mail.go.webbase.ranking.ParamList sessionInfo = 9;
+    optional string geoSpecific = 7;
+    optional bool persional = 8;
+    repeated ru.mail.go.webbase.SputnikRanker.Redirect redirect = 10;
+    optional string serp = 11;
+    optional ru.mail.go.webbase.ranking.ParamList dbType = 12;
+    repeated int32 aux_click = 13;
+    repeated uint64 aux_click_time = 14;
+}

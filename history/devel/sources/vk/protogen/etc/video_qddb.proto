@@ -1,0 +1,57 @@
+syntax = "proto2";
+
+package gogo.video_qddb;
+
+message SourceRanks {
+    enum Version {
+        Current = 1;
+    };
+
+    optional uint32 viewsAll                    = 1;
+    optional uint32 viewsShort                  = 2;
+    optional uint32 viewsUltraShort             = 3;
+    optional float interest                     = 4;
+    optional float ctrInterest                  = 5;
+    optional uint32 ctrInterestOrd              = 6;
+    optional uint32 viewsAllFixedTimes          = 7;
+    optional uint32 views10sViewed              = 8;
+    optional uint32 views60sViewed              = 9;
+    optional float interestFixedTimes           = 10;
+    optional float ctrInterestFixedTimes        = 11;
+    optional float ctr10                        = 12;
+    optional float ctr60                        = 13;
+    optional float durationLess60sViewedPercent = 14;
+    optional uint32 imps                        = 15;
+    optional uint32 clicks                      = 16;
+    optional float ctr                          = 17;
+    optional uint32 ctrOrd                      = 18;
+
+    // С таким ранком был скомилирован протобуф для video_qddb_storage_test.cpp
+    // optional uint32 some_new_rank            = 10000;
+};
+
+message DocRanks {
+    enum Version {
+        Current = 2;
+    };
+
+    required uint32 doc_id             = 1; // Обязательно первый (для рефлексии)
+
+    optional SourceRanks dzen_vdo_srch = 2;
+    optional SourceRanks vk_iph        = 3;
+    optional SourceRanks vk_droid      = 4;
+    optional SourceRanks vk_web        = 5;
+    optional SourceRanks vk_mvk        = 6;
+    optional SourceRanks vk_all        = 7;
+    optional SourceRanks vk_rest       = 8;
+    optional SourceRanks dzen_mlt_srch = 9;
+};
+
+message GeoRanks {
+    required uint32 geo_id      = 1;
+    repeated DocRanks doc_ranks = 2;
+};
+
+message QueryRecord {
+    repeated GeoRanks geo_ranks = 1;
+};

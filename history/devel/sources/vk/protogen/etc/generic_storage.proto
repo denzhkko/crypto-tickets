@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+package gogo.storage;
+option java_outer_classname = "GenericStorage";
+
+message document_length {
+    required fixed32 length = 1;
+}
+

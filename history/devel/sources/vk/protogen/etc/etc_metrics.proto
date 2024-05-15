@@ -1,0 +1,136 @@
+// Copyright (c) 2020 Mail.Ru Groups Authors. All rights reserved.
+// Owners: v.rybakov@corp.mail.ru
+
+syntax = "proto2";
+
+// option optimize_for = LITE_RUNTIME;
+option java_package = "ru.mail.browser.metrics";
+
+option java_outer_classname = "AtomMetrics";
+
+package metrics;
+
+message BrowserInformerProto {
+  enum EventType { OPENED = 0; CLOSED = 1; }
+  enum Action { ACCEPT = 0; DECLINE = 1; CLOSE = 2; LINK = 3; }
+  optional string informer_id = 1;    // informer id (from events.json)
+  optional EventType event_type = 2;  // what happened?
+  optional Action action = 3;         // what control was clicked?
+  optional bool dont_ask = 4;         // state of 'don't ask' check box when inforer was closed
+}
+
+message CAVerificationProto {
+  enum EventType { DETECTED = 0; UPDATE = 1; SHOW_INFOBAR = 2; INFOBAR_ACTION = 3; }
+  enum Action { CERT_INFO = 0; TRUST = 1; MORE_INFO = 2; CLOSE = 3; }
+  enum UpdateStatus { FAILED = 0; SUCCESS = 1; TIMEOUT = 2; INVALID_DATA = 3; UNTRUSTED_SERVER = 4; }
+  optional string hash = 1;           // certificate sha256, valid for event_type == DETECTED
+  optional string subject = 2;        // who emit certificate? valid for event_type == DETECTED
+  optional EventType event_type = 3;  // what happened?
+  optional Action action = 4;         // what control was clicked? valid for event_type == INFOBAR_ACTION
+  optional UpdateStatus update_status = 5;  // valid for event_type == UPDATE
+}
+
+message SecurityPopupProto {
+  enum EventType { POPUP_OPENED = 0; CLEAR_HISTORY = 1; TOGGLE_CHANGED = 2;
+                   SITE_SETTING_CHANGED = 3; CONFIGURE_ALL = 4;
+                   THIRD_PARTY_COOKIES = 5; }
+  optional EventType event_type = 1;     // what happened?
+  optional string connection_type = 2;   // type of connection (secure/unsecure/etc) during POPUP_OPENED
+  optional bool internet = 3;            // current tab: true = internet, false = domain
+  optional string domain = 4;            // what domain options was changed?
+  optional bool toggle_state = 5;        // on/off toggle (valid for event_type == TOGGLE_CHANGED)
+  optional string period_to_clear = 6;   // period for CLEAR_HISTORY
+  optional string control = 7;           // what control was changed during TOGGLE_CHANGED | SITE_SETTING_CHANGED
+  optional string permission_name = 8;   // permission name for SITE_SETTING_CHANGED
+  optional string permission_status = 9; // permission status for SITE_SETTING_CHANGED
+  optional int32 cookies_state = 10;     // how user want to block third party cookies
+}
+
+message KOFRProto {
+  // see description here: https://confluence.mail.ru/pages/viewpage.action?pageId=162152253
+  optional string file_hash = 1;         // hash of the file being checked
+  optional string file_extension = 2;
+  optional int32 kofr_status = 3;
+  optional int32 safe_browsing_status = 4;
+  optional int32 request_status = 5;
+}
+
+message ImportProto {
+  enum EventType { STARTED = 0; FINISHED = 1; }
+  optional EventType event_type = 1;
+  // Browser to import from, see importer::ImporterType:
+  optional int32 import_from = 2;
+  // The numbers of imported items:
+  optional int32 imported_history = 3;
+  optional int32 imported_bookmarks = 4;
+  optional int32 imported_cookies = 5;
+  optional int32 imported_passwords = 6;
+  optional int32 imported_search_engines = 7;
+  optional int32 imported_home_page = 8;
+  optional int32 imported_autofill_data = 9;
+  optional string importer_source = 10;  // manual/onboarding/etc
+}
+
+message PageInfoBubbleProto {
+  enum EventType { OPEN = 0; MORE = 1; BACK = 2; CLOSE = 3; COOKIE_INFO = 4; }
+  optional EventType event_type = 1;                // what happened?
+  optional string security_level_metric_value = 2;  // padlock color
+                                                    // secure/insecure/dangerous connection
+}
+
+message EtcInfoProto {
+  optional string atom_version = 1;      // Atom browser version (8.0, 9.0, etc)
+  optional bool vk_music_switcher = 2;   // Is Vk music dynamic feature enable
+  optional bool vk_notify_switcher = 3;  // Is Vk notify dynamic feature enable
+  optional bool channel_switcher = 4;    // Is Channel dynamic feature enable
+  optional bool whatsapp_switcher = 5;   // Is WhatsApp dynamic feature enable
+  optional string rfr = 6;               // RFR code to identify installation
+  optional string default_search_engine = 7;  // Url of default search
+  optional bool is_browser_default = 8;  // Current browser is default?
+  optional string home_page = 9;         // Home page: session.restore_on_startup |
+                                         // homepage_is_newtabpage | domain
+  optional string ntp = 10;              // NTP extension id
+  optional bool autorun = 11;            // Is autorun on
+  optional string launch = 12;           // How browser was launched
+  optional string shortcut_url = 13;     // URL from browser shortcut
+  optional string assoc = 14;            // protocol when browser was started from link
+  optional bool notify_enabled = 15;     // Is informers enabled?
+  optional int32 vk_login = 16;          // Vk login state
+
+  repeated BrowserInformerProto browser_informer_event = 17;  // the list of browser informer actions
+  repeated CAVerificationProto ca_verification_event = 18;    // the list of certificate actions
+  repeated SecurityPopupProto security_popup_event = 19;      // the list of security popup events
+  repeated KOFRProto kofr_event = 20;                         // the list of kofr events
+  repeated ImportProto import_event = 21;                     // the list of import events
+  repeated PageInfoBubbleProto page_info_bubble_event = 22;   // the list of events on PageInfoBubble
+  repeated CrabEvents crab_event = 23;                        // the list of events on Crab
+}
+
+message CrabItemInfo {
+  required string key = 1;
+  required string value = 2;
+}
+
+message CrabItem {
+  required int32 item_id = 1;     // Unique identifier within show_id
+  repeated CrabItemInfo info = 2; // List of {key, value} pairs obtained as a result of the parser
+}
+
+message CrabShow {
+  required string parser_id = 1;  // Identifier obtained from the configuration, field 'parsers.id'
+  required string show_id = 2;    // Unique identifier (GUID)
+  required int64 client_ts = 3;   // Unix-time
+  repeated CrabItem items = 4;
+}
+
+message CrabClick {
+  required string show_id = 1;    // Unique identifier (GUID)
+  required int32 item_id = 2;     // Unique identifier within show_id
+  required int64 client_ts = 3;   // Unix-time
+  required string final_url = 4;  // Final address in the redirect list
+}
+
+message CrabEvents {
+  repeated CrabShow shows = 1;
+  repeated CrabClick clicks = 2;
+}

@@ -1,0 +1,49 @@
+КАК ДОБАВИТЬ PROTO-ФАЙЛ
+
+1. Создаем projects/protogen/etc/my.proto
+2. Прописываем my.proto в projects/protogen/{cpp|java|python}/CMakeLists.txt
+3. Прописываем my.proto в projects/protogen/build.gradle в список protoFiles
+4. Для зависимых джавных проектов добавляем в CMakeLists.txt: set(GOGO_JARS protogen-go.mail.ru)
+5. Для зависимых плюсовых проектов добавляем в CMakeLists.txt: DEPS_{...}(protogen)
+
+
+СБОРКА
+При make install_protogen автоматом будут сгенерированы либа protogen.a и джарник protogen-go.mail.ru,
+включащие в себя код, порожденный my.proto.
+
+Сборка с помощью gradle выполняется командой ./gradlew protogen:jar
+
+
+ПУБЛИКАЦИЯ В ARTIFACTORY
+1. Инкрементировать номер версии protogen в projects/protogen/build.gradle и закоммитить.
+2. Выполнить сборку libprotogen_shared с помощью make. 
+3. Опубликовать в artifactory:
+    $ ./gradlew protogen:arP
+    Будет опубликован protogen.jar прописанной в п.1 версии, а также protogen:etc - zip-архив с описаниями протобуфов.
+4. Опубликовать файл bin/libprotogen_shared.so из п.2 в artifactory по инструкции:
+    https://confluence.vk.team/pages/viewpage.action?pageId=422150251
+   Указываемые группа и имя артефакта должны соответствовать описанным в projects/build.gradle для библиотеки lib_protogen_shared.
+   Версия должна быть из п.1.
+   N.B. Публикация libprotogen_shared.so в будущем будет автоматически выполняться в п.3, и ручная публикация не потребуется.
+5. Прописать в projects/build.gradle версию из п.1 для библиотек
+    * go_protogen
+    * lib_protogen_shared
+    и закоммитить.
+
+UPD:
+Если не выполнен п.2, то при выполнении п.3 будет выдано такое сообщение:
+Execution failed for task ':protogen:cpp_shared:uploadArchives'.
+> Could not publish configuration 'archives'
+   > Cannot publish artifact 'libprotogen_shared.so' (~/projects/trunk/bin/libprotogen_shared.so) as it does not exist.
+
+
+
+КАК ВЫЛОЖИТЬ PYTHON МОДУЛЬ В PYPI
+
+0.1. Получаем у админов учетку в pypi (https://pypi.g.smailru.net) с возможностью выкладывать в dev/prod
+0.2. Созерцаем все уже выложенные версии протогена: http://artifactory.g.smailru.net/artifactory/webapp/#/artifacts/browse/tree/General/libs-release-local/ru/mail/go/protogen
+1. Поднимаем версию в build.gradle так, чтобы она шла следом за последней выложенной. Если надо - добавляем суффиксы и т.д. Желательно (но не обязательно) закоммитить, чтобы остальные знали, от какой версии подниматься
+2. Перемещаемся в trunk/projects
+3. Запускаем публикацию ./gradlew :protogen:aP
+4. Вы великолепны! Теперь можно пользоваться артефактами вида: "ru.mail.go:protogen:<VERSION>"
+

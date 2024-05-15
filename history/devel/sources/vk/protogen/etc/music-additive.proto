@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+message MusicTrack {
+  optional uint64 user_id = 1;
+  optional string mp3_id = 2;
+  optional uint32 duration = 3;
+  optional string track_name = 4;
+}
+
+message MusicTrackList {
+  repeated MusicTrack tracks = 1;
+  optional string author = 2;
+}

@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+import "document_enums.proto";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "VkReco";
+
+message VkRecoContainer
+{
+  repeated VkRecoItem common = 1;
+  repeated VkRecoItem highly_recommended = 2;
+}
+
+message VkRecoItem
+{
+  required int64 user_id = 1;
+  required int64 item_id = 2;
+  optional int64 num_encountered = 3;
+  optional VkRecoItemMetadata metadata = 4;
+}
+
+message VkRecoItemMetadata
+{
+  optional int32 duration = 1;
+  optional int64 statViews = 2;
+  optional bool official = 3;
+}

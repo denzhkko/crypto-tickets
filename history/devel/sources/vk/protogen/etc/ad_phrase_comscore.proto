@@ -1,0 +1,36 @@
+syntax = "proto2";
+
+package ad_phrase_comscore.pb;
+
+message Phrase {
+    repeated float          vector_data    = 1 [packed=true];
+    required fixed64        id             = 2;
+}
+
+message Request {
+    repeated Phrase         phrases        = 1;
+    // hash from qembedderd to check model version
+    required uint32         model_version  = 2;
+}
+
+message MatchCandidate {
+    required fixed64        id             = 1;
+    required float          distance       = 2;
+}
+
+message DebugInfo {
+    repeated MatchCandidate candidates    = 1;
+}
+
+message MatchedPhrase {
+    required fixed64        id             = 1;
+    optional float          score          = 2;
+    optional DebugInfo      debug          = 3;
+}
+
+message Answer {
+    // this field is needed to reduce false-positivies read by protobuf-lib
+    // shall be always == 0xBEE777AF [MAGIC_HEADER]
+    required fixed32        magic_header   = 1;
+    repeated MatchedPhrase  matched        = 2;
+}

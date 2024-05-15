@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.migrate;
+option java_outer_classname = "DocumentDbctl";
+
+message DocDbctl {
+        required string url = 1;
+        required uint64 time = 2;
+        required uint32 flag = 3;
+        required uint32 type = 4;
+        required uint32 language = 5;
+        required bytes data = 6;
+}
+
+message DocList {
+    repeated DocDbctl docs = 1;
+}

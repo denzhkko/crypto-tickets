@@ -1,0 +1,10 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'go.mail.ru'
+            url = 'https://artifactory.g.smailru.net/artifactory/repo/'
+        }
+    }
+}
+
+rootProject.name = 'video-classify-check'

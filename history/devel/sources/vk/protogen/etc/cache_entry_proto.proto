@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package smanager;
+
+message CacheEntryProto {
+  required double quality = 1;
+  optional uint32 set_time = 2;
+  optional uint32 expiration = 3;
+  optional uint64 bad_url_hash = 4;
+  optional uint32 banned_urls = 5;
+  required bytes result = 15;
+  optional bool   ban_all = 16;
+  repeated string idx_versions = 17;
+}
+

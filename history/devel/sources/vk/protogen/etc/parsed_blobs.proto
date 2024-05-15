@@ -1,0 +1,159 @@
+syntax = "proto2";
+
+// Blobs that are stored in the 'parsed' column family
+package ru.mail.go.webbase.blobs;
+option java_outer_classname = "ParsedBlobs";
+
+// Links from the page. They are raw links extracted from the page.
+message RawLinks {
+    message Link {
+        required string to = 1;
+        required string text = 2;
+
+        enum textFlag {
+            wiki_nofollow = 1;
+            iframe = 2;
+        }
+
+        optional textFlag flag = 3;
+    }
+    repeated Link links = 1;
+}
+
+// Links from the page to the same host. They are raw links extracted from page
+message InnerLinks {
+    message Link {
+        required string to = 1;
+    }
+
+    repeated Link links = 1;
+}
+
+// Links to the page. This links are processed, with resolved redirects
+message RedirectedLinks {
+    message Link {
+        required string to = 1;
+        required string text = 2;
+        optional int32 hits = 3;
+        optional int32 uniq = 4;
+    }
+    repeated Link links = 1;
+} 
+
+message IndexableLinks {
+    message Link {
+        required string text = 1;
+        required uint32 frequency = 2;
+        required float rank = 3;
+    }
+    repeated Link links = 1;
+}
+
+message QLinks {
+    message Text {
+        required string     text  =            1;
+        required float      sr    = 2;
+        required int32      c     = 3;
+        
+        enum Source {
+          SRANKER = 1;
+          LIRU = 2;
+          TOPMAIL = 3;
+        }
+        required Source     src   = 4;
+        
+        enum Engine {
+          GOOGLE = 1;
+          YANDEX = 2;
+        }
+        required Engine se   = 5;
+    }
+    repeated Text texts = 1;
+}
+
+message XLinks {
+    message Link {
+        required string text = 1;
+        required float cost = 2;
+        optional string anchor = 3;
+    }
+    repeated Link links = 1;
+}
+
+message ExtraTextArray {
+	message ExtraText {
+		enum Type 
+		{
+			XLink = 1;
+			QLinkCR = 2; 
+			QLinkSRY = 3; 
+			QLinkSRG = 4; 
+			ExtLink = 5;
+			XLinkAnchor = 6;
+			WTitle = 7;
+			WLink = 8;
+			TLink = 9;
+			QLinkALY = 10; 
+			QLinkALG = 11;  
+			CtgTitle = 12;
+			CtgName = 13;
+			CtgSection = 14;
+			CtgSubSection = 15;
+			CtgDescription = 16;
+			CtgKeyWords = 17;
+			CtgService = 18;
+			Translit = 19;
+			ClickLink = 20;
+			Nail = 21;
+			QLinkAntiCR = 22;
+			QLinkBRY = 23;
+			QLinkBRG = 24;
+			QLinkBRM = 25;
+			QLinkNavig = 26;
+			QLinkSRLiru = 27;
+			SubjLink = 28;
+			QLinkALFY = 29; 
+			QLinkALFG = 30;  
+			QLinkCRB = 31; 
+			QLinkSRBY = 32; 
+			QLinkSRBG = 33; 
+			QLinkALBY = 34; 
+			QLinkALBG = 35;  
+			ShortestRedirect = 36;  
+			QLinkALTUG = 37;  
+			QLinkALTUY = 38;  
+			QLinkALTUMG = 39;  
+			QLinkALTUM = 40;  
+			QLinkALTBG = 41;  
+			QLinkALTBY = 42;  
+			QLinkALTBMG = 43;  
+			QLinkALTBM = 44;  
+			QLinkFB_Y = 45;
+			QLinkFB_G = 46;
+			QLinkFB_M = 47;
+			BackRedirect = 48; 
+			QLinkIMGCR = 100;
+			QLinkIMGALG = 101;
+			QLinkIMGALY = 102;
+			QLinkIMGALG_MIX = 103;
+			ImagesKeywords = 110;
+			Tag = 111;
+			StackBody = 112;
+            EBinderTitleG = 113;
+            EBinderSnippetG = 114;
+            EBinderTitleY = 115;
+            EBinderSnippetY = 116;
+			ExtAlt = 117;
+			ExtPageTitle = 118;
+			ExtHText = 119;
+            QLinkCR2 = 120; 
+		}
+	    required string text = 1;
+	    required Type type = 2;
+	    required float rank = 3;
+	    repeated uint32 attribute = 4; 
+		repeated uint32 extraAttribute = 5; 
+	}
+	repeated ExtraText texts = 1;
+}
+

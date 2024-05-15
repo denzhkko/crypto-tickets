@@ -1,0 +1,282 @@
+syntax = "proto2";
+
+import "snippetdata.proto";
+import "backends_quality.proto";
+option java_outer_classname = "SearchResultDefs";
+
+package gogo.sr;
+
+enum domain_group_type {
+  NONE            = 0;
+  BY_SITE_NAVIG   = 1;
+  BY_LEADER       = 2;
+}
+
+message result_frame {
+  required uint32 matched_docs   = 1; //M
+  optional uint32 ungrouped_docs = 2; //M2
+  optional int32 site_estimate   = 3; //M3
+  optional int32 docs_estimate   = 4; //M4
+  optional uint32 n_ranked_docs  = 5; //M5
+  optional uint32 first_index    = 6; //SN
+  optional uint32 second_index   = 7; //= first_index + 1, SN1
+  optional uint32 last_index     = 8; //EN
+  optional uint32 page_count     = 9; //NP
+  optional uint32 n_param        = 10; //FS
+}
+
+message snippet_text_item {
+    required string text  = 1;
+    optional bool cb      = 2;
+    optional bool ce      = 3;
+    optional string debug_printout = 4;
+}
+
+message snippet_item {
+  repeated snippet_text_item text  = 3;
+  optional uint32 qual             = 4;
+}
+
+message doc_data_ex {
+  optional sint32    depth      = 1;
+  optional uint32    doclen     = 2;
+  optional double    rank       = 3;
+  optional double    textR      = 4;
+  optional double    titleR     = 5;
+  optional double    linkR      = 6; // unused
+  optional double    catalogR   = 7; // unused
+  optional double    trustedR   = 8; // unused
+  optional double    wikiR      = 9; // unused
+  optional double    ctgR       = 10; // unused
+  optional double    clickNufR  = 11; // unused
+  optional double    clickLinkR = 12; // unused
+  optional double    queryLinkR = 13; // unused
+  optional double    clickUnfR  = 14;
+  optional uint32    maxWFreq   = 15;
+  optional double    lastDelta  = 16; // unused
+  optional string    clustTag   = 17; // unused
+  optional string    doc_trace  = 18; //пока что будет строкой
+  optional bool      no_sn      = 19;
+  optional clickrank_data    clickRank  = 20;
+  optional quality_data qualityData = 21; // WARNING: you have to set pair_idf_rank if use this field!
+  optional uint32    bestOp     = 22;
+  optional passage_data passages = 23;
+}
+
+message clickrank_data {
+  required double rank            = 1;
+  required double attractive      = 2;
+  required double satisfaction    = 3;
+  required uint32 sessions        = 4;
+}
+
+message quality_data {
+  required float pair_idf_rank    = 1;
+  optional float text_rank        = 2 [default = 0.0 ];
+  optional float sq_model_rank    = 3;
+}
+
+message passage_data {
+  repeated uint32 zone_id = 1 [packed=true];
+  repeated uint32 start   = 2 [packed=true];
+  repeated uint32 length  = 3 [packed=true];
+  repeated uint32 rank    = 4 [packed=true];
+}
+
+message word_posistions {
+  required uint32 zone_id   = 1;
+  repeated uint32 positions = 2 [packed=true];
+}
+
+message word_posting_list {
+  required uint32 pos_in_query   = 1;
+  repeated word_posistions w_pos = 2;
+}
+
+message text_zone_item {
+    required string name     = 1;
+    required string value    = 2;
+
+    optional string loop_tag = 3;
+
+    optional bool b_marked_flag          = 4;
+    optional bool b_visualize_prev       = 5;
+    optional bool b_visualize_equal_prev = 6;
+
+    optional string visualize_tag        = 7;
+}
+
+message num_zone_item {
+  required string name  = 1;
+  required uint64 value = 2;
+
+  //пока что только эти флаги нужны для визуализации числовых зон
+  optional bool b_visualize_hex       = 3;
+  optional bool b_visualize_upper_hex = 4;
+  optional bool b_visualize_signed    = 5;
+  optional bool b_visualize_bits      = 6;
+  optional bool b_visualize_time_diff = 7;
+  optional bool b_age_in_year         = 8;
+
+  optional uint32 bit_len             = 9;
+}
+
+// идентификатор документа с привязкой к базе
+message real_doc_id_data {
+  required uint32 db_id = 1;
+  required uint32 db_timestamp = 2;
+  required uint32 doc_id = 3;
+}
+
+message doc_zone {
+  optional string name = 1;
+  optional string mode = 2;
+  optional string text = 3;
+  repeated string sentences = 4;
+}
+
+message doc_dump {
+  repeated doc_zone zones = 1;
+}
+
+message doc_item {
+  required uint32 doc_id                      = 1;
+  required uint32 num                         = 2;
+  optional string last_date                   = 3;
+  optional double weight                      = 4;
+  optional uint32 group_size                  = 5;
+  optional bool   spam                        = 6;
+  optional int64 c1                           = 7;
+  optional int64 c2                           = 8;
+  optional int64 c3                           = 9;
+
+  optional snippet_item snip                  = 10;
+  optional doc_data_ex  data_ex               = 11;
+
+  repeated word_posting_list snip_hl          = 12;
+
+  repeated num_zone_item  num_zone_values     = 13;
+  repeated text_zone_item text_zone_values    = 14;
+
+  repeated string track_list                  = 15;
+  optional string body                        = 16;
+
+  optional real_doc_id_data real_doc_id       = 17;
+  optional uint64 c4                          = 18;
+
+  optional ru.mail.go.snippetdata.parser.SiteLinks site_links               = 19;
+  // Расширенные данные для сниппета. В общем случае - данные произвольной структуры.
+  optional ru.mail.go.snippetdata.parser.ValueComposite extra_snippet_data  = 20;
+
+  optional bool is_navig                      = 21;
+
+  optional uint32 required_position           = 22;
+  optional domain_group_type domain_group     = 23 [default = NONE];
+  optional string rank_trace_feat             = 24; // not to do additional stage0 before stage1
+  optional bool is_mergable                   = 25 [default = true];
+  optional string index_version               = 26;
+  optional string raw_text_ranks              = 27;
+  optional uint64 c5                          = 28;
+  optional uint32 snippet_version             = 29;
+  // Расширяет rank_trace_feat: позволяет использовать на stage 1 в режиме кэша сниппетов какие-то данные,
+  // которые считаются на stage 0.
+  optional string doc_trace                   = 30;
+  optional bool could_be_a_group_leader       = 31;
+  optional fixed32 full_domain_hash           = 32;
+  // Тут могут содержаться выбранные зоны документа в том виде, в котором они сохранены в индексе.
+  optional bytes raw_doc_content              = 33;
+  optional sfixed32 features_hash             = 34;
+  optional bool req_pos_mergable              = 35 [default = false]; // Принудительная склейка прибитых документов (пока что только ББ)
+  // Тут может содержаться url документа если он известен уже на стадии s0 (поиск по видео ОК и ВК)
+  optional string doc_url                     = 36;
+  optional bool is_vkmusic_master_copy        = 37 [default = false];
+  optional bool is_vkmusic_release_copy       = 38 [default = false];
+}
+
+message error {
+    required sint32 error_code    = 1;
+    optional string error_message = 2;
+}
+
+message integer_counter {
+    required string name = 1;
+    required int64 counter = 2;
+}
+
+message double_counter {
+    required string name = 1;
+    required double counter = 2;
+}
+
+message statistic {
+    repeated uint32 porno_stats         = 1 [packed=true];
+    repeated uint32 geo_list            = 2 [packed=true];
+    repeated uint32 porno2_stats        = 3 [packed=true];
+    repeated uint32 porno_prob_stats    = 4 [packed=true];
+
+    repeated integer_counter   max_integer_counter = 100;
+    repeated integer_counter   integer_counter     = 101;
+    repeated double_counter    double_counter      = 102;
+    optional bool              metasearch_used     = 103;
+}
+
+message trait {
+    required int32 id       = 1;
+    required bytes data     = 2;
+}
+
+message wnf_url {
+    required string url         = 1;
+    required string category    = 2;
+}
+
+message wnf_text_zone {
+    required uint32 zone_id   = 1;
+    required string value     = 2;
+}
+
+message wnf_dump_tz {
+    required string url           = 1;
+    repeated wnf_text_zone zones  = 2;
+}
+
+message multicast_stat {
+    optional int64 searcher_request_status = 1;
+}
+
+message qual_stat {
+    repeated backends_quality.pb.BackendsQuality backends_quality = 1;
+    optional multicast_stat multicast_stat = 2;
+};
+
+message search_result {
+    required error         err          = 1;
+    optional string        query        = 2;
+    optional string        query_string = 3;
+    optional float         time         = 4;
+    optional result_frame  frame        = 5;
+    repeated string        words        = 6;
+    repeated doc_item      docs         = 7;
+
+    optional uint64     fingerprint     = 8;
+    repeated uint64     zone_dump       = 9;
+    optional string     statistics      = 10;
+    optional string     sm_through      = 11;
+    repeated uint32     porno_stats     = 12 [packed=true];
+    optional bool       use_snip_cache  = 13;
+    optional statistic  statistic       = 14;
+    optional bool       utf8            = 15; // all strings are UTF-8
+    repeated string     microbase_id    = 16;
+    optional string     searcher_vers   = 17;
+    repeated trait      traits          = 18;
+    optional fixed32    version_hash    = 19;
+
+    repeated wnf_url     wnf_urls       = 20;
+    repeated wnf_dump_tz wnf_tz         = 21;
+
+    // domain group documents are delivired out-of-order
+    // TODO: remove after all the searchers and SMs will be updated
+    optional bool        domain_group_ooo = 22;
+
+    optional qual_stat  qual_stat       = 24;
+}

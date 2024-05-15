@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+package gogo.storage;
+option java_outer_classname = "StackexchangeStorage";
+message answer
+{
+    required string body = 1;
+    required int32 rating = 2;
+    required bool is_accepted = 3;
+    repeated string urls = 4;
+    optional int32 authors_rating = 5;
+}
+message question
+{
+    required string title = 1;
+    required string body = 2;
+    required bool is_answered = 3;
+    required int32 rating = 4;
+    required string url = 5;
+    repeated string tags = 6;
+    repeated answer answers = 7;
+    optional int32 authors_rating = 8;
+    optional int64 favorite_count = 9;
+    optional int64 view_count = 10;
+}
+

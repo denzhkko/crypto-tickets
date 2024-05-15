@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+package ru.mail.go.recobase.snippet;
+import "image_defs.proto";
+import "document_enums.proto";
+
+option java_outer_classname = "PostContentForSnippet";
+
+message Page {
+    required string                               url          = 1;
+    optional Html                                htmlContent  = 2;
+    optional ru.mail.go.webbase.parsing.img.Thumb imageContent = 3;
+
+    extensions 100 to 199;
+}
+message Html {
+    required bytes content = 1;
+    required ru.mail.go.webbase.blobs.Encoding encoding = 2;
+}
+
+extend Page {
+    optional int64 htmlCrawlTime = 100;
+    optional int64 imageCrawlTime = 101;
+    optional string routeKey = 102;
+}
+
+
+

@@ -1,0 +1,20 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "DumpRedirects";
+import "crawl_state.proto";
+
+message DumpRedirect {
+    optional string url                    = 1;
+    optional CrawlDetails.stateTypes state = 2;
+    optional int64 lcd                     = 3;
+    optional bool should_be_indexed        = 4;
+    optional bool is_stub                  = 5;
+    optional bool is_root_stub             = 6;
+    optional bool redirect_from_index      = 7;
+    optional string redirect_to            = 8;
+    optional int64 brsq2                   = 9;
+    optional int64 uruq2                   = 10;
+    optional string redirect_from          = 11;
+}

@@ -1,0 +1,196 @@
+syntax = "proto2";
+
+package ru.mail.go.webbase.blobs;
+
+import "crawl_state.proto";
+import "document_enums.proto";
+import "silicon_data.proto";
+
+option java_outer_classname = "FetchList";
+
+enum FetcherType {
+        FAST_FETCHER = 0;
+        DARK_FETCHER = 1;
+        DARK_AFTER_FAST_FETCHER = 2;
+}
+
+message SplitFlags {
+    optional bool SplitA = 1 [default=false];
+    optional bool SplitB = 2 [default=false];
+    optional bool SplitC = 3 [default=false];
+}
+
+message FetchUrl {
+    required string url = 1;
+    optional int32 flag = 2;
+    optional int64 lastModified = 3; // java TS / 1000
+    optional string eTag = 4;
+
+    enum Fastbases {
+        INFO_BASE = 0;
+        NAVIG_BASE = 1;
+        SITEMAP_BASE = 2;
+        BAN_BASE = 3;
+        NAIL_BASE = 4;
+        INTERLEAVING_BASE = 5;
+        BEHAVIORAL_BASE = 6;
+    }
+
+    repeated Fastbases targetBases = 5;
+    optional int32 attemptsToFetch = 6;
+    optional int64 meetDate = 7;
+    optional int64 minDateToFetch = 8;
+    optional int32 minutesToRedownload = 9;
+    repeated string redirects = 10;
+    optional int64 publicationDate = 11;
+    optional FetcherType fetcherType = 12;
+    optional SplitFlags splitFlags = 13;
+    optional string originalUrl = 14;		// holds (effectively-) original url in redirect chain
+    optional ForumType forumType = 15;
+    optional int32 mainPriority = 16;
+    optional bool isNew = 17;
+
+    repeated BaseSplitInfo baseSplitInfo = 18;
+
+    optional string referer = 19;
+
+    // additional monitoring info from batch generator to content parser
+    optional string schedulerName = 20;
+    optional int32 schedulerPriority = 21;
+    optional int64 schedulerTimestamp = 22;
+    optional int64 batchTimestamp = 23;
+    optional int64 schedulerJobEndTimestamp = 24;
+    optional bool isPostscheduled = 25;
+    optional int64 batchGeneratorTimestamp = 26;
+    optional int64 parserTimestamp = 27;
+    optional int64 discoveryBatchingTimestamp = 28;
+
+    extensions 1000 to max;
+
+    extend FetchUrl {
+        optional BatchingResult batchingResult = 1000;
+        optional int64 batchingTs = 1001;
+        optional int64 checkSum = 1002;
+        optional int64 checkSumTs = 1003;
+        optional VideoBanSource videoBanSource = 1004;
+
+        optional bool youtubeForVideoSearch = 1005;
+        optional YouTubeWebSearch youTubeWebSearch = 1006;
+        optional YouTubeCommon youTubeCommon = 1007;
+        optional int32 microbaseID = 1008; // microbase ID for this url
+
+        optional string routeKey = 1009;
+
+        optional CrawlHistory crawlHistory = 1010;
+
+        optional int64 releaseDate = 1011;
+        optional int32 depth = 1012;
+        optional string sourceUrl = 1013;
+
+        repeated SiliconFetchUrl siliconUrls = 1014;
+        optional OkApiMessage okApi = 1015;
+
+        optional string batchPool = 1016;
+    }
+}
+
+enum BatchingResult {
+    not_needed_result = 0;
+    skipped_result = 1;
+    rotten_result = 2;
+    batched_result = 3;
+}
+
+enum VideoBanSource {
+    from_dead_video_ban = 0;
+    from_dead_video_checker = 1;
+}
+
+message BaseSplitInfo
+{
+    required FetchUrl.Fastbases base = 1;
+    optional SplitFlags splitFlags = 2;
+}
+
+message YouTubeWebSearch
+{
+    optional string originalUrl = 1;
+}
+
+message YouTubeCommon
+{
+    repeated YouTubeIdUrlMapping idUrlMapping = 1;
+}
+
+message YouTubeIdUrlMapping
+{
+    required string id = 1;
+    required string url = 2;
+}
+
+message OkApiMessage
+{
+    repeated OkIdToUrlMapping idToUrlMapping = 1;
+}
+message OkIdToUrlMapping
+ {
+    required int64 id = 1;
+    required string url = 2;
+ }
+
+
+message CrawlHistory
+{
+    required int64 firstCrawlTs = 1;
+    required int32 changesNumber = 2;
+    required int64 lastChangeTs = 3;
+}
+
+message FetchResult {
+    optional CrawlDetails crawlStatus = 1;
+
+    optional int32 attemptsToFetch = 2;
+    optional int64 minDateToFetch = 3;
+    repeated string redirects = 4;
+    optional FetcherType fetcherType = 5;
+    optional bool isRotten = 6 [ default = false];
+}
+
+message FetchBanResult {
+    required string sourceUrl = 1;
+    optional bytes fetchStatus = 2;       // == FBUrlsTable.HISTORY_CF.STATUS_TYPE.value()
+    optional CrawlDetails crawlStatus = 3;
+    repeated string redirects = 4;
+    optional int32 httpStatusCode = 5;
+}
+
+message PublicationMarkupRecord {
+    enum Source {
+        // meta:: name==property==itemprop
+        // yandex opengraph
+        ya_ovs_upload_date = 0; // <meta property="ya:ovs:upload_date" content="2013-06-05T00:00:00"/>
+        // schema.org
+        meta_date_published = 1; // <meta itemprop="datePublished" content="2013-06-05T00:00:00">
+                                 // <meta property="datePublished" content="2009-05-08">
+        meta_upload_date = 2; // <meta itemprop="uploadDate" content="2013-06-05T00:00:00">a
+        span_date_published = 3; // <span class="datetime" itemprop="datePublished" content=" 2019-10-18 T17:07:38+0300 ">
+        span_upload_date = 4; // <span itemprop="uploadDate">2013-06-05T00:00:00</span>
+        script_date_published = 5; // <script type="application/ld+json"> .. { .. "@type": "Article", .. "datePublished": "2009-05-08"
+        // OpenGraph
+        article_published_time = 6; // <meta name="article:published_time" content="2019-11-16" />
+        // time
+        time_date_published = 7; // <time datetime="2019-10-18" class="grey" itemprop="datePublished">
+                                 //<time class="published" datetime="28.09.2019">
+        div_date_published = 8; // <div class="b-article_realty-not-draft__date" itemscope="" itemprop="datePublished" content="2019-05-14T18:29:00.000Z">14 мая 2019, 18:29</div>
+    }
+
+    required Source source = 1;
+    required string value = 2;
+    required int64 parsed_date = 3;
+    optional string content_type = 4;
+}
+
+message PublicationMarkup {
+    repeated PublicationMarkupRecord records = 1;
+}
+

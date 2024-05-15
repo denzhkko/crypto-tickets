@@ -1,0 +1,295 @@
+syntax = "proto2";
+import "parsed_blobs.proto";
+
+package ru.mail.go.webbase.blobs;
+
+option java_outer_classname = "VkMusic";
+
+message VkMusicTrack
+{
+  required int64 owner_id = 1;
+  required int64 audio_id = 2;
+  optional string title = 3;
+  optional string performer = 4;
+  repeated string tags = 5;
+  optional int32 duration = 6;
+  optional int32 added = 7;
+  optional int32 genre = 8;
+  optional int32 bitrate = 9;
+  optional bool lyrics = 10;
+  optional bool official = 11;
+  required string hash = 12;
+  required int64 timestamp = 13;
+  optional int64 times_listened = 14;
+  repeated string extra_names = 15; // use extra_performers and extra_titles instead
+  optional bool deleted = 16;
+  optional int64 copy_owner_id = 17;
+  optional int64 copy_audio_id = 18;
+  optional int64 hashgroup_size = 19; // special field for indexing
+  optional int64 crcgroup_size = 20; // special field for indexing
+  optional int64 times_listened_last_month = 21;
+  optional int64 times_listened_last_week = 22;
+  repeated string extra_performer_names = 23;
+  repeated string extra_title_names = 24;
+  optional int64 global_crcgroup_size = 25; // special field for indexing
+  optional int64 global_times_listened = 26;
+  optional int64 global_times_listened_last_month = 27;
+  optional int64 global_times_listened_last_week = 28;
+  optional int64 uma_release_id = 29;
+  repeated string alternative_track_ids = 30; // track ids to replace this one with, in case it's not playable
+  optional int64 track_id = 31;
+  optional int64 cluster_id = 32;
+  optional string subtitle = 33;
+  optional int64 source_owner_id = 34; // what user uploaded the original track
+  optional int64 source_audio_id = 35;
+  optional int64 timestamp_ms = 36;
+  optional bool from_offline_index = 37;
+  optional string title_alternatives = 38;
+  optional string performer_alternatives = 39;
+  optional VkMusicLyrics uma_lyrics = 40;
+  optional int64 album_release_ts = 41;
+  optional int64 rightholder_id = 42;
+  optional string rightholder_name = 43;
+  optional bool is_copy_of_mastercopy = 44;
+  optional bool is_boostable_rightholder = 45;
+  optional bool is_new_boostable_release = 46;
+}
+
+message VkMusicLyrics
+{
+  optional string text = 1;
+  optional int64 release_id = 2;
+  optional int64 track_id = 3;
+  optional bool timecodes = 4;
+  optional int64 timestamp = 5;
+}
+
+message VkMusicTrackOrLyrics
+{
+  optional VkMusicTrack track = 1;
+  optional VkMusicLyrics lyrics = 2;
+}
+
+message VkMusicUserEventListen
+{
+  optional int64 user_id = 1;
+  optional int64 start_ts = 2;
+  optional int32 duration = 3;
+  optional string audio_id = 4;
+  optional string title = 5;
+  optional string performer = 6;
+  optional bool master_track = 7;
+  optional string audio_section = 8;
+  optional bool is_mail_search = 9;
+  optional string playlist_id = 10;
+  optional int64 uma_release_id = 11;
+  optional string device_type = 12;
+  optional string os_type = 13;
+  optional string source = 14;
+  optional string prev_audio_id = 15;
+  optional string prev_playlist_id = 16;
+  //search clicks stat
+  optional int64 vk_qid = 17;
+  optional string block_name = 18;
+  optional int64 app_id = 19;
+}
+
+message VkTrackList
+{
+  repeated string track_ids = 1;
+}
+
+message VkMusicPlaylist
+{
+  optional int64 owner_id = 1;
+  optional int64 playlist_id = 2;
+  optional string title = 3;
+  optional string performer = 4;
+  optional int32 number_of_tracks = 5;
+  optional bool is_official = 6;
+  optional int64 times_listened = 7;
+  optional int64 timestamp = 8;
+  optional int64 followers = 9;
+  optional int64 times_listened_last_month = 10;
+  optional int64 times_listened_last_week = 11;
+  optional VkTrackList tracks = 12;
+  /*optional string track_names = 13;*/
+  repeated string track_names = 13;
+  optional int64 tracks_times_listened = 14;
+  optional int64 tracks_times_listened_last_month = 15;
+  optional int64 tracks_times_listened_last_week = 16;
+  optional string subtitle = 17;
+  optional uint32 year = 18;
+  repeated string tags = 19;
+  optional int64 timestamp_ms = 20;
+  repeated string uma_tags = 21;
+  optional string title_alternatives = 22;
+  optional string performer_alternatives = 23;
+}
+
+message VkMusicUMAAlbumMeta
+{
+  optional int64 owner_id = 1;
+  optional int64 playlist_id = 2;
+  optional int64 timestamp = 3;
+  optional string json_str = 4;
+}
+
+message VkMusicUserPrivacy
+{
+  required int64 owner_id = 1;
+  required bool is_public = 2;
+  optional int64 timestamp = 3;
+  optional int64 timestamp_ms = 4;
+}
+
+message TrackOrPlaylistOrUserPrivacy
+{
+  optional VkMusicTrack track = 1;
+  optional VkMusicPlaylist playlist = 2;
+  optional VkMusicUserPrivacy privacy = 3;
+}
+
+message TrackOrPlaylistOrListenEvent
+{
+  optional VkMusicTrack track = 1;
+  optional VkMusicUserEventListen listen_event = 2;
+  optional VkMusicPlaylist playlist = 3;
+}
+
+message VkUserEventHistory
+{
+  optional int64 user_id = 1;
+  repeated TrackOrPlaylistOrListenEvent history_entry = 2;
+}
+
+message VkMusicExtraData
+{
+  optional bool remove_ugc = 1;
+}
+
+
+enum VkMusicSessionType {
+  TRACK = 1;
+  ALBUM = 2;
+}
+
+enum VkMusicEventType {
+  SEARCH = 1;
+  TRACK_CLICK = 2;
+}
+
+message VkMusicEvent {
+  optional uint64 time = 1;
+  optional uint32 position = 2;
+  optional VkMusicEventType type = 3;
+  optional uint32 duration = 4;
+  optional uint64 uid = 5;
+  optional string extra = 6;
+}
+
+message SessionOrVkMusicEvent {
+  optional VkMusicSession session = 1;
+  optional VkMusicEvent event = 2;
+}
+
+message VkMusicSpellcheckerResponse {
+  enum Type {
+    AUTO = 1;
+    SUGG = 2;
+  }
+  optional Type type = 1;
+  optional string fixed_query = 2;
+  optional bool applied = 3;
+}
+
+message VkMusicSession {
+  enum Sex {
+    FEMALE = 1;
+    MALE = 2;
+  }
+  optional string query = 1;
+  optional uint64 uid = 2;
+  optional uint64 time = 3;
+  repeated VkMusicEvent events = 4;
+  repeated string items = 5;
+  optional VkMusicSessionType type = 6;
+  optional uint32 split = 7;
+  optional string qid = 8;
+  optional uint64 items_num = 9;
+  optional uint64 official_tracks_num = 10;
+  optional int64 vk_qid = 11;
+  optional double reply_quality = 12;
+  optional string query_class = 13;
+  optional int64 as_events_found = 14; // personalization counter
+  optional int64 favourite_tracks = 15; // personalization counter
+  optional int64 favourite_tracks_boosted = 16; // personalization counter
+  optional uint32 qddb_sessions_num_log2 = 17;
+  optional string client = 18;
+  optional VkMusicSpellcheckerResponse spellchecker_response = 19;
+  optional uint32 user_age = 20;
+  optional Sex user_sex = 21;
+  optional string ref = 22;
+}
+
+message VkMusicTrackStatsForQuery {
+  optional string query = 1;
+  optional uint64 sessionCount = 2; // query property
+  optional uint64 performerFilterSessionCount = 3; // query property
+  optional uint64 timesClicked = 4; // track property
+  optional uint64 timesLongClicked = 5; // track property
+  optional uint64 timesLastClicked = 6; // track property
+  optional VkMusicTrack track = 7;
+}
+
+message VkMusicPerformer {
+  optional int64 performer_id = 1;
+  optional string name = 2;
+  optional int64 timestamp = 3;
+  optional int64 followers = 4;
+  optional int64 times_listened = 5;
+  optional int64 times_listened_last_month = 6;
+  optional int64 times_listened_last_week = 7;
+  repeated string tags = 8;
+  optional int64 timestamp_ms = 9;
+  optional string name_alternatives = 10;
+}
+
+message VkMusicClick {
+  optional int64 qid = 1;
+  optional int64 user_id = 2;
+  optional string click_type = 3;
+  optional uint64 click_position = 4;
+  optional string query_text = 5;
+  optional string service_name = 6;
+  optional string block_name = 7;
+  optional string platform = 8;
+  optional int64 owner_id = 9;
+  optional int64 doc_id = 10;
+  optional uint64 timestamp = 11;
+}
+
+message VkMusicClickOrQuery {
+  optional VkMusicClick click = 1;
+  optional string query = 2;
+}
+
+message VkMusicQueryBlockClicks {
+  message Block {
+    optional string name = 1;
+    optional uint64 clicks = 2;
+  }
+  message Service {
+    optional string name = 1;
+    repeated Block blocks = 2;
+  }
+
+  optional string query_text = 1;
+  repeated Service services = 2;
+}
+
+message VkMusicFrontendExtradata {
+  optional uint32 orig_pos = 1;
+  optional uint32 fixed_pos = 2;
+  optional bool orig_turn = 3;
+}

@@ -1,0 +1,285 @@
+syntax = "proto2";
+
+package ru.mail.go.social;
+option java_outer_classname = "Social";
+import "content_storage.proto";
+import "fetcher_storage.proto";
+
+// см. https://confluence.mail.ru/pages/viewpage.action?pageId=237959423
+
+message KV {
+    required string key = 1;
+    required string value = 2;
+}
+
+enum Type {
+    profile = 1;
+    group = 2;
+    post = 3;
+    longread = 4;
+    video = 5;
+    topic_offset = 6;
+    topic_post = 7;
+}
+
+enum Source {
+    vk = 1;
+    fb = 2;
+    ok = 3;
+    ig = 4;
+}
+
+message Audio {
+    required string author = 1;
+    required string title = 2;
+}
+
+enum WorkInfo {
+    unknown = 0;
+    temporaryClosed = 1;
+    alwaysOpened = 2;
+    foreverClosed = 3;
+    timetable = 4;
+}
+
+message Address {
+    required float lat = 1;
+    required float lon = 2;
+    required int32 rbCode = 3;
+    required int32 countryId = 4;
+    required int32 cityId = 5;
+    required string city = 6;
+    required string address = 7;
+    optional string phone = 8;
+    optional string title = 9;
+    required WorkInfo workInfo = 10;
+    repeated Timetable timetable = 11;
+
+    message Timetable {
+        required string day = 1;
+        required int32 openTime = 2;
+        required int32 closeTime = 3;
+        required int32 breakOpenTime = 4;
+        required int32 breakCloseTime = 5;
+    }
+}
+
+message Profile {
+    required string key = 1; //ключ для hbase
+    required string name = 2;  //человекочитаемое имя
+    required bool verified = 3;
+    required bool private = 4;
+    optional string login = 5; //красивый логин, по которому можно открыть в браузере
+    optional string url = 12; //обязательный!!! урл
+    optional string canonicalUrl = 14; //обязательный!!! урл
+    optional bool group = 13 [deprecated=true];
+    optional string text = 6;  //описание самого себя, у вк-профилей, вк-групп и инсты называются по-разному
+    optional string status = 7;
+    optional uint64 followers = 8;
+    optional uint64 following = 9;
+    repeated string links = 10; //ссылки из специальной графы, если есть
+    repeated KV extra = 11; //здесь все строковые поля работа-вуз-город-школа и прочее (ключ может повторяться).
+    optional Type type = 15;
+    optional Source source = 16;
+    repeated Address address = 17;
+    optional uint64 last_seen = 18; //МИЛЛИСЕКУНДЫ!!!
+}
+
+message Post {
+    required string key = 1; //ключ для hbase
+    required string author_id = 2; //кто сделал запись. для вк id стены берётся из ключа
+    optional string repostedFrom = 3; //если репост - ключ таблицы для оригинального поста (существовать не обязан)
+    required uint64 pubDate = 4;
+    required string url = 5;
+    optional string title = 11;
+    required string text = 6;
+    repeated string links = 10; //ссылки включая указания профилей
+    optional int64 cntLike = 7;
+    optional int64 cntShare = 8;
+    optional int64 cntView = 9;
+    optional int64 cntComment = 12;
+    repeated KV extra = 13; //здесь все строковые поля работа-вуз-город-школа и прочее (ключ может повторяться).
+    optional Type type = 14;
+    optional Source source = 15;
+    optional bool private = 16;
+    repeated Audio audios = 17;
+    optional string youlaId = 18;
+    optional YoulaAd youlaAd = 19;
+}
+
+message VideoCollection {
+    required string key = 1;
+    required string author_id = 2;
+    required uint64 pubDate = 3;
+    required string url = 4;
+    required string title = 5;
+    required int32 count = 6;
+
+    message Video {
+        required string title = 1;
+        required string url = 2;
+        required int32 duration = 3;
+        required int64 pubdate = 4;
+    }
+
+    repeated Video videos = 7;
+}
+
+enum OkVideoCollectionsProvider { // провайдеры видео контента в odnoklassniki.ru
+    VIDEOMORE = 1; // name="СТС медиа" 
+    ODKL_COMPILATION = 2; // name="ОК на связи!", group=https://ok.ru/oknasvyazi
+    VSP = 3; // name=VSP
+    START_FILM = 4; // name=START_RU, group=https://ok.ru/startru, url=https://start.ru/
+    X_MEDIA_DIGITAL = 5; // name=Теремок ТВ, group=https://ok.ru/teremoktv, url=http://teremok.tv/
+    RIDE_THE_PLANET = 6; // name=RideThePlanet, group=https://ok.ru/ridetheplanetproject, url=http://www.ridetheplanet.ru/
+    MISCELLANEOUS = 7; // 
+    PLADFORM = 8; //
+}
+
+message Counters { //пока только для поста, тк именно в них необходимость (перекачка инсты)
+    optional int64 likes = 1;
+    optional int64 comments = 2;
+    optional int64 shares = 3;
+    optional int64 views = 4;
+}
+
+message ImgAttaches {
+    repeated gogo.fetcher.fetcher_image img = 1;
+}
+
+message Face {
+    required uint64 photo_id = 1; //могут повторяться если на одной фотке несколько лиц
+    required gogo.fetcher.fetcher_image img = 2; //кропнуто аккурат по ответу эмбеддера
+    required float confidence = 3;
+    repeated float v = 4 [packed = true];
+}
+
+message FacesInfo {
+    repeated uint64 bad = 1; //id фотографий, которые ранее скачивались и оказались мусорными
+    repeated Face faces = 2;
+}
+
+message PutRequest { // формат, в который будет нужно оборачивать результат парсера; содержит ключ для таблицы и таймстамп под которым класть
+    required string key = 1;
+    required uint64 ts = 2;
+    optional Post post = 3;
+    optional Profile profile = 4;
+    optional ImgAttaches attaches = 5;
+    optional string profile_url = 6; // канонический урл паблика / юзера
+
+    enum Origin {
+        wpII = 1;
+        message = 2;
+        longread = 3;
+        userActivity = 4;
+    }
+    optional Origin origin = 7;
+    optional Status status = 8;
+
+    enum Fastbase {
+        PROD = 1;
+        RM_TTL = 2;
+        RM_KAFKA = 3;
+    }
+    optional Fastbase fastbase = 9;
+    optional Counters counters = 10;
+    optional int64 last_event_attempt = 11;
+    optional bool noFetch = 12;
+    optional bool noIndex = 13;
+    enum Destination {
+        // SOCIAL - обычный путреквест в hbase таблицу, FACES - в промежуточную папку для обработки лиц
+        SOCIAL = 0;
+        FACES = 1;
+    }
+    optional Destination dest = 14 [default = SOCIAL];
+}
+
+message LoginResolveRequest {
+    enum request_t {
+        key_primary = 0;
+        reposted_from_primary = 1;
+    }
+    repeated request_t request = 1;
+    required PutRequest put = 2;
+}
+
+message Status {
+    required bool alive = 1;
+
+    enum CheckType {
+        IMPORT = 1;
+        VK_MESSAGES = 2;
+        API_FETCH = 3;
+        RB_IMPORT = 4;
+        OWNER_DELETED = 5;
+        OK_USER_ACTIVITY = 6;
+        YOULA_NOT_ACTUAL = 7;
+    }
+    required CheckType type = 2;
+}
+
+message UrlList {
+    repeated string urls = 1;
+}
+
+message GatewayRecord {
+    optional string socialId = 1;
+    optional string url = 2;
+    optional int32 targetId = 3;
+    optional int64 value64 = 4;
+    optional int32 value32 = 5;
+    optional bytes value = 6;
+}
+
+message ProfileExplorerResponse {
+    message Body {
+        repeated string vkFriendsIds = 1;
+        repeated string vkSubGroupsIds = 2; // vkSubGroupsIds = subscription groups,
+        repeated string vkSubUsersIds = 3;  // vkSubUsersIds = subscription users
+        repeated string okFriendsIds = 4;
+    }
+    optional Body body = 1;
+    optional string error = 2;
+}
+
+// Group subscribers geo stats
+message GeoStats {
+    message Record {
+        required string geo = 1;
+        required float percent = 2;
+    }
+
+    repeated Record records = 1;
+}
+
+message ConverterState {
+    required PutRequest putRequest = 1;
+    optional gogo.storage.spider_document_detail fastTexts = 2;
+    optional gogo.storage.spider_document_detail numzones = 3;
+    optional GeoStats geoStats = 4;
+    optional int32 neuroporn = 5;
+}
+
+message YoulaAd {
+    required string productId = 1;
+    required uint64 ts = 2;
+    required bool isArchived = 3;
+    required bool isBlocked = 4;
+    required bool isDeleted = 5;
+    required bool isSold = 6;
+    required int32 price = 7;
+    required int32 priceOrig = 8;
+    required string name = 9;
+    required string desc = 10;
+    required float lat = 11;
+    required float lon = 12;
+}
+
+message YoulaWithPutRequest {
+    optional YoulaAd youlaAd = 1;
+    optional PutRequest putRequest = 2;
+}
+
+message PutRequestList {
+    repeated PutRequest putRequest = 1;
+}

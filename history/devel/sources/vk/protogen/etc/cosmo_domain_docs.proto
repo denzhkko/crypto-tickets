@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+message ProtoDomainDocsRecord {
+    required int64 domain = 1;
+    repeated ProtoDomainDocsEntry entries = 2;
+}
+
+message ProtoDomainDocsEntry {
+    required int64 source_id = 1;
+    required int64 doc_id = 2;
+}

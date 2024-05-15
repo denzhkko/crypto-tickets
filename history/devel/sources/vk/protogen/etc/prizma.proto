@@ -1,0 +1,10 @@
+syntax = "proto2";
+
+
+package prizma.pb;
+
+message Ticket
+{
+    required int64 expiration_ts        = 1;
+    required string product_id          = 2;
+}
